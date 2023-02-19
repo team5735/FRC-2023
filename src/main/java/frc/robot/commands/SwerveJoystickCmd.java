@@ -42,14 +42,19 @@ public class SwerveJoystickCmd extends CommandBase {
     @Override
     public void execute() {
         // 1. Get real-time joystick inputs
-        double xSpeed = Math.pow(xSpdFunction.get(), 3) * 0.5;
-        double ySpeed = Math.pow(ySpdFunction.get(), 3) * 0.5; // xbox controller
-        double turningSpeed = turningSpdFunction.get() * 0.75;
+        double xSpeed = Math.pow(xSpdFunction.get(), 3);
+        double ySpeed = Math.pow(ySpdFunction.get(), 3); // xbox controller
+        double turningSpeed = Math.copySign(Math.pow(turningSpdFunction.get(), 2), turningSpdFunction.get());
 
         // 2. Apply deadband
         xSpeed = Math.abs(xSpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? xSpeed : 0.0;
         ySpeed = Math.abs(ySpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? turningSpeed : 0.0;
+
+        // 2.5 Limit speed
+        xSpeed *= Constants.OIConstants.SPEED_LIMIT_XY;
+        ySpeed *= Constants.OIConstants.SPEED_LIMIT_XY;
+        turningSpeed *= Constants.OIConstants.SPEED_LIMIT_TURN;
 
         // 3. Make the driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND; // returns desired

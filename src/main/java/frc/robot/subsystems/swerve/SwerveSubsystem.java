@@ -92,11 +92,11 @@ public class SwerveSubsystem extends SubsystemBase {
                 Constants.DrivetrainConstants.DT_KINEMATICS, // Give the odometry the kinematics of the robot,
                 new Rotation2d(0), // and the starting angle of the robot
                 new SwerveModulePosition[] {
-                    this.frontLeft.getPosition(),
-                    this.frontRight.getPosition(),
-                    this.backLeft.getPosition(),
-                    this.backRight.getPosition()
-                  }, new Pose2d(0, 0, new Rotation2d())); // Initial position
+                        this.frontLeft.getPosition(),
+                        this.frontRight.getPosition(),
+                        this.backLeft.getPosition(),
+                        this.backRight.getPosition()
+                }, new Pose2d(0, 0, new Rotation2d())); // Initial position
 
         // Reset the heading of the robot after 1 second
         new Thread(() -> {
@@ -120,6 +120,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     /**
      * Returns if field-oriented drive is enabled
+     * 
      * @return true if field-oriented drive is enabled, false otherwise
      */
     public boolean isFieldOrientedEnabled() {
@@ -140,7 +141,8 @@ public class SwerveSubsystem extends SubsystemBase {
      * @return
      */
     public double getGyroHeadingDeg() {
-        // Negative because NavX says clockwise is positive but WPILib says counterclockwise is positive
+        // Negative because NavX says clockwise is positive but WPILib says
+        // counterclockwise is positive
         return Math.IEEEremainder(-this.gyro.getAngle(), 360);
     }
 
@@ -170,16 +172,26 @@ public class SwerveSubsystem extends SubsystemBase {
      * @param pose the new position and orientation of the robot
      */
     public void resetOdometry() {
+        this.frontLeft.resetEncoders();
+        this.frontRight.resetEncoders();
+        this.backLeft.resetEncoders();
+        this.backRight.resetEncoders();
         this.odometer.resetPosition(
-            new Rotation2d(),
-            new SwerveModulePosition[] {
-                this.frontLeft.getPosition(),
-                this.frontRight.getPosition(),
-                this.backLeft.getPosition(),
-                this.backRight.getPosition()
-              },
-            new Pose2d(0, 0, new Rotation2d())
-        );
+                new Rotation2d(),
+                new SwerveModulePosition[] {
+                        this.frontLeft.getPosition(),
+                        this.frontRight.getPosition(),
+                        this.backLeft.getPosition(),
+                        this.backRight.getPosition()
+                },
+                new Pose2d());
+    }
+
+    /**
+     * Testing purposes. Turns a motor full power to measure velocity
+     */
+    public void turnFullPower() {
+        this.frontRight.turnFullPower();
     }
 
     /**
@@ -204,14 +216,16 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         odometer.update( // Updates the current angle and position of the robot
-            this.getRotation2d(),
-            new SwerveModulePosition[] {
-                this.frontLeft.getPosition(), this.frontRight.getPosition(),
-                this.backLeft.getPosition(), this.backRight.getPosition()
-            }
-        );
+                this.getRotation2d(),
+                new SwerveModulePosition[] {
+                        this.frontLeft.getPosition(), this.frontRight.getPosition(),
+                        this.backLeft.getPosition(), this.backRight.getPosition()
+                });
 
         m_field.setRobotPose(this.odometer.getPoseMeters());
+
+        // SmartDashboard.putString("Odometry",
+        // this.odometer.getPoseMeters().toString());
 
         SmartDashboard.putBoolean("Gyro Calibrating", this.gyro.isCalibrating());
         SmartDashboard.putBoolean("Gyro Connected", this.gyro.isConnected());
@@ -219,10 +233,15 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Robot Location (m)", this.getPose().getTranslation().toString());
         SmartDashboard.putBoolean("Field Oriented Enabled", this.isFieldOrientedEnabled);
 
-        SmartDashboard.putNumber("FL Wheel Angle", Units.radiansToDegrees(frontLeft.getWheelAngle()));
-        SmartDashboard.putNumber("FR Wheel Angle", Units.radiansToDegrees(frontRight.getWheelAngle()));
-        SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getWheelAngle()));
-        SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getWheelAngle()));
+        SmartDashboard.putNumber("FL Wheel Angle", Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
+        SmartDashboard.putNumber("FR Wheel Angle", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
+        SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
+        SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
+
+        SmartDashboard.putNumber("FL Wheel Speed", Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
+        SmartDashboard.putNumber("FR Wheel Speed", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
+        SmartDashboard.putNumber("BL Wheel Speed", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
+        SmartDashboard.putNumber("BR Wheel Speed", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
     }
 
     /**

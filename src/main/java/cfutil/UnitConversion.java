@@ -44,4 +44,14 @@ public class UnitConversion {
                 * (2 * Math.PI); // turns 0.65 rotations into fraction of full rotation in radians
     }
 
+    // Turn motor
+    public static double falconToRadPerSec(double velocityFalconUnits) {
+        return (velocityFalconUnits // in units/100ms
+                / UnitConversion.FALCON_ENCODER_CPR // becomes rev/100ms
+                / Constants.DrivetrainConstants.MK4_TURN_MOTOR_GEAR_RATIO  // changes # of rev
+                * 10 // becomes rev/1s
+                * 2 * Math.PI // becomes rad/s
+                );
+    }
+
 }

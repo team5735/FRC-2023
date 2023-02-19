@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.trajectories.Trajectories;
@@ -77,6 +78,9 @@ public class RobotContainer {
     // When B is pressed, make the wheels brake.
     new JoystickButton(this.driverController, XboxController.Button.kB.value)
         .whenHeld(new BrakeCommand(this.swerveSubsystem));
+
+    // new JoystickButton(this.driverController, XboxController.Button.kA.value)
+    //   .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
   }
 
 
@@ -88,7 +92,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory trajectory = Trajectories.ONE_METER_CURVE_LEFT;
+    Trajectory trajectory = Trajectories.ONE_METER_STRAIGHT;
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
