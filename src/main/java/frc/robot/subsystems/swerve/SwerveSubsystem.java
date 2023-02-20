@@ -242,6 +242,11 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("FR Wheel Speed", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
         SmartDashboard.putNumber("BL Wheel Speed", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
         SmartDashboard.putNumber("BR Wheel Speed", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
+
+        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns in Degrees
+        SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll());
+        SmartDashboard.putNumber("Gyro Yaw", this.gyro.getYaw());
+
     }
 
     /**
