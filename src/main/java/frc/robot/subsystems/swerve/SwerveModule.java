@@ -99,6 +99,10 @@ public class SwerveModule {
         return new Rotation2d(this.getTurnMotorAngle());
     }
 
+    public double getTurnMotorInRotations() {
+        return this.turnAbsoluteEncoder.get();
+    }
+
     /**
      * Returns how fast the wheel turn motor is spinning in rad/s
      */
@@ -106,7 +110,6 @@ public class SwerveModule {
         return UnitConversion.falconToRadPerSec(
                 this.turnMotor.getSelectedSensorVelocity());
     }
-
 
     public void resetEncoders() {
         this.driveMotor.setSelectedSensorPosition(0);

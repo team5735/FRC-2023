@@ -27,7 +27,7 @@ public class GyroAutocorrectCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double proportional = Units.degreesToRadians(gyroscope.getRoll()) * 0.7;
+        double proportional = Units.degreesToRadians(gyroscope.getPitch()) * 0.7;
 
         // for safety
         if(proportional > 0.25 || proportional < -0.25) {
@@ -42,25 +42,25 @@ public class GyroAutocorrectCommand extends CommandBase {
         }
 
         else if((proportional > 0.05 || proportional < -0.05) && enabled) {
-            SwerveModuleState frontLeftState = new SwerveModuleState(-proportional, Rotation2d.fromDegrees(0));
-            SwerveModuleState frontRightState = new SwerveModuleState(-proportional, Rotation2d.fromDegrees(0));
-            SwerveModuleState backLeftState = new SwerveModuleState(-proportional, Rotation2d.fromDegrees(0));
-            SwerveModuleState backRightState = new SwerveModuleState(-proportional, Rotation2d.fromDegrees(0));
+            SwerveModuleState frontLeftState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
+            SwerveModuleState frontRightState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
+            SwerveModuleState backLeftState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
+            SwerveModuleState backRightState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
             SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
             this.swerveSubsystem.setModuleStates(moduleStates);
         }
         
         // Additional Safety -- untested
-        // if(proportional < 0.05 && proportional > -0.05) {
-        //     SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-        //     SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-        //     SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-        //     SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-        //     SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-        //     this.swerveSubsystem.setModuleStates(moduleStates);
-        //     enabled = false;
-        //     return;
-        // }
+        if(proportional < 0.05 && proportional > -0.05) {
+            SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
+            SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
+            SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
+            SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
+            SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
+            this.swerveSubsystem.setModuleStates(moduleStates);
+            enabled = false;
+            return;
+        }
     }
 
     @Override
