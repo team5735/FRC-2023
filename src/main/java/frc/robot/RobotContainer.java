@@ -18,6 +18,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
+import frc.robot.commands.GyroAutocorrectCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.trajectories.Trajectories;
 
@@ -64,10 +65,15 @@ public class RobotContainer {
         () -> -this.driverController.getRightX())); // Rotate left on controller is - but rotate left on controller is +
 
     // When Y is pressed on driver controller, toggle field oriented
+    // new JoystickButton(this.driverController, XboxController.Button.kY.value)
+    //     .whenPressed(new InstantCommand(() -> {
+    //       this.swerveSubsystem.toggleFieldOriented();
+    //     }));
+
+    // NOTE: Strikethrough caused by depreciated, but functional, software
+    // FOR TESTING When Y is pressed, trigger gyro autocorrect command
     new JoystickButton(this.driverController, XboxController.Button.kY.value)
-        .whenPressed(new InstantCommand(() -> {
-          this.swerveSubsystem.toggleFieldOriented();
-        }));
+        .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
     new JoystickButton(this.driverController, XboxController.Button.kX.value)
