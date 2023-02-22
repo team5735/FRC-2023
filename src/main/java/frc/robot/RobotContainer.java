@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
@@ -21,6 +22,10 @@ import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.GyroAutocorrectCommand;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.trajectories.Trajectories;
+
+//Intake imports
+import frc.robot.commands.intake.*;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,6 +40,7 @@ public class RobotContainer {
   private final XboxController driverController, subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -44,6 +50,7 @@ public class RobotContainer {
     this.subsystemController = new XboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     this.swerveSubsystem = new SwerveSubsystem();
+    this.intakeSubsystem = new IntakeSubsystem();
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -72,21 +79,43 @@ public class RobotContainer {
 
     // NOTE: Strikethrough caused by depreciated, but functional, software
     // FOR TESTING When Y is pressed, trigger gyro autocorrect command
-    new JoystickButton(this.driverController, XboxController.Button.kY.value)
+    /*new JoystickButton(this.driverController, XboxController.Button.kY.value)
         .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
+    */ 
+    new Trigger(this.driverController::getYButton)
+      .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
-    new JoystickButton(this.driverController, XboxController.Button.kX.value)
+    /*new JoystickButton(this.driverController, XboxController.Button.kX.value)
         .whenPressed(new InstantCommand(() -> {
+          this.swerveSubsystem.zeroHeading();
+        }));
+    */
+    new Trigger(this.driverController::getXButton)
+        .whileTrue(new InstantCommand(() -> {
           this.swerveSubsystem.zeroHeading();
         }));
 
     // When B is pressed, make the wheels brake.
-    new JoystickButton(this.driverController, XboxController.Button.kB.value)
+    /*new JoystickButton(this.driverController, XboxController.Button.kB.value)
         .whenHeld(new BrakeCommand(this.swerveSubsystem));
+    */
+    new Trigger(this.driverController::getBButton)
+        .whileTrue(new BrakeCommand(this.swerveSubsystem));
 
     // new JoystickButton(this.driverController, XboxController.Button.kA.value)
     //   .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
+
+    //Intake controls
+    //Right bumper for intake forward
+    new Trigger(this.driverController::getRightBumper)
+        .whileTrue(new IntakeForward(this.intakeSubsystem))
+        .whileFalse(new IntakeStop(this.intakeSubsystem));
+
+    //Left bumper for intake backward
+    new Trigger(this.driverController::getLeftBumper)
+        .whileTrue(new IntakeBackward(this.intakeSubsystem))
+        .whileFalse(new IntakeStop(this.intakeSubsystem));
   }
 
 
