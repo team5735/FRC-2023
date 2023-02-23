@@ -8,6 +8,7 @@ import frc.robot.constants.IntakeConstants;
 
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -21,21 +22,34 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     intakeMotor = new CANSparkMax(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
     conveyorMotor = new CANSparkMax(IntakeConstants.CONVEYOR_MOTOR_ID, MotorType.kBrushless);
+
+    //intakeMotor.setInverted(true);
+    //conveyorMotor.setInverted(true);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // This method will be called once per scheduler run (every 20ms default)
+    //Current checks
+    SmartDashboard.putNumber("intake_current", intakeMotor.getOutputCurrent());
+    SmartDashboard.putNumber("conveyor_current", conveyorMotor.getOutputCurrent());
+    if(intakeMotor.getOutputCurrent() < 15) {
+      SmartDashboard.putString("LOW CURRENT", "motor controller "+IntakeConstants.INTAKE_MOTOR_ID+" not providing enough current");
+    }
+
+    //Check motor direction
+    SmartDashboard.putNumber("intake motor direction", intakeMotor.get());
+    SmartDashboard.putNumber("conveyor motor direction", conveyorMotor.get());
   }
 
   public void intakeForward() {
-    intakeMotor.set(IntakeConstants.INTAKE_SPEED);
-    conveyorMotor.set(IntakeConstants.CONVEYOR_SPEED);
+    intakeMotor.set(IntakeConstants.INTAKE_IN_SPEED);
+    conveyorMotor.set(IntakeConstants.CONVEYOR_IN_SPEED);
   }
 
   public void intakeBackward() {
-    intakeMotor.set(-IntakeConstants.INTAKE_SPEED);
-    conveyorMotor.set(-IntakeConstants.CONVEYOR_SPEED);
+    intakeMotor.set(IntakeConstants.INTAKE_OUT_SPEED);
+    conveyorMotor.set(IntakeConstants.CONVEYOR_OUT_SPEED);
   }
 
   public void intakeStop() {

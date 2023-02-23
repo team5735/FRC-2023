@@ -107,7 +107,7 @@ public class RobotContainer {
     // new JoystickButton(this.driverController, XboxController.Button.kA.value)
     //   .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
 
-    //Intake controls
+    //INTAKE CONTROLS
     //Right bumper for intake forward
     new Trigger(this.driverController::getRightBumper)
         .whileTrue(new IntakeForward(this.intakeSubsystem))
@@ -117,6 +117,8 @@ public class RobotContainer {
     new Trigger(this.driverController::getLeftBumper)
         .whileTrue(new IntakeBackward(this.intakeSubsystem))
         .whileFalse(new IntakeStop(this.intakeSubsystem));
+
+    //Button A to reverse intake (if that problem happens again...)
   }
 
 
