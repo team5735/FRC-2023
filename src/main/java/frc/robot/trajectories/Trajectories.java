@@ -1,6 +1,7 @@
 package frc.robot.trajectories;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,6 +9,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import frc.robot.Constants;
+
+// Pathweaver Interpretation Imports
+import java.util.List;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+
+
 
 public class Trajectories {
         public static final Trajectory TEST_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
@@ -35,4 +43,19 @@ public class Trajectories {
                 List.of(),
                 new Pose2d(1, 1, Rotation2d.fromDegrees(90)), 
                 Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
+
+        public static final Trajectory generateTrajectory(String TrajectoryName) {
+                String trajectoryJSON = "FieldTest#2.wpilib.json"; //"TrajectoryName"
+                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+                Trajectory exampleTrajectory;
+                try {
+                        exampleTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+                } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                        // DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+                        return null;
+                }
+                return exampleTrajectory;
+        }
 }

@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
@@ -128,6 +129,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // The trajectory to follow
     Trajectory trajectory = Trajectories.ONE_METER_STRAIGHT;
+    // Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("FieldTest#2.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
@@ -157,3 +159,28 @@ public class RobotContainer {
         new InstantCommand(() -> swerveSubsystem.stopModules()));
   }
 }
+
+  // private Command generateRamseteCommand() {
+
+  //     RamseteCommand ramseteCommand = new RamseteCommand(
+  //       exampleTrajectory,
+  //       m_drivetrain::getPose,
+  //       new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+  //       new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter),
+  //       DriveConstants.kDriveKinematics,
+  //       m_drivetrain::getWheelSpeeds,
+  //       new PIDController(DriveConstants.kPDriveVelLeft, 0, 0),
+  //       new PIDController(DriveConstants.kPDriveVelRight, 0, 0),
+  //       m_drivetrain::tankDriveVolts,
+  //       m_drivetrain);
+
+//     // Set up a sequence of commands
+//     // First, we want to reset the drivetrain odometry
+//     return new InstantCommand(() -> m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose()), m_drivetrain)
+//         // next, we run the actual ramsete command
+//         .andThen(ramseteCommand)
+
+//         // Finally, we make sure that the robot stops
+//         .andThen(new InstantCommand(() -> m_drivetrain.tankDriveVolts(0, 0), m_drivetrain));
+//   } 
+// }
