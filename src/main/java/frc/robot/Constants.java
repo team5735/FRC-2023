@@ -44,11 +44,12 @@ public final class Constants {
                 public static final double MK4_DRIVE_MOTOR_GEAR_RATIO = 8.14 / 1.0;// 6.12 / 1.0;
                 public static final double MK4_TURN_MOTOR_GEAR_RATIO = 12.8 / 1.0;
 
-                // Locations of swerve modules, in meters, from the center of bthe robot
+                // Locations of swerve modules, in meters, from the center of the robot
+                // Updated for new chassis
                 // Distance between right and left wheels, in m
-                public static final double DT_TRACK_WIDTH = Units.inchesToMeters(19.5);
+                public static final double DT_TRACK_WIDTH = Units.inchesToMeters(23.5); //0.5969 meters
                 // Distance between front and back wheels, in m
-                public static final double DT_WHEEL_BASE = Units.inchesToMeters(21.5);
+                public static final double DT_WHEEL_BASE = Units.inchesToMeters(23.5);
 
                 public static final Translation2d locationFL = new Translation2d(DT_WHEEL_BASE / 2,
                                 DT_TRACK_WIDTH / 2);
@@ -76,8 +77,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants FRONT_LEFT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061)
-                                .setFeedbackConstants(3.6583, 0.0, 0.078931)
+                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) //0.267, 1.3978, 0.021241
+                                .setFeedbackConstants(3.6583, 0.0, 0.078931) //0.38743, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.036935, 0.22318, 0.013196)
                 // .setFeedbackConstants(6.0656, 0.0, 0.3549)
@@ -93,8 +94,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.5147, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants FRONT_RIGHT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061)
-                                .setFeedbackConstants(3.6583, 0.0, 0.078931)
+                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) //0.24355, 1.3793, 0.017404
+                                .setFeedbackConstants(3.6583, 0.0, 0.078931) //0.27857, 0, 0
                                 .build();
 
                 // Module 2
@@ -107,8 +108,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants BACK_LEFT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061)
-                                .setFeedbackConstants(3.6583, 0.0, 0.078931)
+                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) //0.3011, 1.3791, 0.078867
+                                .setFeedbackConstants(3.6583, 0.0, 0.078931) //1.3611, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.10355, 0.22137, 0.019083)
                 // .setFeedbackConstants(6.5677, 0.0, 0.45055)
@@ -124,8 +125,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.5147, 0.0, 0.0) // 2.3645
                                 .build();
                 public static final CharacterizationConstants BACK_RIGHT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061)
-                                .setFeedbackConstants(3.6583, 0.0, 0.078931)
+                                .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) //0.17362, 1.3895, 0.10071
+                                .setFeedbackConstants(3.6583, 0.0, 0.078931) //1.5034, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.082718, 0.22418, 0.0087416)
                 // .setFeedbackConstants(5.3903, 0.0, 0.26148)
