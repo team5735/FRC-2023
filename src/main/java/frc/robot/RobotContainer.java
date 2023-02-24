@@ -15,16 +15,25 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
+
+// Commands Import -- May be unnecessary
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.GyroAutocorrectCommand;
+
+// Pneumatics Imports -- Could be reorganized by system
+import frc.robot.commands.pneumatics.CompressorOnOff;
+import frc.robot.commands.pneumatics.extendRetract;
+import frc.robot.subsystems.PneumaticsSubsystem;
+
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.trajectories.Trajectories;
 
-//Intake imports
+// Intake imports
 import frc.robot.commands.intake.*;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -42,19 +51,23 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private final PneumaticsSubsystem pneumaticsSubsystem;
 
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands(?)
    */
   public RobotContainer() {
+    this.swerveSubsystem = new SwerveSubsystem();
+    this.intakeSubsystem = new IntakeSubsystem();
+    this.pneumaticsSubsystem = new PneumaticsSubsystem();
+
+
     this.driverController = new XboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new XboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
-    this.swerveSubsystem = new SwerveSubsystem();
-    this.intakeSubsystem = new IntakeSubsystem();
-
     // Configure the button bindings
     this.configureDriverBindings();
+    this.configureSubsystemBindings();
   }
 
   /**
@@ -119,6 +132,18 @@ public class RobotContainer {
         .whileFalse(new IntakeStop(this.intakeSubsystem));
 
     //Button A to reverse intake (if that problem happens again...)
+
+    
+  }
+
+  private void configureSubsystemBindings() {
+    // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
+    new Trigger(this.subsystemController::getAButton)
+        .whileTrue(new CompressorOnOff(this.pneumaticsSubsystem));
+
+    new Trigger(this.subsystemController::getLeftBumper)
+        .whileTrue(new extendRetract(this.pneumaticsSubsystem));
+
   }
 
 

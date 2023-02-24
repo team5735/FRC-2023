@@ -178,6 +178,7 @@ public final class Constants {
                                 .setKinematics(DrivetrainConstants.DT_KINEMATICS);
         }
 
+        // OI means Operater Interface :D
         public static class OIConstants {
                 public static final int DRIVER_CONTROLLER_PORT = 0;
                 public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
