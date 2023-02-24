@@ -7,9 +7,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // Using limelight 3D support
 public class VisionSubsystem extends SubsystemBase {
     private NetworkTable limelightTable;
-    
-    public VisionSubsystem() {
+    private int pipelineCount;
+    public VisionSubsystem(int pipelineCount) {
         limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+        this.pipelineCount = pipelineCount;
     }
     public boolean seesTarget() {
         // Would you rather have the ability to see into empty boxes or speak four different dead languages fluently?
@@ -36,5 +37,16 @@ public class VisionSubsystem extends SubsystemBase {
         return limelightTable.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
     }
 
+    public long getPipelineIndex() {
+        return limelightTable.getEntry("getpipe").getInteger(-1);
+    }
+
+    public void pipelineLeft() {
+        limelightTable.getEntry("pipeline").setInteger(Math.max(0, getPipelineIndex() - 1));
+    }
+
+    public void pipelineRight() {
+        limelightTable.getEntry("pipeline").setInteger(Math.min(getPipelineIndex() + 1, pipelineCount - 1));
+    }
 
 }
