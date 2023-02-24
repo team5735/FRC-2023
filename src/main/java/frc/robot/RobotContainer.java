@@ -130,8 +130,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory trajectory = Trajectories.ONE_METER_STRAIGHT;
-    // Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("FieldTest#2.wpilib.json");
+    Trajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
+    Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
@@ -141,7 +141,7 @@ public class RobotContainer {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        trajectory, // The trajectory to follow
+        plotTrajectory, // The trajectory to follow
         swerveSubsystem::getPose, // The supplier of the robot's x/y position and heading
         Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
         xController, // The PID controller to correct error in the robot's x position

@@ -45,8 +45,9 @@ public class Trajectories {
                 Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
 
         public static final Trajectory generateTrajectory(String TrajectoryName) {
-                String trajectoryJSON = "FieldTest#2.wpilib.json"; //"TrajectoryName"
-                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+                //String trajectoryJSON = "ForwardMove.wpilib.json"; //"TrajectoryName"
+                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(TrajectoryName);
+                System.out.println("here" + Filesystem.getDeployDirectory());
                 Trajectory exampleTrajectory;
                 try {
                         exampleTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);

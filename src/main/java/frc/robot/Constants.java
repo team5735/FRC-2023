@@ -164,9 +164,9 @@ public final class Constants {
                                 / 2; // During auto, 1/2 of max angular acceleration
 
                 // TODO: Tune these auto controller constants
-                public static final double AUTO_XCONTROLLER_KP = 5;
-                public static final double AUTO_YCONTROLLER_KP = 5;
-                public static final double AUTO_THETACONTROLLER_KP = 5;
+                public static final double AUTO_XCONTROLLER_KP = 0.75;
+                public static final double AUTO_YCONTROLLER_KP = 0.65;
+                public static final double AUTO_THETACONTROLLER_KP = 0.5;
 
                 public static final TrapezoidProfile.Constraints AUTO_THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
                                 AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
