@@ -12,6 +12,7 @@ public class CompressorOnOff extends CommandBase {
 
     @Override
     public void initialize() {
+        // System.out.println("Compressor Status Switch");
         if (pneumaticsSubsystem.statusOfCompressor()) {
             pneumaticsSubsystem.compressorOff();
         }

@@ -10,8 +10,8 @@ public class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 13;
     public static final int CONVEYOR_MOTOR_ID = 9;
 
-    public static final double INTAKE_IN_SPEED = -.7;
+    public static final double INTAKE_IN_SPEED = -.5;
     public static final double INTAKE_OUT_SPEED = .5;
-    public static final double CONVEYOR_IN_SPEED = -.5;
-    public static final double CONVEYOR_OUT_SPEED = .2;
+    public static final double CONVEYOR_IN_SPEED = .3;
+    public static final double CONVEYOR_OUT_SPEED = -.3;
 }
