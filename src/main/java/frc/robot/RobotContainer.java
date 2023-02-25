@@ -11,18 +11,20 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.JoystickButton; //Outdated
 
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
 
-// Commands Import -- May be unnecessary
+// Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
+import frc.robot.commands.ExtenderControl;
 import frc.robot.commands.GyroAutocorrectCommand;
 
 // Pneumatics Imports -- Could be reorganized by system
@@ -36,6 +38,8 @@ import frc.robot.trajectories.Trajectories;
 // Intake imports
 import frc.robot.commands.intake.*;
 import frc.robot.subsystems.IntakeSubsystem;
+
+import frc.robot.subsystems.ExtenderSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -52,6 +56,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final PneumaticsSubsystem pneumaticsSubsystem;
+  private final ExtenderSubsystem extenderSubsystem;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
@@ -60,6 +65,7 @@ public class RobotContainer {
     this.swerveSubsystem = new SwerveSubsystem();
     this.intakeSubsystem = new IntakeSubsystem();
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
+    this.extenderSubsystem = new ExtenderSubsystem();
 
 
     this.driverController = new XboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
@@ -143,6 +149,13 @@ public class RobotContainer {
 
     new Trigger(this.subsystemController::getLeftBumper)
         .whileTrue(new extendRetract(this.pneumaticsSubsystem));
+
+    // TODO: Use parallel command group to run elevator and extender at the same time
+    // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
+    // () -> Creates a function, lambda operator
+    // :: similar to a lambda
+    new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
+        .whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
 
   }
 
