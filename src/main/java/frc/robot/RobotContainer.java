@@ -157,6 +157,9 @@ public class RobotContainer {
     new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
         .whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
 
+    new Trigger(this.subsystemController::getBButton)
+        .whileTrue()
+
   }
 
 
