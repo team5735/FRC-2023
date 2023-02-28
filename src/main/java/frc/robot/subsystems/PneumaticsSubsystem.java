@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import edu.wpi.first.wpilibj.PneumaticsBase;
-// import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import frc.robot.Constants;
+import edu.wpi.first.wpilibj.PneumaticsBase;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 
@@ -47,8 +49,9 @@ public class PneumaticsSubsystem extends SubsystemBase{
     }
 
     public boolean statusOfCompressor() {
-        System.out.println("It's Statusing time!");
-        return pcmCompressor.enabled();
+        //TODO(malish): uncomment this out when the time is right
+        // System.out.println("It's Statusing time!");
+        return pcmCompressor.isEnabled();
     }
     public void compressorOff(){
     //

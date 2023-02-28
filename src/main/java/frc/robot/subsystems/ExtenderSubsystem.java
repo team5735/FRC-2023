@@ -14,7 +14,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   public ExtenderSubsystem() {
     // Basic framework, unknown if this setup is correct
     // could create a new constant file, not worth the trouble
-    this.extenderController = new WPI_TalonFX(55);
+    this.extenderController = new WPI_TalonFX(57);
 
   }
 
