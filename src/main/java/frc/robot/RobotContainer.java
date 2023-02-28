@@ -11,22 +11,35 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.JoystickButton; //Outdated
+
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.OIConstants;
+
+// Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
+import frc.robot.commands.ExtenderControl;
 import frc.robot.commands.GyroAutocorrectCommand;
+
+// Pneumatics Imports -- Could be reorganized by system
+import frc.robot.commands.pneumatics.CompressorOnOff;
+import frc.robot.commands.pneumatics.extendRetract;
+import frc.robot.subsystems.PneumaticsSubsystem;
+
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.trajectories.Trajectories;
 
-//Intake imports
+// Intake imports
 import frc.robot.commands.intake.*;
 import frc.robot.subsystems.IntakeSubsystem;
+
+import frc.robot.subsystems.ExtenderSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,19 +55,25 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private final PneumaticsSubsystem pneumaticsSubsystem;
+  private final ExtenderSubsystem extenderSubsystem;
 
   /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
+   * The container for the robot. Contains subsystems, OI devices, and commands(?)
    */
   public RobotContainer() {
+    this.swerveSubsystem = new SwerveSubsystem();
+    this.intakeSubsystem = new IntakeSubsystem();
+    this.pneumaticsSubsystem = new PneumaticsSubsystem();
+    this.extenderSubsystem = new ExtenderSubsystem();
+
+
     this.driverController = new XboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new XboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
-    this.swerveSubsystem = new SwerveSubsystem();
-    this.intakeSubsystem = new IntakeSubsystem();
-
     // Configure the button bindings
     this.configureDriverBindings();
+    this.configureSubsystemBindings();
   }
 
   /**
@@ -119,6 +138,25 @@ public class RobotContainer {
         .whileFalse(new IntakeStop(this.intakeSubsystem));
 
     //Button A to reverse intake (if that problem happens again...)
+
+    
+  }
+
+  private void configureSubsystemBindings() {
+    // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
+    new Trigger(this.subsystemController::getAButton)
+        .whileTrue(new CompressorOnOff(this.pneumaticsSubsystem));
+
+    new Trigger(this.subsystemController::getLeftBumper)
+        .whileTrue(new extendRetract(this.pneumaticsSubsystem));
+
+    // TODO: Use parallel command group to run elevator and extender at the same time
+    // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
+    // () -> Creates a function, lambda operator
+    // :: similar to a lambda
+    new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
+        .whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+
   }
 
 
@@ -130,8 +168,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory trajectory = Trajectories.ONE_METER_STRAIGHT;
-    // Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("FieldTest#2.wpilib.json");
+    Trajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
+    Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
@@ -141,7 +179,7 @@ public class RobotContainer {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        trajectory, // The trajectory to follow
+        plotTrajectory, // The trajectory to follow
         swerveSubsystem::getPose, // The supplier of the robot's x/y position and heading
         Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
         xController, // The PID controller to correct error in the robot's x position

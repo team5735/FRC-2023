@@ -26,7 +26,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
         public static class SpeedConstants {
-                // TODO: Be aware these numbers were arbitrarily set
+                // TODO: Be aware these numbers were arbitrarily set -- How do we find and fix that?
                 public static final double MAX_SPEED_METERS_PER_SECOND = 3.0; // 3 meters per second
                 public static final double MAX_ACCELERATION_METERS_PER_SECONDSQ = 3.0; // 3 meters per second squared,
                                                                                        // so 1
@@ -163,10 +163,10 @@ public final class Constants {
                 public static final double AUTO_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ = Constants.SpeedConstants.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ
                                 / 2; // During auto, 1/2 of max angular acceleration
 
-                // TODO: Tune these auto controller constants
-                public static final double AUTO_XCONTROLLER_KP = 5;
-                public static final double AUTO_YCONTROLLER_KP = 5;
-                public static final double AUTO_THETACONTROLLER_KP = 5;
+                // TODO: Tune these auto controller constants -- In Progress
+                public static final double AUTO_XCONTROLLER_KP = 0.75;
+                public static final double AUTO_YCONTROLLER_KP = 0.65;
+                public static final double AUTO_THETACONTROLLER_KP = 0.5;
 
                 public static final TrapezoidProfile.Constraints AUTO_THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
                                 AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
@@ -178,6 +178,7 @@ public final class Constants {
                                 .setKinematics(DrivetrainConstants.DT_KINEMATICS);
         }
 
+        // OI means Operater Interface :D
         public static class OIConstants {
                 public static final int DRIVER_CONTROLLER_PORT = 0;
                 public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
