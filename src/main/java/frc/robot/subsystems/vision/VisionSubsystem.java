@@ -29,6 +29,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         DriverStation.Alliance a = DriverStation.getAlliance();
         long tid = getPrimaryTargetID();
+
         // red community: 1, 2, 3
         if (a == DriverStation.Alliance.Red &&  tid > 0 && tid < 4) {
             return true;
@@ -38,6 +39,9 @@ public class VisionSubsystem extends SubsystemBase {
         if (a == DriverStation.Alliance.Blue && tid > 5 && tid < 9) {
             return true;
         }
+
+        // community/troll target
+        return false;
     }
 
     // TODO(ari): maybe add seesTeamSubstation to turn to drop thingy
