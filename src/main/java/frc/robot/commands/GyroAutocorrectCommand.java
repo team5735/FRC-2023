@@ -5,38 +5,31 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import edu.wpi.first.wpilibj.SPI;
 
 public class GyroAutocorrectCommand extends CommandBase {
     private final SwerveSubsystem swerveSubsystem;
-    private final AHRS gyroscope;
     private boolean enabled = true; //testing
 
     public GyroAutocorrectCommand(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
-        this.gyroscope = new AHRS(SPI.Port.kMXP);
         addRequirements(swerveSubsystem);
     }
 
     @Override
     public void initialize() {
         enabled = true;
-
     }
 
     @Override
     public void execute() {
-        double proportional = Units.degreesToRadians(gyroscope.getPitch()) * 0.7;
+        double proportional = this.swerveSubsystem.getGyroPitchRad() * 0.7;
 
         // for safety
         if(proportional > 0.25 || proportional < -0.25) {
-            SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-            SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-            SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-            SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-            SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-            this.swerveSubsystem.setModuleStates(moduleStates);
+            this.swerveSubsystem.brake();
             enabled = false;
             return;
         }
@@ -52,12 +45,7 @@ public class GyroAutocorrectCommand extends CommandBase {
         
         // Additional Safety -- untested
         if(proportional < 0.05 && proportional > -0.05) {
-            SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-            SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-            SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-            SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-            SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-            this.swerveSubsystem.setModuleStates(moduleStates);
+            this.swerveSubsystem.brake();
             enabled = false;
             return;
         }

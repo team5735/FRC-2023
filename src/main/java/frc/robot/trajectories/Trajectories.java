@@ -18,6 +18,14 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 
 public class Trajectories {
+        public static final Trajectory DO_NOT_MOVE = TrajectoryGenerator.generateTrajectory(
+                new Pose2d(0, 0, new Rotation2d(0)),
+                List.of(
+                        new Translation2d(0, 0)
+                ),
+                new Pose2d(0, 0, new Rotation2d(0)),
+                Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
+
         public static final Trajectory TEST_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
             new Pose2d(0, 0, new Rotation2d(0)),
             List.of(
@@ -44,19 +52,22 @@ public class Trajectories {
                 new Pose2d(1, 1, Rotation2d.fromDegrees(90)), 
                 Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
 
-        public static final Trajectory generateTrajectory(String TrajectoryName) {
+
+        /**
+         * Reads a trajectory from the file system. The path must be relative to src/main/deploy.
+         */
+        public static final Trajectory loadTrajectory(String trajectoryFile) {
                 //String trajectoryJSON = "ForwardMove.wpilib.json"; //"TrajectoryName"
-                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(TrajectoryName);
+                Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryFile);
                 System.out.println("here" + Filesystem.getDeployDirectory());
-                Trajectory exampleTrajectory;
+                Trajectory loadedTrajectory;
                 try {
-                        exampleTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+                        loadedTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
                 } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                         // DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-                        return null;
+                        return Trajectories.DO_NOT_MOVE;
                 }
-                return exampleTrajectory;
+                return loadedTrajectory;
         }
 }

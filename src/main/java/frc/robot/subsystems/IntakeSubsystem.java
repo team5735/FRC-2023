@@ -4,10 +4,9 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.constants.IntakeConstants;
-
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
@@ -20,37 +19,38 @@ public class IntakeSubsystem extends SubsystemBase {
   private CANSparkMax conveyorMotor;
 
   public IntakeSubsystem() {
-    intakeMotor = new CANSparkMax(IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
-    conveyorMotor = new CANSparkMax(IntakeConstants.CONVEYOR_MOTOR_ID, MotorType.kBrushless);
+    intakeMotor = new CANSparkMax(Constants.IntakeConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
+    conveyorMotor = new CANSparkMax(Constants.IntakeConstants.CONVEYOR_MOTOR_ID, MotorType.kBrushless);
 
-    //intakeMotor.setInverted(true);
-    //conveyorMotor.setInverted(true);
+    // intakeMotor.setInverted(true);
+    // conveyorMotor.setInverted(true);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run (every 20ms default)
-    //Current checks
+    // Current checks
     SmartDashboard.putNumber("intake_current", intakeMotor.getOutputCurrent());
     SmartDashboard.putNumber("conveyor_current", conveyorMotor.getOutputCurrent());
-    if(intakeMotor.getOutputCurrent() < 15) {
-      SmartDashboard.putString("LOW CURRENT", "motor controller "+IntakeConstants.INTAKE_MOTOR_ID+" not providing enough current");
+    if (intakeMotor.getOutputCurrent() < 15) {
+      SmartDashboard.putString("LOW CURRENT",
+          "motor controller " + Constants.IntakeConstants.INTAKE_MOTOR_ID + " not providing enough current");
     }
 
-    //Check motor direction
+    // Check motor direction
     SmartDashboard.putNumber("intake motor direction", intakeMotor.get());
     SmartDashboard.putNumber("conveyor motor direction", conveyorMotor.get());
   }
 
   // TODO: Has the commands set as proxies for these methods, worth reconsidering
   public void intakeForward() {
-    intakeMotor.set(IntakeConstants.INTAKE_IN_SPEED);
-    conveyorMotor.set(IntakeConstants.CONVEYOR_IN_SPEED);
+    intakeMotor.set(Constants.IntakeConstants.INTAKE_IN_SPEED);
+    conveyorMotor.set(Constants.IntakeConstants.CONVEYOR_IN_SPEED);
   }
 
   public void intakeBackward() {
-    intakeMotor.set(IntakeConstants.INTAKE_OUT_SPEED);
-    conveyorMotor.set(IntakeConstants.CONVEYOR_OUT_SPEED);
+    intakeMotor.set(Constants.IntakeConstants.INTAKE_OUT_SPEED);
+    conveyorMotor.set(Constants.IntakeConstants.CONVEYOR_OUT_SPEED);
   }
 
   public void intakeStop() {

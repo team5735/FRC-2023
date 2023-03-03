@@ -147,6 +147,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Gets the pitch of the gyro, in radians, for autobalancing purposes.
+     */
+    public double getGyroPitchRad() {
+        return Units.degreesToRadians(this.gyro.getPitch());
+    }
+
+    /**
      * Constructs a Rotation2d object from the gyro heading, converting it to
      * radians
      * 
@@ -176,6 +183,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.frontRight.resetEncoders();
         this.backLeft.resetEncoders();
         this.backRight.resetEncoders();
+        this.gyro.reset();
         this.odometer.resetPosition(
                 new Rotation2d(),
                 new SwerveModulePosition[] {
@@ -266,5 +274,12 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.stop();
         backLeft.stop();
         backRight.stop();
+    }
+
+    /**
+     * Set the swerve drive to brake position, which is 45 degrees
+     */
+    public void brake() {
+        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE);
     }
 }
