@@ -25,6 +25,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
+        public static class VisionConstants {
+                public static final long TURN_TIMEOUT = 3000;
+        }
+
         public static class SpeedConstants {
                 // TODO: Be aware these numbers were arbitrarily set -- How do we find and fix that?
                 public static final double MAX_SPEED_METERS_PER_SECOND = 3.0; // 3 meters per second
