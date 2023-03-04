@@ -83,10 +83,10 @@ public class RobotContainer {
         () -> -this.driverController.getRightX())); // Rotate left on controller is - but rotate left on controller is +
 
     // When Y is pressed on driver controller, toggle field oriented
-    // this.driverController.y()
-    //     .whileTrue(new InstantCommand(() -> {
-    //       this.swerveSubsystem.toggleFieldOriented();
-    //     }));
+    this.driverController.y()
+        .whileTrue(new InstantCommand(() -> {
+          this.swerveSubsystem.toggleFieldOriented();
+        }));
 
     // NOTE: Strikethrough caused by deprecated, but functional, software
     // FOR TESTING When Y is pressed, trigger gyro autocorrect command
@@ -94,8 +94,8 @@ public class RobotContainer {
      * new JoystickButton(this.driverController, XboxController.Button.kY.value)
      * .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
      */
-    this.driverController.y()
-        .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+    // this.driverController.y()
+    //     .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
     this.driverController.x()
