@@ -16,6 +16,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
     public PneumaticsSubsystem() {
         this.solenoid = new DoubleSolenoid(6, PneumaticsModuleType.CTREPCM, 1, 0);
         this.pcmCompressor = new Compressor(6, PneumaticsModuleType.CTREPCM);
+        this.pcmCompressor.disable();
     }
 
     /**
