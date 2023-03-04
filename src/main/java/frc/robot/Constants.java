@@ -163,14 +163,10 @@ public final class Constants {
         }
 
         public static final class AutoConstants {
-                public static final double AUTO_MAX_SPEED_METERS_PER_SECOND = Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND
-                                / 2; // During auto, 1/2 of max speed
-                public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Constants.SpeedConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND
-                                / 2; // During auto, 1/2 of max angular speed
-                public static final double AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ = Constants.SpeedConstants.MAX_ACCELERATION_METERS_PER_SECONDSQ
-                                / 2; // During auto, 1/2 of max acceleration
-                public static final double AUTO_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ = Constants.SpeedConstants.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ
-                                / 2; // During auto, 1/2 of max angular acceleration
+                public static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 2.0; // m/s
+                public static final double AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ = 5.0; // m/s/s
+                public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 25.0; // rad/s
+                public static final double AUTO_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ = 50.0; // rad/s/s
 
                 // TODO: Tune these auto controller constants -- In Progress
                 public static final double AUTO_XCONTROLLER_KP = 0.0;//0.75;

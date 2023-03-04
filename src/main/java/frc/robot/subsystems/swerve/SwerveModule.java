@@ -158,7 +158,7 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState state) {
         // If the speed is very small, stop motors and do nothing
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
+        if (Math.abs(state.speedMetersPerSecond) < 0.0005) {
             stop();
             return;
         }

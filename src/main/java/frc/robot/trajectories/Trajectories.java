@@ -21,9 +21,9 @@ public class Trajectories {
         public static final Trajectory DO_NOT_MOVE = TrajectoryGenerator.generateTrajectory(
                 new Pose2d(0, 0, new Rotation2d(0)),
                 List.of(
-                        new Translation2d(0, 0)
+                        new Translation2d(0.01, 0)
                 ),
-                new Pose2d(0, 0, new Rotation2d(0)),
+                new Pose2d( 0.02, 0, new Rotation2d(0)),
                 Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
 
         public static final Trajectory TEST_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
@@ -57,14 +57,19 @@ public class Trajectories {
          * Reads a trajectory from the file system. The path must be relative to src/main/deploy.
          */
         public static final Trajectory loadTrajectory(String trajectoryFile) {
+                System.out.println("here 1");
                 //String trajectoryJSON = "ForwardMove.wpilib.json"; //"TrajectoryName"
                 Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryFile);
                 System.out.println("here" + Filesystem.getDeployDirectory());
                 Trajectory loadedTrajectory;
                 try {
+                        System.out.println("trying");
                         loadedTrajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+                        System.out.println("loaded");
                 } catch (IOException e) {
+                        System.out.println("ERROR");
                         e.printStackTrace();
+                        System.out.println("returning");
                         // DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
                         return Trajectories.DO_NOT_MOVE;
                 }

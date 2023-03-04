@@ -43,7 +43,8 @@ import frc.robot.subsystems.ExtenderSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final CommandXboxController driverController, subsystemController;
+  private final CommandXboxController driverController;
+  // private final CommandXboxController subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -60,7 +61,7 @@ public class RobotContainer {
     this.extenderSubsystem = new ExtenderSubsystem();
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
-    this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
+    // this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -121,15 +122,15 @@ public class RobotContainer {
 
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
-    this.subsystemController.a()
-        .whileTrue(new InstantCommand(() -> {
-          this.pneumaticsSubsystem.toggleCompressor();
-        }));
+    // this.subsystemController.a()
+    //     .whileTrue(new InstantCommand(() -> {
+    //       this.pneumaticsSubsystem.toggleCompressor();
+    //     }));
 
-    this.subsystemController.leftBumper()
-        .whileTrue(new InstantCommand(() -> {
-          this.pneumaticsSubsystem.togglePiston();
-        }));
+    // this.subsystemController.leftBumper()
+    //     .whileTrue(new InstantCommand(() -> {
+    //       this.pneumaticsSubsystem.togglePiston();
+    //     }));
 
     // TODO: Use parallel command group to run elevator and extender at the same
     // time
@@ -137,8 +138,8 @@ public class RobotContainer {
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
 
-    this.subsystemController.leftStick()
-        .whileTrue(new ExtendCommand(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+    // this.subsystemController.leftStick()
+    //     .whileTrue(new ExtendCommand(extenderSubsystem, () -> this.subsystemController.getLeftY()));
 
   }
 
@@ -150,8 +151,8 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // The trajectory to follow
     Trajectory plotTrajectory
-    // = Trajectories.ONE_METER_STRAIGHT;
-        = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
+    = Trajectories.ONE_METER_STRAIGHT;
+        // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
