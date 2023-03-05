@@ -71,6 +71,7 @@ public class SwerveModule {
      * Returns the drive wheel's position in meters
      */
     public double getDriveWheelPosition() {
+        // SmartDashboard.putNumber("Mod " + this.moduleId + " Enc", this.driveMotor.getSelectedSensorPosition());
         return UnitConversion.falconToMeters(
                 this.driveMotor.getSelectedSensorPosition());
     }

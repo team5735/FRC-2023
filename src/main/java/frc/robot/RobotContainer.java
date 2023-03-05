@@ -152,7 +152,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory plotTrajectory = Trajectories.TWO_METER_FLIP;
+    Trajectory plotTrajectory = Trajectories.SIX_METER_STRAIGHT;
     // = Trajectories.ONE_METER_STRAIGHT;
     // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
 

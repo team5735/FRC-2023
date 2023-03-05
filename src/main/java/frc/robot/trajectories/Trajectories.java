@@ -43,16 +43,16 @@ public class Trajectories {
                         new Pose2d(2, 0, Rotation2d.fromDegrees(0)),
                         Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
 
+        public static final Trajectory SIX_METER_STRAIGHT = TrajectoryGenerator.generateTrajectory(
+                        List.of(
+                                        new Pose2d(0, 0, new Rotation2d()),
+                                        new Pose2d(6, 0, new Rotation2d())),
+                        Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
+
         public static final Trajectory ONE_METER_CURVE_LEFT = TrajectoryGenerator.generateTrajectory(
                         new Pose2d(0, 0, new Rotation2d(0)),
                         List.of(),
                         new Pose2d(1, 1, Rotation2d.fromDegrees(90)),
-                        Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
-
-        public static final Trajectory TWO_METER_FLIP = TrajectoryGenerator.generateTrajectory(
-                        new Pose2d(0, 0, new Rotation2d(0)),
-                        List.of(),
-                        new Pose2d(2, 0, Rotation2d.fromDegrees(180)),
                         Constants.AutoConstants.AUTO_TRAJECTORY_CONFIG);
 
         /**
