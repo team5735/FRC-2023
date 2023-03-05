@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+
 import cfutil.CharacterizationConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -44,7 +46,7 @@ public final class Constants {
                                                                                      // inches outer diameter, so 2
                                                                                      // inches radius
                 public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI * WHEEL_RADIUS; // meters
-                public static final double MK4_DRIVE_MOTOR_GEAR_RATIO = 6.23 / 1.0;//6.75 / 1.0; //8.14 / 1.0;
+                public static final double MK4_DRIVE_MOTOR_GEAR_RATIO = 6.23 / 1.0;// 6.75 / 1.0; //8.14 / 1.0;
                 public static final double MK4_TURN_MOTOR_GEAR_RATIO = 12.8 / 1.0;
 
                 // Locations of swerve modules, in meters, from the center of the robot
@@ -66,11 +68,16 @@ public final class Constants {
                 public static final SwerveDriveKinematics DT_KINEMATICS = new SwerveDriveKinematics(locationFL,
                                 locationFR, locationBL, locationBR);
 
-                private static SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-                private static SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-                private static SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-                private static SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-                public static final SwerveModuleState[] STATE_BRAKE = { frontLeftState, frontRightState, backLeftState, backRightState };
+                private static SwerveModuleState frontLeftState = new SwerveModuleState(0.001,
+                                Rotation2d.fromDegrees(-45));
+                private static SwerveModuleState frontRightState = new SwerveModuleState(0.001,
+                                Rotation2d.fromDegrees(45));
+                private static SwerveModuleState backLeftState = new SwerveModuleState(0.001,
+                                Rotation2d.fromDegrees(45));
+                private static SwerveModuleState backRightState = new SwerveModuleState(0.001,
+                                Rotation2d.fromDegrees(-45));
+                public static final SwerveModuleState[] STATE_BRAKE = { frontLeftState, frontRightState, backLeftState,
+                                backRightState };
         }
 
         public static class MotorConstants {
@@ -86,7 +93,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants FRONT_LEFT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.267, 1.3978, 0.021241
+                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.267, 1.3978,
+                                // 0.021241
                                 .setFeedbackConstants(5.7583, 0.0, 0.05) // 0.38743, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.036935, 0.22318, 0.013196)
@@ -103,7 +111,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.5147, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants FRONT_RIGHT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.24355, 1.3793, 0.017404
+                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.24355, 1.3793,
+                                // 0.017404
                                 .setFeedbackConstants(5.7583, 0.0, 0.05) // 0.27857, 0, 0
                                 .build();
 
@@ -117,7 +126,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
                                 .build();
                 public static final CharacterizationConstants BACK_LEFT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.3011, 1.3791, 0.078867
+                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.3011, 1.3791,
+                                // 0.078867
                                 .setFeedbackConstants(5.7583, 0.0, 0.05) // 1.3611, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.10355, 0.22137, 0.019083)
@@ -134,7 +144,8 @@ public final class Constants {
                                 .setFeedbackConstants(2.5147, 0.0, 0.0) // 2.3645
                                 .build();
                 public static final CharacterizationConstants BACK_RIGHT_TURN_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.17362, 1.3895, 0.10071
+                                // .setFeedforwardConstants(0.12178, 0.22138, 0.0029061) // 0.17362, 1.3895,
+                                // 0.10071
                                 .setFeedbackConstants(5.7583, 0.0, 0.05) // 1.5034, 0, 0
                                 .build();
                 // .setFeedforwardConstants(0.082718, 0.22418, 0.0087416)
@@ -181,6 +192,9 @@ public final class Constants {
                                 AUTO_MAX_SPEED_METERS_PER_SECOND,
                                 AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ)
                                 .setKinematics(DrivetrainConstants.DT_KINEMATICS);
+
+                public static final PathConstraints PP_AUTO_CONSTRAINTS = new PathConstraints(
+                                AUTO_MAX_SPEED_METERS_PER_SECOND, AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ);
         }
 
         // OI means Operater Interface :D

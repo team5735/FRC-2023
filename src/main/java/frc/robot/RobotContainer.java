@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -152,31 +155,49 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory plotTrajectory = Trajectories.SIX_METER_STRAIGHT;
+    PathPlannerTrajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
     // = Trajectories.ONE_METER_STRAIGHT;
     // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
-    ProfiledPIDController thetaController = new ProfiledPIDController(
-        Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0,
-        Constants.AutoConstants.AUTO_THETACONTROLLER_CONSTRAINTS);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    PIDController thetaController = new PIDController(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0);
+    // ProfiledPIDController thetaController = new ProfiledPIDController(
+    // Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0,
+    // Constants.AutoConstants.AUTO_THETACONTROLLER_CONSTRAINTS);
+    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        plotTrajectory, // The trajectory to follow
-        swerveSubsystem::getPose, // The supplier of the robot's x/y position and heading
-        Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
-        xController, // The PID controller to correct error in the robot's x position
-        yController, // The PID controller to correct error in the robot's y position
-        thetaController, // The PID controller to correct error in the robot's heading
-        swerveSubsystem::setModuleStates, // The function to use to set the robot's module states
-        swerveSubsystem); // The subsystem to execute the command on
+    PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
+        plotTrajectory,
+        swerveSubsystem::getPose, // Pose supplier
+        Constants.DrivetrainConstants.DT_KINEMATICS, // SwerveDriveKinematics
+        xController,
+        yController,
+        thetaController,
+        swerveSubsystem::setModuleStates, // Module states consumer
+        true, // Should the path be automatically mirrored depending on alliance color.
+               // Optional, defaults to true
+        swerveSubsystem // Requires this drive subsystem
+    );
+
+    // SwerveControllerCommand swerveControllerCommand = new
+    // SwerveControllerCommand(
+    // plotTrajectory, // The trajectory to follow
+    // swerveSubsystem::getPose, // The supplier of the robot's x/y position and
+    // heading
+    // Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
+    // xController, // The PID controller to correct error in the robot's x position
+    // yController, // The PID controller to correct error in the robot's y position
+    // thetaController, // The PID controller to correct error in the robot's
+    // heading
+    // swerveSubsystem::setModuleStates, // The function to use to set the robot's
+    // module states
+    // swerveSubsystem); // The subsystem to execute the command on
 
     return new SequentialCommandGroup(
         // Start the command by "placing" the robot at the beginning of the trajectory
         new InstantCommand(() -> swerveSubsystem.resetOdometry(
-            plotTrajectory.getInitialPose())),
+            plotTrajectory.getInitialHolonomicPose())),
         // Run the trajectory command
         swerveControllerCommand,
         // Stop the robot at the end of the trajectory
