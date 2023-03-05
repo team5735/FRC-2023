@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 
 // Using limelight 3D support
+
+// limelight knowledge: positive return value in targetpose_robotspace[6]
+// means that you need to turn right. negative is left.
 public class VisionSubsystem extends SubsystemBase {
     private NetworkTable limelightTable;
     private int pipelineCount;
@@ -40,7 +43,7 @@ public class VisionSubsystem extends SubsystemBase {
             return true;
         }
 
-        // community/troll target
+         // community/troll target (possible strategy to consider while people are wasting time in the stands)
         return false;
     }
 

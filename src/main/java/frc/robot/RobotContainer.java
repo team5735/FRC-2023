@@ -24,7 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
-import frc.robot.commands.ExtenderControl;
+import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
 
 // Pneumatics Imports -- Could be reorganized by system
@@ -154,11 +154,15 @@ public class RobotContainer {
     // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
-    new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
-        .whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+    //new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
+        //.whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+
+    //EXTENDER CONTROLS
+    new Trigger(this.subsystemController::getXButton)
+      .whileTrue(new ExtenderIn(this.extenderSubsystem));
 
     new Trigger(this.subsystemController::getBButton)
-        .whileTrue()
+      .whileTrue(new ExtenderOut(this.extenderSubsystem));
 
   }
 

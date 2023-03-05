@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -195,6 +196,15 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Set desired X, Y, and angular velocity (through a ChassisSpeed object)
+     */
+    public void setChassisSpeed(ChassisSpeeds chassisSpeeds) {
+        SwerveModuleState[] moduleStates = Constants.DrivetrainConstants.DT_KINEMATICS
+                .toSwerveModuleStates(chassisSpeeds);
+        this.setModuleStates(moduleStates);
+    }
+
+    /**
      * Sets the desired velocity and angle of all swerve modules
      * 
      * @param desiredStates
@@ -244,16 +254,28 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("BR Absolute Encoder", backRight.getTurnMotorInRotations());
 
         // Doesn't actually do what its supposed to do
-        // SmartDashboard.putNumber("FL Wheel Speed", Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
-        // SmartDashboard.putNumber("FR Wheel Speed", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
-        // SmartDashboard.putNumber("BL Wheel Speed", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
-        // SmartDashboard.putNumber("BR Wheel Speed", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("FL Wheel Speed",
+        // Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("FR Wheel Speed",
+        // Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("BL Wheel Speed",
+        // Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("BR Wheel Speed",
+        // Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
-        // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro orientation
-        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
-        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation on the axis of the battery in Radians
+        // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro
+        // orientation
+        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to
+                                                                      // battery
+        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation
+                                                                                                     // on the axis of
+                                                                                                     // the battery in
+                                                                                                     // Radians
         SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
-        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation on the axis of the battery in Radians
+        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation
+                                                                                                    // on the axis of
+                                                                                                    // the battery in
+                                                                                                    // Radians
         SmartDashboard.putNumber("Gyro Yaw", this.gyro.getYaw()); // Flat Axis -- Rotation
 
     }

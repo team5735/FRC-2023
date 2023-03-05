@@ -1,6 +1,8 @@
 package frc.robot.commands.vision;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -13,6 +15,10 @@ public class TurnToZero extends CommandBase {
     private VisionSubsystem vision;
     private boolean isFinished;
     private long startTime;
+
+    //private static final SwerveModuleState[] DONT_SEE_STATES = {
+        
+    //};
 
     //TODO(malish): Calibrate PID!!
     private PIDController pid = new PIDController(0, 0, 0);
@@ -39,6 +45,14 @@ public class TurnToZero extends CommandBase {
             return;
         }
 
-        
+        // check for team target (important, don't want to be lining up with the opponents' target)
+        if (!vision.seesTeamTarget()) {
+            // maybe too fast? 
+            ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(90));
+            this.drivetrain.setChassisSpeed(null);
+            return;
+        }
+
+        //pid.calculate()
     }
 }
