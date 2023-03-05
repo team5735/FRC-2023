@@ -44,7 +44,7 @@ public final class Constants {
                                                                                      // inches outer diameter, so 2
                                                                                      // inches radius
                 public static final double WHEEL_CIRCUMFERENCE = 2 * Math.PI * WHEEL_RADIUS; // meters
-                public static final double MK4_DRIVE_MOTOR_GEAR_RATIO = 8.14 / 1.0;// 6.12 / 1.0;
+                public static final double MK4_DRIVE_MOTOR_GEAR_RATIO = 6.23 / 1.0;//6.75 / 1.0; //8.14 / 1.0;
                 public static final double MK4_TURN_MOTOR_GEAR_RATIO = 12.8 / 1.0;
 
                 // Locations of swerve modules, in meters, from the center of the robot
@@ -163,15 +163,15 @@ public final class Constants {
         }
 
         public static final class AutoConstants {
-                public static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 2.0; // m/s
-                public static final double AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ = 5.0; // m/s/s
-                public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 25.0; // rad/s
-                public static final double AUTO_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ = 50.0; // rad/s/s
+                public static final double AUTO_MAX_SPEED_METERS_PER_SECOND = 1.5; // m/s
+                public static final double AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ = 1.5; // m/s/s
+                public static final double AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = 10.0; // rad/s
+                public static final double AUTO_MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ = 10.0; // rad/s/s
 
                 // TODO: Tune these auto controller constants -- In Progress
-                public static final double AUTO_XCONTROLLER_KP = 0.0;//0.75;
-                public static final double AUTO_YCONTROLLER_KP = 0.0;//0.65;
-                public static final double AUTO_THETACONTROLLER_KP = 0.0;//0.5;
+                public static final double AUTO_XCONTROLLER_KP = 5;
+                public static final double AUTO_YCONTROLLER_KP = 5;
+                public static final double AUTO_THETACONTROLLER_KP = 2;
 
                 public static final TrapezoidProfile.Constraints AUTO_THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
                                 AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,

@@ -176,21 +176,26 @@ public class SwerveSubsystem extends SubsystemBase {
      * 
      * @param pose the new position and orientation of the robot
      */
-    public void resetOdometry() {
-        this.frontLeft.resetEncoders();
-        this.frontRight.resetEncoders();
-        this.backLeft.resetEncoders();
-        this.backRight.resetEncoders();
-        this.gyro.reset();
+    public void resetOdometry(Pose2d initialPose) {
+        // this.frontLeft.resetEncoders();
+        // this.frontRight.resetEncoders();
+        // this.backLeft.resetEncoders();
+        // this.backRight.resetEncoders();
+        // this.gyro.reset();
         this.odometer.resetPosition(
-                new Rotation2d(),
+                this.gyro.getRotation2d(),
+                // new Rotation2d(),
                 new SwerveModulePosition[] {
-                        this.frontLeft.getPosition(),
-                        this.frontRight.getPosition(),
-                        this.backLeft.getPosition(),
-                        this.backRight.getPosition()
+                    this.frontLeft.getPosition(),
+                    this.frontRight.getPosition(),
+                    this.backLeft.getPosition(),
+                    this.backRight.getPosition()
+                        // new SwerveModulePosition(0, this.frontLeft.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.frontRight.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.backLeft.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.backRight.getTurnMotorRotation2d())
                 },
-                new Pose2d());
+                initialPose);
     }
 
     /**

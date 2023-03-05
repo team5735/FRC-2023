@@ -61,7 +61,8 @@ public class RobotContainer {
     this.extenderSubsystem = new ExtenderSubsystem();
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
-    // this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
+    // this.subsystemController = new
+    // CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -96,7 +97,7 @@ public class RobotContainer {
      * .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
      */
     // this.driverController.y()
-    //     .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+    // .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
     this.driverController.x()
@@ -123,14 +124,14 @@ public class RobotContainer {
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
     // this.subsystemController.a()
-    //     .whileTrue(new InstantCommand(() -> {
-    //       this.pneumaticsSubsystem.toggleCompressor();
-    //     }));
+    // .whileTrue(new InstantCommand(() -> {
+    // this.pneumaticsSubsystem.toggleCompressor();
+    // }));
 
     // this.subsystemController.leftBumper()
-    //     .whileTrue(new InstantCommand(() -> {
-    //       this.pneumaticsSubsystem.togglePiston();
-    //     }));
+    // .whileTrue(new InstantCommand(() -> {
+    // this.pneumaticsSubsystem.togglePiston();
+    // }));
 
     // TODO: Use parallel command group to run elevator and extender at the same
     // time
@@ -139,7 +140,8 @@ public class RobotContainer {
     // :: similar to a lambda
 
     // this.subsystemController.leftStick()
-    //     .whileTrue(new ExtendCommand(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+    // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
+    // this.subsystemController.getLeftY()));
 
   }
 
@@ -150,9 +152,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory plotTrajectory
-    = Trajectories.ONE_METER_STRAIGHT;
-        // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
+    Trajectory plotTrajectory = Trajectories.TWO_METER_FLIP;
+    // = Trajectories.ONE_METER_STRAIGHT;
+    // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
@@ -174,8 +176,7 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         // Start the command by "placing" the robot at the beginning of the trajectory
         new InstantCommand(() -> swerveSubsystem.resetOdometry(
-        // trajectory.getInitialPose()
-        )),
+            plotTrajectory.getInitialPose())),
         // Run the trajectory command
         swerveControllerCommand,
         // Stop the robot at the end of the trajectory
