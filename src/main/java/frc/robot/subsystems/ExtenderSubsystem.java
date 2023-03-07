@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -9,12 +10,15 @@ public class ExtenderSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final WPI_TalonFX extenderController;
+  private final PIDController extenderPID;
+
 
 
   public ExtenderSubsystem() {
     // Basic framework, unknown if this setup is correct
     // could create a new constant file, not worth the trouble
-    this.extenderController = new WPI_TalonFX(57);
+    this.extenderController = new WPI_TalonFX(9);
+    this.extenderPID = new PIDController(0, 0, 0);
 
   }
 

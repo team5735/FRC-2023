@@ -197,15 +197,20 @@ public final class Constants {
                                 AUTO_MAX_SPEED_METERS_PER_SECOND, AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ);
         }
 
-        // OI means Operater Interface :D
-        public static class OIConstants {
-                public static final int DRIVER_CONTROLLER_PORT = 0;
-                public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
-                public static final double JOYSTICK_DEADBAND = 0.08;
+        public static class EleavtorConstants {
+                private static final double errorThreshold = 1; // Inches
+                private static final double heightLimit = 75; // Inches
+                private static final double cruisingVelocity = 3.5;// Inches / sec, Could be increased
+                // private static final double acceleration = 2;  // Time to Cruising Velocity Sec              
 
-                public static double SPEED_LIMIT_XY = 0.75;
-                public static double SPEED_LIMIT_TURN = 0.15;
+                // Physical Constants
+                private static final double encoderTicksPerRevolution = 4096; // Should be correct
+                private static final double gearRatio = 84 / 12.; // 12 teeth on gear attached to motor, 84 on gear attached to chain
+                private static final double chainLinkLength = 0.25; // inches
+                private static final double travelLength = 33.375; // inches
+                private static final int sprocketTeethNumber = 16; 
         }
+
 
         public static class IntakeConstants {
                 public static final int INTAKE_MOTOR_ID = 13;
@@ -215,6 +220,16 @@ public final class Constants {
                 public static final double INTAKE_OUT_SPEED = .5;
                 public static final double CONVEYOR_IN_SPEED = .3;
                 public static final double CONVEYOR_OUT_SPEED = -.3;
+        }
+
+        // OI means Operater Interface :D
+        public static class OIConstants {
+                public static final int DRIVER_CONTROLLER_PORT = 0;
+                public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
+                public static final double JOYSTICK_DEADBAND = 0.08;
+
+                public static double SPEED_LIMIT_XY = 0.75;
+                public static double SPEED_LIMIT_TURN = 0.15;
         }
 
 }
