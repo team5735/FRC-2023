@@ -171,6 +171,13 @@ public final class Constants {
                 // .setFeedforwardConstants(0.70364, 0.21449, 0.0049559)
                 // .setFeedbackConstants(4.3347, 0.0, 0.15614)
                 // .build();
+
+                public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
+                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
+                public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
+                                .setFeedforwardConstants(0, 0, 0, 0)
+                                .setFeedbackConstants(0, 0, 0)
+                                .build();
         }
 
         public static final class AutoConstants {
@@ -197,9 +204,10 @@ public final class Constants {
                                 AUTO_MAX_SPEED_METERS_PER_SECOND, AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ);
         }
 
-        public static class EleavtorConstants {
+        // Carson: Convert all of this to meters / metric units please
+        public static class ElevatorConstants {
                 private static final double errorThreshold = 1; // Inches
-                private static final double heightLimit = 75; // Inches
+                public static final double HEIGHT_LIMIT = Units.inchesToMeters(75); // Inches
                 private static final double cruisingVelocity = 3.5;// Inches / sec, Could be increased
                 // private static final double acceleration = 2;  // Time to Cruising Velocity Sec              
 
