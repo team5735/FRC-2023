@@ -4,36 +4,38 @@
 
 package frc.robot.commands.extender;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtenderSubsystem;
-import frc.robot.constants.ExtenderConstants;
 
-public class ExtenderIn extends CommandBase {
+import edu.wpi.first.wpilibj2.command.CommandBase;
+
+public class ExtenderChooseLevel extends CommandBase {
 
   private final ExtenderSubsystem extenderSubsystem;
-  /** Creates a new ExtenderIn. */
-  public ExtenderIn(ExtenderSubsystem extenderSubsystem) {
+  private double goalEncoderValue;
+
+  /** Creates a new ExtenderChooseLevel. */
+  public ExtenderChooseLevel(ExtenderSubsystem extenderSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
+
     this.extenderSubsystem = extenderSubsystem;
+    //Set to a default of some sort
+    this.goalEncoderValue = 1;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    extenderSubsystem.extenderMove(ExtenderConstants.EXTEND_MOTOR_IN_SPEED);
+    //Specifically for the lower level
+    goalEncoderValue = extenderSubsystem.getGoalEncoderValue(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    SmartDashboard.putNumber("extender encoder", extenderSubsystem.getCurrentEncoderPosition());
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    extenderSubsystem.extenderStop();
   }
 
   // Returns true when the command should end.

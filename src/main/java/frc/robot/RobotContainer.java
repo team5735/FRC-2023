@@ -159,10 +159,18 @@ public class RobotContainer {
 
     //EXTENDER CONTROLS
     new Trigger(this.subsystemController::getXButton)
-      .whileTrue(new ExtenderIn(this.extenderSubsystem));
+      .whileTrue(new ExtenderOut(extenderSubsystem))
+      .whileFalse(new ExtenderStop(extenderSubsystem));
 
     new Trigger(this.subsystemController::getBButton)
-      .whileTrue(new ExtenderOut(this.extenderSubsystem));
+      .whileTrue(new ExtenderIn(extenderSubsystem))
+      .whileFalse(new ExtenderStop(extenderSubsystem));
+
+    //new Trigger(this.subsystemController::getBButton)
+      //.whileTrue(new SequentialCommandGroup(
+        //new ExtenderChooseLevel(extenderSubsystem),
+        //new ExtenderOut(extenderSubsystem, 0)
+      //)
 
   }
 

@@ -18,7 +18,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   public ExtenderSubsystem() {
     // Basic framework, unknown if this setup is correct
     // could create a new constant file, not worth the trouble
-    this.extenderMotor = new CANSparkMax(5, MotorType.kBrushless);
+    this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
 
   }
 
@@ -28,16 +28,16 @@ public class ExtenderSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Current motor speed", extenderMotor.get());
   }
 
+  public double getCurrentEncoderPosition() {
+    return extenderMotor.getEncoder().getPosition();
+  }
+
   public void extenderMove(double speed) {
     extenderMotor.set(speed);
   }
 
   public void extenderStop() {
     extenderMotor.set(0);
-  }
-
-  public double getCurrentEncoderPosition() {
-    return extenderMotor.getEncoder().getPosition();
   }
 
   //Based on desired level and current encoder value, figure out what encoder value need to reach
