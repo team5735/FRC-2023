@@ -213,8 +213,8 @@ public final class Constants {
 
                 // Physical Constants
                 public static final double gearRatio = 84 / 12.; // 12 teeth on gear attached to motor, 84 on gear attached to chain
-                public static final double chainLinkLength = 0.25; // inches
-                public static final double travelLength = 33.375; // inches
+                public static final double chainLinkLength = Units.inchesToMeters(0.25); // inches
+                public static final double travelLength = Units.inchesToMeters(33.375); // inches
                 public static final int sprocketTeethNumber = 16; 
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated

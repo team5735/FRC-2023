@@ -20,7 +20,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final WPI_TalonFX elevatorLeader, elevatorFollower;
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
-  private final double inchesPerRotation, metersPerRotation;
+  private final double metersPerRotation;
 
   private double heightSetpoint;
 
@@ -46,12 +46,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     );
 
     // Gear Ratio * Sprocket Teeth # * Length per chain link
-    this.inchesPerRotation = 
+    this.metersPerRotation = 
         Constants.ElevatorConstants.gearRatio *
         Constants.ElevatorConstants.sprocketTeethNumber *
         Constants.ElevatorConstants.chainLinkLength;
-    this.metersPerRotation = Units.inchesToMeters(inchesPerRotation);
-
     this.resetMotors();
   }
 
