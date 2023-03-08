@@ -53,9 +53,9 @@ public class VisionSubsystem extends SubsystemBase {
 
     // TODO(ari): maybe add seesTeamSubstation to turn to drop thingy
 
-    public void toggleAnnoyingMode() {
-        limelightTable.getEntry("ledMode").setNumber(limelightTable.getEntry("ledMode").getNumber(2) == (Number)(2) ? 0 : 2);   
-    }
+    // public void toggleAnnoyingMode() {
+    //     limelightTable.getEntry("ledMode").setNumber(limelightTable.getEntry("ledMode").getNumber(2) == (Number)(2) ? 0 : 2);   
+    // }
 
     public double getPipelineLatency() {
         return limelightTable.getEntry("tl").getDouble(0);
