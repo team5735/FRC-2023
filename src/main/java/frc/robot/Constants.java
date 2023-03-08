@@ -206,17 +206,18 @@ public final class Constants {
 
         // Carson: Convert all of this to meters / metric units please
         public static class ElevatorConstants {
-                private static final double errorThreshold = 1; // Inches
-                public static final double HEIGHT_LIMIT = Units.inchesToMeters(75); // Inches
-                private static final double cruisingVelocity = 3.5;// Inches / sec, Could be increased
+                public static final double errorThreshold = 1; // Inches
+                public static final double HEIGHT_LIMIT = Units.inchesToMeters(75);
+                public static final double cruisingVelocity = 3.5;// Inches / sec, Could be increased
                 // private static final double acceleration = 2;  // Time to Cruising Velocity Sec              
 
                 // Physical Constants
-                private static final double encoderTicksPerRevolution = 4096; // Should be correct
-                private static final double gearRatio = 84 / 12.; // 12 teeth on gear attached to motor, 84 on gear attached to chain
-                private static final double chainLinkLength = 0.25; // inches
-                private static final double travelLength = 33.375; // inches
-                private static final int sprocketTeethNumber = 16; 
+                public static final double gearRatio = 84 / 12.; // 12 teeth on gear attached to motor, 84 on gear attached to chain
+                public static final double chainLinkLength = 0.25; // inches
+                public static final double travelLength = 33.375; // inches
+                public static final int sprocketTeethNumber = 16; 
+
+                // private static final double encoderTicksPerRevolution = 4096; Outdated
         }
 
 

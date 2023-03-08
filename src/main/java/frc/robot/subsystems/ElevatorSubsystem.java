@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -11,12 +12,15 @@ import frc.robot.Constants;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import cfutil.UnitConversion;
+
 public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final WPI_TalonFX elevatorLeader, elevatorFollower;
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
+  private final double inchesPerRotation, metersPerRotation;
 
   private double heightSetpoint;
 
@@ -41,6 +45,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
     );
 
+    // Gear Ratio * Sprocket Teeth # * Length per chain link
+    this.inchesPerRotation = 
+        Constants.ElevatorConstants.gearRatio *
+        Constants.ElevatorConstants.sprocketTeethNumber *
+        Constants.ElevatorConstants.chainLinkLength;
+    this.metersPerRotation = Units.inchesToMeters(inchesPerRotation);
+
     this.resetMotors();
   }
 
@@ -53,17 +64,17 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Get the current elevator height in meters
    */
   private double getElevatorHeight() {
-    // Carson you can figure this out. Use the selected sensor position + gear ratio
-    // + possibly chain link?
-    return 0.0;
+    // Must have motor position reset to zero beforehand for this to work well
+    double elevatorHeight = metersPerRotation * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
+    return elevatorHeight;
   }
 
   /**
    * Get elevator motor velocity in m/s
    */
   private double getElevatorVelocity() {
-    // Carson you can also figure this out, use same stuff as above and convert from falcon to meters (?)
-    return 0.0;
+    double elevatorVelocity = metersPerRotation * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
+    return elevatorVelocity;
   }
 
   public void setSetpoint(double heightMeters) {
