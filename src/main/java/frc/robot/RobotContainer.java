@@ -30,9 +30,11 @@ import frc.robot.commands.GyroAutocorrectCommand;
 // Pneumatics Imports -- Could be reorganized by system
 import frc.robot.commands.pneumatics.CompressorOnOff;
 import frc.robot.commands.pneumatics.extendRetract;
+import frc.robot.commands.vision.TurnToZero;
 import frc.robot.subsystems.PneumaticsSubsystem;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.trajectories.Trajectories;
 
 // Intake imports
@@ -57,6 +59,7 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final PneumaticsSubsystem pneumaticsSubsystem;
   private final ExtenderSubsystem extenderSubsystem;
+  private final VisionSubsystem visionSubsystem;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
@@ -66,7 +69,9 @@ public class RobotContainer {
     this.intakeSubsystem = new IntakeSubsystem();
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
-
+    
+    // pipeline stuff not set up yet (do we even need?)
+    this.visionSubsystem = new VisionSubsystem(0);
 
     this.driverController = new XboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new XboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
@@ -139,7 +144,9 @@ public class RobotContainer {
 
     //Button A to reverse intake (if that problem happens again...)
 
-    
+    // turn to zero
+    new Trigger(this.driverController::getBackButton)
+        .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
   }
 
   private void configureSubsystemBindings() {

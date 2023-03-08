@@ -33,6 +33,10 @@ public class VisionSubsystem extends SubsystemBase {
         DriverStation.Alliance a = DriverStation.getAlliance();
         long tid = getPrimaryTargetID();
 
+        if (a == DriverStation.Alliance.Invalid) {
+            return seesTarget();
+        }
+
         // red community: 1, 2, 3
         if (a == DriverStation.Alliance.Red &&  tid > 0 && tid < 4) {
             return true;
@@ -78,5 +82,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void pipelineRight() {
         limelightTable.getEntry("pipeline").setInteger(Math.min(getPipelineIndex() + 1, pipelineCount - 1));
+    }
+
+    public double getYaw() {
+        // i'm like 80% sure this is yaw
+        return getOffsetCameraspace()[6];
     }
 }

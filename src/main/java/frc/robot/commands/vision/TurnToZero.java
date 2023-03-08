@@ -6,8 +6,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.Constants;
-import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.VisionConstants;
 
 public class TurnToZero extends CommandBase {
@@ -20,8 +18,8 @@ public class TurnToZero extends CommandBase {
         
     //};
 
-    //TODO(malish): Calibrate PID!!
-    private PIDController pid = new PIDController(0, 0, 0);
+    //TODO: Calibrate PID
+    private PIDController pid = new PIDController(0.0727, 0.26, 0);
 
     public TurnToZero(VisionSubsystem v, SwerveSubsystem s) {
         vision = v;
@@ -46,13 +44,28 @@ public class TurnToZero extends CommandBase {
         }
 
         // check for team target (important, don't want to be lining up with the opponents' target)
+        // ChassisSpeed uses CCW rotation.
         if (!vision.seesTeamTarget()) {
             // maybe too fast? 
+            // it's in degrees if I recall right, but I'm not 100% on that
             ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(90));
-            this.drivetrain.setChassisSpeed(null);
+            this.drivetrain.setChassisSpeed(turn);
             return;
         }
 
-        //pid.calculate()
+        else {
+            double desired = pid.calculate(vision.getYaw(), 0);
+            ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(desired));
+            this.drivetrain.setChassisSpeed(turn);
+        }
+    }
+    @Override
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        System.out.println("Turn to target over");
     }
 }
