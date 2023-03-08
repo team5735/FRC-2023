@@ -29,10 +29,10 @@ public class SwerveModule {
     private final PIDController drivePID;
 
     // Use this if plain PID isn't good enough
-    private final SimpleMotorFeedforward turnFF;
-    private final ProfiledPIDController turnPID;
+    // private final SimpleMotorFeedforward turnFF;
+    // private final ProfiledPIDController turnPID;
 
-    // private final PIDController turnPID;
+    private final PIDController turnPID;
 
     public SwerveModule(int driveMotorId, int turnMotorId, boolean driveMotorReversed, boolean turnMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffsetRotations, int moduleId,
@@ -50,15 +50,16 @@ public class SwerveModule {
         this.driveFF = new SimpleMotorFeedforward(drivePid.getS(), drivePid.getV(), drivePid.getA());
         this.drivePID = new PIDController(drivePid.getP(), drivePid.getI(), drivePid.getD());
 
-        this.turnFF = new SimpleMotorFeedforward(turnPid.getS(), turnPid.getV(),
-                turnPid.getA());
-        this.turnPID = new ProfiledPIDController(turnPid.getP(), turnPid.getI(), turnPid.getD(),
-                new TrapezoidProfile.Constraints(
-                        Constants.SpeedConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
-                        Constants.SpeedConstants.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ));
+        // this.turnFF = new SimpleMotorFeedforward(turnPid.getS(), turnPid.getV(),
+        // turnPid.getA());
+        // this.turnPID = new ProfiledPIDController(turnPid.getP(), turnPid.getI(),
+        // turnPid.getD(),
+        // new TrapezoidProfile.Constraints(
+        // Constants.SpeedConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,
+        // Constants.SpeedConstants.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECONDSQ));
 
-        // this.turnPID = new PIDController(turnPid.getP(), turnPid.getI(),
-        // turnPid.getD());
+        this.turnPID = new PIDController(turnPid.getP(), turnPid.getI(),
+                turnPid.getD());
         this.turnPID.enableContinuousInput(-Math.PI, Math.PI);
 
         this.moduleId = moduleId;
@@ -70,6 +71,7 @@ public class SwerveModule {
      * Returns the drive wheel's position in meters
      */
     public double getDriveWheelPosition() {
+        // SmartDashboard.putNumber("Mod " + this.moduleId + " Enc", this.driveMotor.getSelectedSensorPosition());
         return UnitConversion.falconToMeters(
                 this.driveMotor.getSelectedSensorPosition());
     }
@@ -157,7 +159,7 @@ public class SwerveModule {
      */
     public void setDesiredState(SwerveModuleState state) {
         // If the speed is very small, stop motors and do nothing
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
+        if (Math.abs(state.speedMetersPerSecond) < 0.0005) {
             stop();
             return;
         }
@@ -180,26 +182,27 @@ public class SwerveModule {
         // error), output is voltage
         // - FeedForward: Input is current velocity, next velocity (determined by PID
         // controller setpoint), and time diff for acceleration calc
-        double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(), state.angle.getRadians());
-        turnVoltage += this.turnFF.calculate(
-                this.getTurnMotorVelocity(), // current TURN MOTOR velocity
-                this.turnPID.getSetpoint().velocity, // next setpoint velocity
-                0.02); // 20ms is the time diff between each loop
-        // Set the voltage
-        this.turnMotor.setVoltage(turnVoltage);
+        // double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
+        // state.angle.getRadians());
+        // turnVoltage += this.turnFF.calculate(
+        // this.getTurnMotorVelocity(), // current TURN MOTOR velocity
+        // this.turnPID.getSetpoint().velocity, // next setpoint velocity
+        // 0.02); // 20ms is the time diff between each loop
+        // // Set the voltage
+        // this.turnMotor.setVoltage(turnVoltage);
 
         // WHEN USING PIDCONTROLLER:
         // - Just use PID: Input is current angle and angle setpoint (to calculate
         // error), output is voltage
-        // double turnVoltage = this.turnPID.calculate(this.getWheelAngle(),
-        // state.angle.getRadians());
-        // // Set the voltage
-        // this.turnMotor.setVoltage(turnVoltage);
+        double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
+                state.angle.getRadians());
+        // Set the voltage
+        this.turnMotor.setVoltage(turnVoltage);
 
         // Logging
         SmartDashboard.putString("Swerve[" + this.moduleId + "] state", state.toString());
-        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
-        // this.turnAbsoluteEncoder.get());
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
+                this.turnAbsoluteEncoder.get());
     }
 
     /**

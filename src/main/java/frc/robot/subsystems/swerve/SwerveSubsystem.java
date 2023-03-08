@@ -108,8 +108,6 @@ public class SwerveSubsystem extends SubsystemBase {
                 throw new RuntimeException("Could not reset the heading of the robot!");
             }
         }).start();
-
-        SmartDashboard.putData("Field", m_field);
     }
 
     /**
@@ -148,6 +146,13 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
+     * Gets the pitch of the gyro, in radians, for autobalancing purposes.
+     */
+    public double getGyroPitchRad() {
+        return Units.degreesToRadians(this.gyro.getPitch());
+    }
+
+    /**
      * Constructs a Rotation2d object from the gyro heading, converting it to
      * radians
      * 
@@ -172,20 +177,26 @@ public class SwerveSubsystem extends SubsystemBase {
      * 
      * @param pose the new position and orientation of the robot
      */
-    public void resetOdometry() {
-        this.frontLeft.resetEncoders();
-        this.frontRight.resetEncoders();
-        this.backLeft.resetEncoders();
-        this.backRight.resetEncoders();
+    public void resetOdometry(Pose2d initialPose) {
+        // this.frontLeft.resetEncoders();
+        // this.frontRight.resetEncoders();
+        // this.backLeft.resetEncoders();
+        // this.backRight.resetEncoders();
+        // this.gyro.reset();
         this.odometer.resetPosition(
-                new Rotation2d(),
+                this.gyro.getRotation2d(),
+                // new Rotation2d(),
                 new SwerveModulePosition[] {
-                        this.frontLeft.getPosition(),
-                        this.frontRight.getPosition(),
-                        this.backLeft.getPosition(),
-                        this.backRight.getPosition()
+                    this.frontLeft.getPosition(),
+                    this.frontRight.getPosition(),
+                    this.backLeft.getPosition(),
+                    this.backRight.getPosition()
+                        // new SwerveModulePosition(0, this.frontLeft.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.frontRight.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.backLeft.getTurnMotorRotation2d()),
+                        // new SwerveModulePosition(0, this.backRight.getTurnMotorRotation2d())
                 },
-                new Pose2d());
+                initialPose);
     }
 
     /**
@@ -234,6 +245,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
         m_field.setRobotPose(this.odometer.getPoseMeters());
 
+        SmartDashboard.putData("Field", m_field);
+        SmartDashboard.putString("Odometry", this.odometer.getPoseMeters().toString());
+
+        SmartDashboard.putNumber("FL Drive Pos", this.frontLeft.getDriveWheelPosition());
+        SmartDashboard.putNumber("FR Drive Pos", this.frontRight.getDriveWheelPosition());
+        SmartDashboard.putNumber("BL Drive Pos", this.backLeft.getDriveWheelPosition());
+        SmartDashboard.putNumber("BR Drive Pos", this.backRight.getDriveWheelPosition());
+
+
         // SmartDashboard.putString("Odometry",
         // this.odometer.getPoseMeters().toString());
 
@@ -248,10 +268,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
         SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
-        SmartDashboard.putNumber("FL Absolute Encoder", frontLeft.getTurnMotorInRotations());
-        SmartDashboard.putNumber("FR Absolute Encoder", frontRight.getTurnMotorInRotations());
-        SmartDashboard.putNumber("BL Absolute Encoder", backLeft.getTurnMotorInRotations());
-        SmartDashboard.putNumber("BR Absolute Encoder", backRight.getTurnMotorInRotations());
+        // SmartDashboard.putNumber("FL Absolute Encoder", frontLeft.getTurnMotorInRotations());
+        // SmartDashboard.putNumber("FR Absolute Encoder", frontRight.getTurnMotorInRotations());
+        // SmartDashboard.putNumber("BL Absolute Encoder", backLeft.getTurnMotorInRotations());
+        // SmartDashboard.putNumber("BR Absolute Encoder", backRight.getTurnMotorInRotations());
 
         // Doesn't actually do what its supposed to do
         // SmartDashboard.putNumber("FL Wheel Speed",
@@ -288,5 +308,12 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.stop();
         backLeft.stop();
         backRight.stop();
+    }
+
+    /**
+     * Set the swerve drive to brake position, which is 45 degrees
+     */
+    public void brake() {
+        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE);
     }
 }

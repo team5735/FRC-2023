@@ -1,66 +1,73 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import edu.wpi.first.wpilibj.PneumaticsBase;
-import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
+public class PneumaticsSubsystem extends SubsystemBase {
 
-public class PneumaticsSubsystem extends SubsystemBase{
-    DoubleSolenoid solenoid = new DoubleSolenoid(6, PneumaticsModuleType.CTREPCM, 1, 0);
-    Compressor pcmCompressor = new Compressor(6, PneumaticsModuleType.CTREPCM);
+    private DoubleSolenoid solenoid;
+    private boolean pistonExtended;
 
+    private Compressor pcmCompressor;
 
-    public PneumaticsSubsystem(){
-        
-    }
-    @Override
-     public void periodic() {
-    // This method will be called once per scheduler run
-    }
-
-    @Override
-    public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    }
-    public void extend() {
-        System.out.println("Extend");
-        solenoid.set(Value.kForward);
-    }
-    public void retract() {
-        // System.out.println("retract");
-
-        solenoid.set(Value.kReverse);
-    }
-    public void off() {
-        System.out.println("off");
-
-        solenoid.set(Value.kOff);
-    }
-    public void compressorOn(){
-        System.out.println("compressing");
-
-        pcmCompressor.enableDigital();
+    public PneumaticsSubsystem() {
+        this.solenoid = new DoubleSolenoid(6, PneumaticsModuleType.CTREPCM, 1, 0);
+        this.pcmCompressor = new Compressor(6, PneumaticsModuleType.CTREPCM);
+        this.pcmCompressor.disable();
     }
 
-    public boolean statusOfCompressor() {
-        //TODO(malish): uncomment this out when the time is right
-        // System.out.println("It's Statusing time!");
-        return pcmCompressor.isEnabled();
+    /**
+     * Turn the compressor on or off
+     */
+    public void toggleCompressor() {
+        if (this.statusOfCompressor()) {
+            this.compressorOff();
+        } else {
+            this.compressorOn();
+        }
     }
-    public void compressorOff(){
-    //
-    
-    
-    
-    System.out.println("compressor off");
 
-        pcmCompressor.disable();
+    /**
+     * Toggle piston
+     */
+    public void togglePiston() {
+        if(!this.pistonExtended) {
+            this.pistonExtend();
+            this.pistonExtended = true;
+        } else {
+            this.pistonRetract();
+            this.pistonExtended = false;
+        }
     }
-    
+
+    private void pistonExtend() {
+        this.solenoid.set(Value.kForward);
+    }
+
+    private void pistonRetract() {
+        this.solenoid.set(Value.kReverse);
+    }
+
+    public void stopPiston() {
+        this.solenoid.set(Value.kOff);
+    }
+
+    /**
+     * Returns whether the compressor is on or not.
+     */
+    private boolean statusOfCompressor() {
+        return this.pcmCompressor.isEnabled();
+    }
+
+    private void compressorOn() {
+        this.pcmCompressor.enableDigital();
+    }
+
+    private void compressorOff() {
+        this.pcmCompressor.disable();
+    }
+
 }

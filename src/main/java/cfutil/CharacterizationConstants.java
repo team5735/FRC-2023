@@ -3,6 +3,7 @@ package cfutil;
 public class CharacterizationConstants {
     private final double kS;
     private final double kV;
+    private final double kG;
     private final double kA;
 
     private final double kP;
@@ -12,6 +13,17 @@ public class CharacterizationConstants {
     private CharacterizationConstants(double kS, double kV, double kA,
      double kP, double kI, double kD) {
         this.kS = kS;
+        this.kG = 0.0;
+        this.kV = kV;
+        this.kA = kA;
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
+    }
+
+    private CharacterizationConstants(double kS, double kG, double kV, double kA, double kP, double kI, double kD) {
+        this.kS = kS;
+        this.kG = kG;
         this.kV = kV;
         this.kA = kA;
         this.kP = kP;
@@ -21,6 +33,10 @@ public class CharacterizationConstants {
 
     public double getS() {
         return kS;
+    }
+
+    public double getG() {
+        return kG;
     }
 
     public double getV() {
@@ -46,6 +62,7 @@ public class CharacterizationConstants {
     // Builder pattern. Why? Because it's cool. Unnecessary, but cool. -Mingle, 12/21/2022
     public static class Builder {
         private double kS = 0.0;
+        private double kG = 0.0;
         private double kV = 0.0;
         private double kA = 0.0;
 
@@ -60,6 +77,14 @@ public class CharacterizationConstants {
             return this;
         }
 
+        public Builder setFeedforwardConstants(double kS, double kG, double kV, double kA) {
+            this.kS = kS;
+            this.kG = kG;
+            this.kV = kV;
+            this.kA = kA;
+            return this;
+        }
+
         public Builder setFeedbackConstants(double kP, double kI, double kD) {
             this.kP = kP;
             this.kI = kI;
@@ -68,7 +93,7 @@ public class CharacterizationConstants {
         }
 
         public CharacterizationConstants build() {
-            return new CharacterizationConstants(kS, kV, kA, kP, kI, kD);
+            return new CharacterizationConstants(kS, kG, kV, kA, kP, kI, kD);
         }
     }
 }
