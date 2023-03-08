@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.BrakeCommand;
@@ -25,8 +26,9 @@ import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
 
 // Pneumatics Imports -- Could be reorganized by system
-import frc.robot.commands.pneumatics.CompressorOnOff;
-import frc.robot.commands.pneumatics.extendRetract;
+//TODO: these aren't working. Fix
+//import frc.robot.commands.pneumatics.CompressorOnOff;
+//import frc.robot.commands.pneumatics.extendRetract;
 import frc.robot.commands.vision.TurnToZero;
 import frc.robot.subsystems.PneumaticsSubsystem;
 
@@ -129,15 +131,10 @@ public class RobotContainer {
     this.driverController.leftBumper()
         .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.BACKWARD));
 
-    //Left bumper for intake backward
-    new Trigger(this.driverController::getLeftBumper)
-        .whileTrue(new IntakeBackward(this.intakeSubsystem))
-        .whileFalse(new IntakeStop(this.intakeSubsystem));
-
     //Button A to reverse intake (if that problem happens again...)
 
     // turn to zero
-    new Trigger(this.driverController::getBackButton)
+    this.driverController.back()
         .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
   }
 
@@ -162,11 +159,11 @@ public class RobotContainer {
         //.whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
 
     //EXTENDER CONTROLS
-    new Trigger(this.subsystemController::getXButton)
+    this.subsystemController.x()
       .whileTrue(new ExtenderOut(extenderSubsystem))
       .whileFalse(new ExtenderStop(extenderSubsystem));
 
-    new Trigger(this.subsystemController::getBButton)
+    this.subsystemController.b()
       .whileTrue(new ExtenderIn(extenderSubsystem))
       .whileFalse(new ExtenderStop(extenderSubsystem));
 

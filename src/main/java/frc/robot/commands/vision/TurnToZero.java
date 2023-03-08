@@ -18,7 +18,7 @@ public class TurnToZero extends CommandBase {
         
     //};
 
-    //TODO: Calibrate PID
+    //TODO: Calibrate PID. These values are arbitrary and I don't know if they're good.
     private PIDController pid = new PIDController(0.0727, 0.26, 0);
 
     public TurnToZero(VisionSubsystem v, SwerveSubsystem s) {
