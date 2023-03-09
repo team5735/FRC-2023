@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -206,19 +207,30 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the desired velocity and angle of all swerve modules
+     * Drive with open loop control (does not correct for error)
+     * @param chassisSpeeds
+     */
+    public void openLoopDrive(ChassisSpeeds chassisSpeeds) {
+        SwerveModuleState[] moduleStates = Constants.DrivetrainConstants.DT_KINEMATICS
+                .toSwerveModuleStates(chassisSpeeds);
+
+        this.setModuleStates(moduleStates, true);
+    }
+
+    /**
+     * Sets the desired velocity and angle of all swerve modules. Uses FF + PID control.
      * 
      * @param desiredStates
      */
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop) {
         // Scales all desired states to the maximum speed of the robot
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates,
                 Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND);
 
-        frontLeft.setDesiredState(desiredStates[0]);
-        frontRight.setDesiredState(desiredStates[1]);
-        backLeft.setDesiredState(desiredStates[2]);
-        backRight.setDesiredState(desiredStates[3]);
+        frontLeft.setDesiredState(desiredStates[0], isOpenLoop);
+        frontRight.setDesiredState(desiredStates[1], isOpenLoop);
+        backLeft.setDesiredState(desiredStates[2], isOpenLoop);
+        backRight.setDesiredState(desiredStates[3], isOpenLoop);
     }
 
     /**
@@ -292,6 +304,6 @@ public class SwerveSubsystem extends SubsystemBase {
      * Set the swerve drive to brake position, which is 45 degrees
      */
     public void brake() {
-        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE);
+        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE, false);
     }
 }

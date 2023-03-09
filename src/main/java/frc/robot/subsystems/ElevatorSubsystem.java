@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -20,16 +22,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final WPI_TalonFX elevatorLeader, elevatorFollower;
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
-  private final double metersPerRotation;
 
   private double heightSetpoint;
 
   public ElevatorSubsystem() {
     this.elevatorLeader = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_LEADER_MOTOR_ID);
+    this.elevatorLeader.setInverted(true);
     this.elevatorFollower = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_FOLLOWER_MOTOR_ID);
-    // Is the motor inverted? Based on how you set elevatorRight to negative, I'm
-    // gonna assume so.
-    this.elevatorFollower.setInverted(true);
+    this.elevatorFollower.setInverted(false);
     this.elevatorFollower.follow(this.elevatorLeader);
 
     this.elevatorFeedforward = new ElevatorFeedforward(
@@ -45,11 +45,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
     );
 
-    // Gear Ratio * Sprocket Teeth # * Length per chain link
-    this.metersPerRotation = 
-        Constants.ElevatorConstants.gearRatio *
-        Constants.ElevatorConstants.sprocketTeethNumber *
-        Constants.ElevatorConstants.chainLinkLength;
     this.resetMotors();
   }
 
@@ -63,16 +58,14 @@ public class ElevatorSubsystem extends SubsystemBase {
    */
   private double getElevatorHeight() {
     // Must have motor position reset to zero beforehand for this to work well
-    double elevatorHeight = metersPerRotation * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
-    return elevatorHeight;
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
   }
 
   /**
    * Get elevator motor velocity in m/s
    */
   private double getElevatorVelocity() {
-    double elevatorVelocity = metersPerRotation * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
-    return elevatorVelocity;
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
   }
 
   public void setSetpoint(double heightMeters) {
@@ -85,18 +78,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
-    // Acceleration is 0? could be totally wrong. Want to get to profiled pid controller velocity setpoint
-    voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
-    // Set the voltage
-    this.elevatorLeader.setVoltage(voltage);
+    // WARNING: UNTESTED
+
+    // double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
+    // // Acceleration is 0? could be totally wrong. Want to get to profiled pid controller velocity setpoint
+    // voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
+    // // Set the voltage
+    // this.elevatorLeader.setVoltage(voltage);
   }
 
-  // public void elevatorControl(double joystickInput) {
-  // elevatorLeft.set(joystickInput);
-  // elevatorRight.set(-joystickInput);
-
-  // }
+  public void manualControl(double input) {
+    this.elevatorLeader.setVoltage(12.0 * input);
+  }
 
   // public void eleavtorStop() {
   // elevatorLeft.stopMotor();

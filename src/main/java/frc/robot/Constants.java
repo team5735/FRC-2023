@@ -206,20 +206,26 @@ public final class Constants {
 
         // Carson: Convert all of this to meters / metric units please
         public static class ElevatorConstants {
-                public static final double errorThreshold = 1; // Inches
+                public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
                 public static final double HEIGHT_LIMIT = Units.inchesToMeters(75);
-                public static final double cruisingVelocity = 3.5;// Inches / sec, Could be increased
-                // private static final double acceleration = 2;  // Time to Cruising Velocity Sec              
+                public static final double ELEVATOR_CRUISING_VEL = 3.5;// Inches / sec, Could be increased
+                // private static final double acceleration = 2; // Time to Cruising Velocity
+                // Sec
 
                 // Physical Constants
-                public static final double gearRatio = 84 / 12.; // 12 teeth on gear attached to motor, 84 on gear attached to chain
-                public static final double chainLinkLength = Units.inchesToMeters(0.25); // inches
-                public static final double travelLength = Units.inchesToMeters(33.375); // inches
-                public static final int sprocketTeethNumber = 16; 
+                public static final double ELEVATOR_GEAR_RATIO = 84 / 12.; // 12 teeth on gear attached to motor, 84 on
+                                                                           // gear attached to chain
+                public static final double ELEVATOR_CHAIN_LINK_LENGTH = Units.inchesToMeters(0.25); // inches
+                public static final double ELEVATOR_TRAVEL_LENGTH = Units.inchesToMeters(33.375); // inches
+                public static final int ELEVATOR_SPROCKET_NUM_TEETH = 16;
+
+                public static final double ELEVATORS_METERS_PER_ROTATION = Constants.ElevatorConstants.ELEVATOR_GEAR_RATIO
+                                *
+                                Constants.ElevatorConstants.ELEVATOR_SPROCKET_NUM_TEETH *
+                                Constants.ElevatorConstants.ELEVATOR_CHAIN_LINK_LENGTH;
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
         }
-
 
         public static class IntakeConstants {
                 public static final int INTAKE_MOTOR_ID = 13;

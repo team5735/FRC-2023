@@ -35,6 +35,6 @@ public class BrakeCommand extends CommandBase {
         SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(0));
         SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(0));
         SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-        this.swerveSubsystem.setModuleStates(moduleStates);
+        this.swerveSubsystem.setModuleStates(moduleStates, false);
     }
 }

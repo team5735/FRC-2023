@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import java.util.function.Consumer;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,7 +25,7 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.ExtendCommand;
 import frc.robot.commands.GyroAutocorrectCommand;
-
+import frc.robot.commands.ManualElevatorCmd;
 // Pneumatics Imports -- Could be reorganized by system
 import frc.robot.subsystems.PneumaticsSubsystem;
 
@@ -33,7 +36,7 @@ import frc.robot.trajectories.Trajectories;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.IntakeCommand.IntakeDirection;
 import frc.robot.subsystems.IntakeSubsystem;
-
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtenderSubsystem;
 
 /**
@@ -47,12 +50,13 @@ import frc.robot.subsystems.ExtenderSubsystem;
  */
 public class RobotContainer {
   private final CommandXboxController driverController;
-  // private final CommandXboxController subsystemController;
+  private final CommandXboxController subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final PneumaticsSubsystem pneumaticsSubsystem;
   private final ExtenderSubsystem extenderSubsystem;
+  private final ElevatorSubsystem elevatorSubsystem;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
@@ -62,10 +66,10 @@ public class RobotContainer {
     this.intakeSubsystem = new IntakeSubsystem();
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
+    this.elevatorSubsystem = new ElevatorSubsystem();
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
-    // this.subsystemController = new
-    // CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
+    this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -146,6 +150,9 @@ public class RobotContainer {
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
     // this.subsystemController.getLeftY()));
 
+    this.elevatorSubsystem.setDefaultCommand(
+        new ManualElevatorCmd(this.elevatorSubsystem,
+            () -> -this.subsystemController.getRightY())); // negative b/c y is inverted
   }
 
   /**
@@ -174,9 +181,14 @@ public class RobotContainer {
         xController,
         yController,
         thetaController,
-        swerveSubsystem::setModuleStates, // Module states consumer
+        new Consumer<SwerveModuleState[]>() {
+          @Override
+          public void accept(SwerveModuleState[] states) {
+            swerveSubsystem.setModuleStates(states, false);
+          }
+        }, // Module states consumer
         true, // Should the path be automatically mirrored depending on alliance color.
-               // Optional, defaults to true
+              // Optional, defaults to true
         swerveSubsystem // Requires this drive subsystem
     );
 
