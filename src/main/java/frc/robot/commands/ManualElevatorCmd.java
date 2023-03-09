@@ -29,6 +29,14 @@ public class ManualElevatorCmd extends CommandBase {
     public void execute() {
         double input = this.inputSupplier.get() * 0.25;
         input = (Math.abs(input) > Constants.OIConstants.JOYSTICK_DEADBAND) ? input : 0.0;
+        if (input <= 0 && this.elevatorSubsystem.isAtBottom()) {
+            return;
+        }
+
+        if (input >= 0 && this.elevatorSubsystem.isAtTop()) {
+            return;
+        }
+
         this.elevatorSubsystem.manualControl(input);
     }
 
