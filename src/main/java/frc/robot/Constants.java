@@ -223,6 +223,10 @@ public final class Constants {
                                 *
                                 Constants.ElevatorConstants.ELEVATOR_SPROCKET_NUM_TEETH *
                                 Constants.ElevatorConstants.ELEVATOR_CHAIN_LINK_LENGTH;
+                                
+                // TODO: Update Sensor IDs
+                public static final int BOTTOM_HALL_SENSOR_ID = 6;
+                public static final int TOP_HALL_SENSOR_ID = 7;
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
         }

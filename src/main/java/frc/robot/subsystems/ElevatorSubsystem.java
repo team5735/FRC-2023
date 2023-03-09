@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -22,6 +23,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final WPI_TalonFX elevatorLeader, elevatorFollower;
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
+
+  private final DigitalInput bottomHallSensor, topHallSensor;
 
   private double heightSetpoint;
 
@@ -44,6 +47,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
         new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
     );
+
+    this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
+    this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
 
     this.resetMotors();
   }
@@ -91,8 +97,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.elevatorLeader.setVoltage(12.0 * input);
   }
 
-  // public void eleavtorStop() {
-  // elevatorLeft.stopMotor();
-  // elevatorRight.stopMotor();
-  // }
+  public boolean isAtBottom() {
+    return this.bottomHallSensor.get();
+  }
+
+  public boolean isAtTop() {
+    return this.topHallSensor.get();
+  }
+
+  public void stopMotors() {
+    this.elevatorLeader.stopMotor();
+  }
 }
