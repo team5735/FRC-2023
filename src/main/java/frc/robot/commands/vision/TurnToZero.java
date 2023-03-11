@@ -50,7 +50,8 @@ public class TurnToZero extends CommandBase {
         if (!vision.seesTeamTarget()) {
             // maybe too fast?
             ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(90));
-            this.drivetrain.setChassisSpeed(turn);
+            //this.drivetrain.setChassisSpeed(turn);
+            drivetrain.openLoopDrive(turn);
             return;
         }
 
@@ -58,7 +59,8 @@ public class TurnToZero extends CommandBase {
             // it's in degrees if I recall right, but I'm not 100% on that
             double desired = pid.calculate(vision.getYaw(), 0);
             ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(desired));
-            this.drivetrain.setChassisSpeed(turn);
+            //this.drivetrain.setChassisSpeed(turn);
+            drivetrain.openLoopDrive(turn);
         }
     }
 

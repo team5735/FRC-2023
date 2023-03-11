@@ -59,9 +59,12 @@ public class AlignToGoal extends CommandBase {
         
         // I solved control theory but apparently the code was "already tried and bad." George orwell predicted this    
         //worse solution:
-        var desx = pidX.calculate(x, 0);
+        var desx = pidX.calculate(x, 0.3); // Source: I made it up \
+        
         var desy = pidY.calculate(y, 0);
-        drivetrain.setChassisSpeed(new ChassisSpeeds(desx, desy, 0));
+        //TODO: Ask Mingle why this is wrong
+        //drivetrain.setChassisSpeed(new ChassisSpeeds(desx, desy, 0));
+        drivetrain.openLoopDrive(new ChassisSpeeds(desx, desy, 0));
     }
 
     @Override
