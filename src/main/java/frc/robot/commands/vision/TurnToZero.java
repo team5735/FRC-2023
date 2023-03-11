@@ -14,12 +14,13 @@ public class TurnToZero extends CommandBase {
     private boolean isFinished;
     private long startTime;
 
-    //private static final SwerveModuleState[] DONT_SEE_STATES = {
-        
-    //};
+    // private static final SwerveModuleState[] DONT_SEE_STATES = {
 
-    //TODO: Calibrate PID. These values are arbitrary and I don't know if they're good.
-    private PIDController pid = new PIDController(0.0727, 0.26, 0);
+    // };
+
+    // TODO: Calibrate PID. These values are arbitrary and I don't know if they're
+    // good.
+    private PIDController pid = new PIDController(0.0727, 0, 0);
 
     public TurnToZero(VisionSubsystem v, SwerveSubsystem s) {
         vision = v;
@@ -43,22 +44,24 @@ public class TurnToZero extends CommandBase {
             return;
         }
 
-        // check for team target (important, don't want to be lining up with the opponents' target)
+        // check for team target (important, don't want to be lining up with the
+        // opponents' target)
         // ChassisSpeed uses CCW rotation.
         if (!vision.seesTeamTarget()) {
-            // maybe too fast? 
-            // it's in degrees if I recall right, but I'm not 100% on that
+            // maybe too fast?
             ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(90));
             this.drivetrain.setChassisSpeed(turn);
             return;
         }
 
         else {
+            // it's in degrees if I recall right, but I'm not 100% on that
             double desired = pid.calculate(vision.getYaw(), 0);
             ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(desired));
             this.drivetrain.setChassisSpeed(turn);
         }
     }
+
     @Override
     public boolean isFinished() {
         return isFinished;
@@ -66,6 +69,6 @@ public class TurnToZero extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Turn to target over");
+        // System.out.println("Turn to target over");
     }
 }
