@@ -76,12 +76,7 @@ public class SwerveJoystickCmd extends CommandBase {
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
         }
 
-        // 5. Convert chassis speeds to individual module states
-        SwerveModuleState[] moduleStates = Constants.DrivetrainConstants.DT_KINEMATICS
-                .toSwerveModuleStates(chassisSpeeds);
-
-        // 6. Output each module states to wheels
-        swerveSubsystem.setModuleStates(moduleStates);
+        swerveSubsystem.openLoopDrive(chassisSpeeds);
     }
 
     @Override

@@ -71,7 +71,8 @@ public class SwerveModule {
      * Returns the drive wheel's position in meters
      */
     public double getDriveWheelPosition() {
-        // SmartDashboard.putNumber("Mod " + this.moduleId + " Enc", this.driveMotor.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Mod " + this.moduleId + " Enc",
+        // this.driveMotor.getSelectedSensorPosition());
         return UnitConversion.falconToMeters(
                 this.driveMotor.getSelectedSensorPosition());
     }
@@ -157,7 +158,7 @@ public class SwerveModule {
      * @param state the desired state of the swerve module (velocity and angle of
      *              wheel)
      */
-    public void setDesiredState(SwerveModuleState state) {
+    public void setDesiredState(SwerveModuleState state, boolean isOpenLoop) {
         // If the speed is very small, stop motors and do nothing
         if (Math.abs(state.speedMetersPerSecond) < 0.0005) {
             stop();
@@ -170,11 +171,18 @@ public class SwerveModule {
         // Set drive motor voltage
         // FeedForward: Input is velocity setpoint, output is voltage
         double driveVoltage = this.driveFF.calculate(state.speedMetersPerSecond);
-        // PID: Input is current velocity and velocity setpoint (to calculate error),
-        // output is voltage
-        driveVoltage += this.drivePID.calculate(this.getDriveWheelVelocity(), state.speedMetersPerSecond);
-        // Set the voltage
-        this.driveMotor.setVoltage(driveVoltage);
+
+        if (!isOpenLoop) {
+            // Add PID control if not open loop
+            // PID: Input is current velocity and velocity setpoint (to calculate error),
+            // output is voltage
+            driveVoltage += this.drivePID.calculate(this.getDriveWheelVelocity(), state.speedMetersPerSecond);
+            // Set the voltage
+            this.driveMotor.setVoltage(driveVoltage);
+        } else {
+            // Not sure if this is gonna work. /12 to get percent
+            this.driveMotor.set(ControlMode.PercentOutput, driveVoltage / 12.0);
+        }
 
         // Set turn motor voltage
         // WHEN USING PROFILEDPIDCONTROLLER:

@@ -54,4 +54,8 @@ public class UnitConversion {
                 );
     }
 
+    // For Elevator as the above is tailored to the Turn Motor
+    public static double falconToRotations(double distanceFalconUnits) {
+        return (distanceFalconUnits) / UnitConversion.FALCON_ENCODER_CPR;
+    }
 }
