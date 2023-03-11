@@ -14,8 +14,8 @@ public class PneumaticsSubsystem extends SubsystemBase {
     private Compressor pcmCompressor;
 
     public PneumaticsSubsystem() {
-        this.solenoid = new DoubleSolenoid(6, PneumaticsModuleType.CTREPCM, 1, 0);
-        this.pcmCompressor = new Compressor(6, PneumaticsModuleType.CTREPCM);
+        this.solenoid = new DoubleSolenoid(11, PneumaticsModuleType.CTREPCM, 1, 0);
+        this.pcmCompressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
         this.pcmCompressor.disable();
     }
 
