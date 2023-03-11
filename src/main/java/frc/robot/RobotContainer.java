@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import edu.wpi.first.wpilibj2.command.button.JoystickButton; //Outdated
 
@@ -53,7 +54,7 @@ import frc.robot.subsystems.ExtenderSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final XboxController driverController, subsystemController;
+  private final CommandXboxController driverController, subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -69,12 +70,12 @@ public class RobotContainer {
     this.intakeSubsystem = new IntakeSubsystem();
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
-    
+
     // pipeline stuff not set up yet (do we even need?)
     this.visionSubsystem = new VisionSubsystem(0);
 
-    this.driverController = new XboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
-    this.subsystemController = new XboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
+    this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
+    this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -98,90 +99,104 @@ public class RobotContainer {
 
     // When Y is pressed on driver controller, toggle field oriented
     // new JoystickButton(this.driverController, XboxController.Button.kY.value)
-    //     .whenPressed(new InstantCommand(() -> {
-    //       this.swerveSubsystem.toggleFieldOriented();
-    //     }));
+    // .whenPressed(new InstantCommand(() -> {
+    // this.swerveSubsystem.toggleFieldOriented();
+    // }));
 
     // NOTE: Strikethrough caused by depreciated, but functional, software
     // FOR TESTING When Y is pressed, trigger gyro autocorrect command
-    /*new JoystickButton(this.driverController, XboxController.Button.kY.value)
-        .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
-    */ 
-    new Trigger(this.driverController::getYButton)
-      .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+    /*
+     * new JoystickButton(this.driverController, XboxController.Button.kY.value)
+     * .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
+     */
+    driverController.y()
+        .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
-    /*new JoystickButton(this.driverController, XboxController.Button.kX.value)
-        .whenPressed(new InstantCommand(() -> {
-          this.swerveSubsystem.zeroHeading();
-        }));
-    */
-    new Trigger(this.driverController::getXButton)
+    /*
+     * new JoystickButton(this.driverController, XboxController.Button.kX.value)
+     * .whenPressed(new InstantCommand(() -> {
+     * this.swerveSubsystem.zeroHeading();
+     * }));
+     */
+    driverController.x()
         .whileTrue(new InstantCommand(() -> {
           this.swerveSubsystem.zeroHeading();
         }));
 
     // When B is pressed, make the wheels brake.
-    /*new JoystickButton(this.driverController, XboxController.Button.kB.value)
-        .whenHeld(new BrakeCommand(this.swerveSubsystem));
-    */
-    new Trigger(this.driverController::getBButton)
+    /*
+     * new JoystickButton(this.driverController, XboxController.Button.kB.value)
+     * .whenHeld(new BrakeCommand(this.swerveSubsystem));
+     */
+    driverController.b()
         .whileTrue(new BrakeCommand(this.swerveSubsystem));
 
     // new JoystickButton(this.driverController, XboxController.Button.kA.value)
-    //   .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
+    // .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
 
-    //INTAKE CONTROLS
-    //Right bumper for intake forward
-    new Trigger(this.driverController::getRightBumper)
+    // INTAKE CONTROLS
+    // Right bumper for intake forward
+    driverController.rightBumper()
         .whileTrue(new IntakeForward(this.intakeSubsystem))
         .whileFalse(new IntakeStop(this.intakeSubsystem));
 
-    //Left bumper for intake backward
-    new Trigger(this.driverController::getLeftBumper)
+    // Left bumper for intake backward
+    driverController.leftBumper()
         .whileTrue(new IntakeBackward(this.intakeSubsystem))
         .whileFalse(new IntakeStop(this.intakeSubsystem));
 
-    //Button A to reverse intake (if that problem happens again...)
+    // Button A to reverse intake (if that problem happens again...)
 
     // turn to zero
-    new Trigger(this.driverController::getBackButton)
+    driverController.back()
         .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
   }
 
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
-    new Trigger(this.subsystemController::getAButton)
+    subsystemController.a()
         .whileTrue(new CompressorOnOff(this.pneumaticsSubsystem));
 
-    new Trigger(this.subsystemController::getLeftBumper)
+    subsystemController.leftBumper()
         .whileTrue(new extendRetract(this.pneumaticsSubsystem));
 
-    // TODO: Use parallel command group to run elevator and extender at the same time
+    // TODO: Use parallel command group to run elevator and extender at the same
+    // time
     // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
-    //new Trigger(() -> this.subsystemController.getLeftY() > 0.08 || this.subsystemController.getLeftY() < -0.08)
-        //.whileTrue(new ExtenderControl(extenderSubsystem, () -> this.subsystemController.getLeftY()));
+    // new Trigger(() -> this.subsystemController.getLeftY() > 0.08 ||
+    // this.subsystemController.getLeftY() < -0.08)
+    // .whileTrue(new ExtenderControl(extenderSubsystem, () ->
+    // this.subsystemController.getLeftY()));
 
-    //EXTENDER CONTROLS
-    new Trigger(this.subsystemController::getXButton)
-      .whileTrue(new ExtenderOut(extenderSubsystem))
-      .whileFalse(new ExtenderStop(extenderSubsystem));
+    // EXTENDER CONTROLS
+    // //X button to extend to low level
+    // new Trigger(this.subsystemController::getXButtonPressed)
+    // .onTrue(new ExtenderOut(this.extenderSubsystem, 1));
 
-    new Trigger(this.subsystemController::getBButton)
-      .whileTrue(new ExtenderIn(extenderSubsystem))
-      .whileFalse(new ExtenderStop(extenderSubsystem));
+    subsystemController.x()
+        .whileTrue(new ExtenderOut(this.extenderSubsystem, 2))
+        .whileFalse(new ExtenderStop(this.extenderSubsystem));
 
-    //new Trigger(this.subsystemController::getBButton)
-      //.whileTrue(new SequentialCommandGroup(
-        //new ExtenderChooseLevel(extenderSubsystem),
-        //new ExtenderOut(extenderSubsystem, 0)
-      //)
+    // //Y button to extend to mid level
+    // new Trigger(this.subsystemController::getYButtonPressed)
+    // .onTrue(new ExtenderOut(this.extenderSubsystem, 2));
+
+    // //B button to extend to upper level
+    // new Trigger(this.subsystemController::getBButtonPressed)
+    // .onTrue(new ExtenderOut(this.extenderSubsystem, 3));
+
+    // //right bumper to bring all the way back to start
+    // new Trigger(this.subsystemController::getRightBumperPressed)
+    // .onTrue(new ExtenderIn(this.extenderSubsystem));
+
+    // //right stick button to stop extender
+    // new Trigger(this.subsystemController::getRightStickButtonPressed)
+    // .onTrue(new ExtenderStop(this.extenderSubsystem));
 
   }
-
-
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -213,8 +228,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(
         // Start the command by "placing" the robot at the beginning of the trajectory
         new InstantCommand(() -> swerveSubsystem.resetOdometry(
-          // trajectory.getInitialPose()
-          )),
+        // trajectory.getInitialPose()
+        )),
         // Run the trajectory command
         swerveControllerCommand,
         // Stop the robot at the end of the trajectory
@@ -222,27 +237,31 @@ public class RobotContainer {
   }
 }
 
-  // private Command generateRamseteCommand() {
+// private Command generateRamseteCommand() {
 
-  //     RamseteCommand ramseteCommand = new RamseteCommand(
-  //       exampleTrajectory,
-  //       m_drivetrain::getPose,
-  //       new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-  //       new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter, DriveConstants.kaVoltSecondsSquaredPerMeter),
-  //       DriveConstants.kDriveKinematics,
-  //       m_drivetrain::getWheelSpeeds,
-  //       new PIDController(DriveConstants.kPDriveVelLeft, 0, 0),
-  //       new PIDController(DriveConstants.kPDriveVelRight, 0, 0),
-  //       m_drivetrain::tankDriveVolts,
-  //       m_drivetrain);
+// RamseteCommand ramseteCommand = new RamseteCommand(
+// exampleTrajectory,
+// m_drivetrain::getPose,
+// new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+// new SimpleMotorFeedforward(DriveConstants.ksVolts,
+// DriveConstants.kvVoltSecondsPerMeter,
+// DriveConstants.kaVoltSecondsSquaredPerMeter),
+// DriveConstants.kDriveKinematics,
+// m_drivetrain::getWheelSpeeds,
+// new PIDController(DriveConstants.kPDriveVelLeft, 0, 0),
+// new PIDController(DriveConstants.kPDriveVelRight, 0, 0),
+// m_drivetrain::tankDriveVolts,
+// m_drivetrain);
 
-//     // Set up a sequence of commands
-//     // First, we want to reset the drivetrain odometry
-//     return new InstantCommand(() -> m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose()), m_drivetrain)
-//         // next, we run the actual ramsete command
-//         .andThen(ramseteCommand)
+// // Set up a sequence of commands
+// // First, we want to reset the drivetrain odometry
+// return new InstantCommand(() ->
+// m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose()), m_drivetrain)
+// // next, we run the actual ramsete command
+// .andThen(ramseteCommand)
 
-//         // Finally, we make sure that the robot stops
-//         .andThen(new InstantCommand(() -> m_drivetrain.tankDriveVolts(0, 0), m_drivetrain));
-//   } 
+// // Finally, we make sure that the robot stops
+// .andThen(new InstantCommand(() -> m_drivetrain.tankDriveVolts(0, 0),
+// m_drivetrain));
+// }
 // }
