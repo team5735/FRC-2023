@@ -162,6 +162,10 @@ public class RobotContainer {
         .whileTrue(new ExtenderOut(this.extenderSubsystem, 2))
         .whileFalse(new ExtenderStop(this.extenderSubsystem));
 
+    subsystemController.b()
+      .whileTrue(new ExtenderIn(extenderSubsystem))
+      .whileFalse(new ExtenderStop(extenderSubsystem));
+
     // this.subsystemController.leftStick()
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
     // this.subsystemController.getLeftY()));
