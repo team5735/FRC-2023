@@ -176,8 +176,8 @@ public final class Constants {
                 // .setFeedbackConstants(4.3347, 0.0, 0.15614)
                 // .build();
 
-                public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
-                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
+                public static final int ELEVATOR_LEADER_MOTOR_ID = 57;
+                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 55;
                 public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0, 0, 0, 0)
                                 .setFeedbackConstants(0, 0, 0)
@@ -239,10 +239,10 @@ public final class Constants {
                 public static final int INTAKE_MOTOR_ID = 13;
                 public static final int CONVEYOR_MOTOR_ID = 9;
 
-                public static final double INTAKE_IN_SPEED = .5;
-                public static final double INTAKE_OUT_SPEED = -.5;
-                public static final double CONVEYOR_IN_SPEED = .3;
-                public static final double CONVEYOR_OUT_SPEED = -.3;
+                public static final double INTAKE_IN_SPEED = 0.75;
+                public static final double INTAKE_OUT_SPEED = -0.75;
+                public static final double CONVEYOR_IN_SPEED = .45;
+                public static final double CONVEYOR_OUT_SPEED = -.45;
         }
 
         // OI means Operater Interface :D
@@ -251,8 +251,8 @@ public final class Constants {
                 public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
                 public static final double JOYSTICK_DEADBAND = 0.08;
 
-                public static double SPEED_LIMIT_XY = 0.75;
-                public static double SPEED_LIMIT_TURN = 0.15;
+                public static double SPEED_LIMIT_XY = 1.00;
+                public static double SPEED_LIMIT_TURN = 1.00;
         }
 
 }
