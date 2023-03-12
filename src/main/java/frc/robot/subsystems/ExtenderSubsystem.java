@@ -4,6 +4,8 @@ import frc.robot.constants.ExtenderConstants;
 
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,22 +17,68 @@ public class ExtenderSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final CANSparkMax extenderMotor;
+  private final ProfiledPIDController pidController;
 
-
+  private double extenderSetpoint; // where you want the extender to be, in meters
 
   public ExtenderSubsystem() {
-    // Basic framework, unknown if this setup is correct
-    // could create a new constant file, not worth the trouble
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
 
+    // TODO: Find constants that work. Start with a small P value, velocity, and acceleration.
+    this.pidController = new ProfiledPIDController(
+        0.0, // P value
+        0.0, // I vaue
+        0.0, // D value
+        new TrapezoidProfile.Constraints(
+            0.0, // max velocity m/s
+            0.0 // max acceleration m/s/s
+        ));
+
     SmartDashboard.putString("extend", "created");
+
+    this.resetMotors();
+  }
+
+  private void resetMotors() {
+    this.extenderMotor.getEncoder().setPosition(0);
+  }
+
+  /**
+   * Gets how far the extender has extended, in meters
+   */
+  private double getExtenderPosition() {
+    return this.extenderMotor.getEncoder()
+        .getPosition() // in rotations
+        * 1.0; // TODO: Find conversion from meters to rotations
+  }
+
+  /**
+   * Move the extender out to X meters
+   */
+  public void setSetpoint(double setpointMeters) {
+    if (setpointMeters < 0.0
+        || setpointMeters > 100.0) { // TODO: Find the "max length"
+      return;
+    }
+    this.extenderSetpoint = setpointMeters;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run (every 20ms default)
-    SmartDashboard.putNumber("Current motor speed", extenderMotor.get());
+
+    // WARNING: UNTESTED
+    // double voltage = this.pidController.calculate(
+    // this.getExtenderPosition(), // where the extender is right now
+    // this.extenderSetpoint // where you want the extender to be
+    // );
+    // // Set the voltage
+    // this.extenderMotor.setVoltage(voltage);
+
+    SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
   }
+
+  // Bella's code
 
   public void extenderMove(double speed) {
     extenderMotor.set(speed);
@@ -44,7 +92,8 @@ public class ExtenderSubsystem extends SubsystemBase {
     return extenderMotor.getEncoder().getPosition();
   }
 
-  //Based on desired level and current encoder value, figure out what encoder value need to reach
+  // Based on desired level and current encoder value, figure out what encoder
+  // value need to reach
   public double setGoalEncoderPosition(int desiredLevel) {
     desiredLevel--;
     return ExtenderConstants.LEVEL_ENCODER_VALS[desiredLevel];
