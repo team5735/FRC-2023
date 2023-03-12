@@ -245,14 +245,14 @@ public final class Constants {
                 public static final double CONVEYOR_OUT_SPEED = -.45;
         }
 
-        // OI means Operater Interface :D
+        // OI means Operator Interface :D
         public static class OIConstants {
                 public static final int DRIVER_CONTROLLER_PORT = 0;
                 public static final int SUBSYSTEM_CONTROLLER_PORT = 1;
                 public static final double JOYSTICK_DEADBAND = 0.08;
 
                 public static double SPEED_LIMIT_XY = 1.00;
-                public static double SPEED_LIMIT_TURN = 1.00;
+                public static double SPEED_LIMIT_TURN = 0.5;
         }
 
 }

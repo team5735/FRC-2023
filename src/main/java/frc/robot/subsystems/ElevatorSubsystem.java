@@ -40,6 +40,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
         Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
         Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getA());
+        //Constants from Characterization
+        // ks = 0.051528, kv = 7.8232, ka = 0.13338, kg = 0.27546
 
     this.elevatorFeedback = new ProfiledPIDController(
         Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP(),
@@ -87,7 +89,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     // WARNING: UNTESTED
 
     // double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
-    // // Acceleration is 0? could be totally wrong. Want to get to profiled pid controller velocity setpoint
+    // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid controller velocity setpoint
     // voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
     // // Set the voltage
     // this.elevatorLeader.setVoltage(voltage);
