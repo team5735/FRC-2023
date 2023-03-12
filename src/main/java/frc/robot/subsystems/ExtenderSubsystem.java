@@ -26,12 +26,12 @@ public class ExtenderSubsystem extends SubsystemBase {
 
     // TODO: Find constants that work. Start with a small P value, velocity, and acceleration.
     this.pidController = new ProfiledPIDController(
-        0.0, // P value
+        0.01, // P value
         0.0, // I vaue
         0.0, // D value
         new TrapezoidProfile.Constraints(
-            0.0, // max velocity m/s
-            0.0 // max acceleration m/s/s
+            0.01, // max velocity m/s
+            0.01 // max acceleration m/s/s
         ));
 
     SmartDashboard.putString("extend", "created");
@@ -50,6 +50,8 @@ public class ExtenderSubsystem extends SubsystemBase {
     return this.extenderMotor.getEncoder()
         .getPosition() // in rotations
         * 1.0; // TODO: Find conversion from meters to rotations
+        //3 rotation neo axle = 1 rotation gearbox axle = /3
+        //b/c get meters for 1 rotation of gearbox axle --> so one rotation of neo did 1/3 distance
   }
 
   /**
@@ -57,10 +59,16 @@ public class ExtenderSubsystem extends SubsystemBase {
    */
   public void setSetpoint(double setpointMeters) {
     if (setpointMeters < 0.0
-        || setpointMeters > 100.0) { // TODO: Find the "max length"
+        || setpointMeters > (76.0*.0254)) { // TODO: Find the "max length"
       return;
     }
     this.extenderSetpoint = setpointMeters;
+  }
+
+  public void moveForward(double setpoint) {
+    this.setSetpoint(setpoint);
+    double speed = pidController.calculate(this.getExtenderPosition(), this.extenderSetpoint);
+    extenderMotor.set(speed);
   }
 
   @Override
