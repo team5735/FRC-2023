@@ -9,10 +9,10 @@ import java.util.Arrays;
 /** Add your docs here. */
 public class ExtenderConstants {
 
-    public static final double EXTEND_MOTOR_OUT_SPEED = -.1;
-    public static final double EXTEND_MOTOR_IN_SPEED = .1;
+    public static final double EXTEND_MOTOR_OUT_SPEED = .1;
+    public static final double EXTEND_MOTOR_IN_SPEED = -.1;
 
-    public static final int EXTEND_MOTOR_ID = 12;
+    public static final int EXTEND_MOTOR_ID = 14;
 
     //TODO: get actual values for this
     //Extension encoder values

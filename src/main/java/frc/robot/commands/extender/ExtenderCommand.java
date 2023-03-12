@@ -4,6 +4,7 @@
 
 package frc.robot.commands.extender;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtenderSubsystem;
 
@@ -22,12 +23,15 @@ public class ExtenderCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    extenderSubsystem.moveForward(.5);
+    //extenderSubsystem.moveForward();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    SmartDashboard.putNumber("extend encoder", extenderSubsystem.getCurrentEncoderPosition());
+    //extenderSubsystem.moveForward();
+  }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -11,79 +11,81 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class ExtenderSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final CANSparkMax extenderMotor;
-  private final ProfiledPIDController pidController;
+  private final SparkMaxPIDController pidController;
+  private RelativeEncoder extenderEncoder;
 
-  private double extenderSetpoint; // where you want the extender to be, in meters
+  public double kP, maxVel, maxAcc;
 
   public ExtenderSubsystem() {
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
 
-    // TODO: Find constants that work. Start with a small P value, velocity, and acceleration.
-    this.pidController = new ProfiledPIDController(
-        0.01, // P value
-        0.0, // I vaue
-        0.0, // D value
-        new TrapezoidProfile.Constraints(
-            0.01, // max velocity m/s
-            0.01 // max acceleration m/s/s
-        ));
-
-    SmartDashboard.putString("extend", "created");
+    // Initialize pid controller and encoder
+    this.pidController = extenderMotor.getPIDController();
+    this.extenderEncoder = extenderMotor.getEncoder();
 
     this.resetMotors();
+
+    // Set pid coefficients
+    kP = .1;
+    this.pidController.setP(kP);
+
+    // set smart motion values (in rpm)
+    maxVel = 1000;
+    maxAcc = 500;
+
+    int smartMotionSlot = 0;
+    this.pidController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+    this.pidController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
+
   }
 
   private void resetMotors() {
     this.extenderMotor.getEncoder().setPosition(0);
   }
-
-  /**
-   * Gets how far the extender has extended, in meters
-   */
-  private double getExtenderPosition() {
-    return this.extenderMotor.getEncoder()
-        .getPosition() // in rotations
-        * 1.0; // TODO: Find conversion from meters to rotations
-        //3 rotation neo axle = 1 rotation gearbox axle = /3
-        //b/c get meters for 1 rotation of gearbox axle --> so one rotation of neo did 1/3 distance
-  }
-
-  /**
-   * Move the extender out to X meters
-   */
-  public void setSetpoint(double setpointMeters) {
-    if (setpointMeters < 0.0
-        || setpointMeters > (76.0*.0254)) { // TODO: Find the "max length"
-      return;
-    }
-    this.extenderSetpoint = setpointMeters;
-  }
-
-  public void moveForward(double setpoint) {
-    this.setSetpoint(setpoint);
-    double speed = pidController.calculate(this.getExtenderPosition(), this.extenderSetpoint);
-    extenderMotor.set(speed);
-  }
+  
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run (every 20ms default)
+    
+    SmartDashboard.putNumber("current encoder", extenderEncoder.getPosition());
+    
+    //Get input from smart dashboard (for easy value updates)
+    double p = SmartDashboard.getNumber("P val", 0);
+    if (p != kP) {
+      this.pidController.setP(p);
+    }
 
-    // WARNING: UNTESTED
-    // double voltage = this.pidController.calculate(
-    // this.getExtenderPosition(), // where the extender is right now
-    // this.extenderSetpoint // where you want the extender to be
-    // );
-    // // Set the voltage
-    // this.extenderMotor.setVoltage(voltage);
+    double maxV = SmartDashboard.getNumber("max vel", 0);
+    double maxA = SmartDashboard.getNumber("max accel", 0);
 
-    SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
+    if(maxV != maxVel) {
+      this.pidController.setSmartMotionMaxVelocity(maxV, 0);
+    }
+    if(maxA != maxAcc) {
+      this.pidController.setSmartMotionMaxAccel(maxA, 0);
+    }
+
+    // set setpoint
+    double setPoint, currentPosition;
+    setPoint = 100;
+    //setPoint = SmartDashboard.getNumber("set position", 0);
+
+    // run smart motion stuff
+    this.pidController.setReference(setPoint, ControlType.kSmartMotion);
+    currentPosition = extenderEncoder.getPosition();
+
+    //put data
+    SmartDashboard.putNumber("set point", setPoint);
+    SmartDashboard.putNumber("current position", currentPosition);
   }
 
   // Bella's code
