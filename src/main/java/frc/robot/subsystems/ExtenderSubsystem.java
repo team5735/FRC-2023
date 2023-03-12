@@ -3,9 +3,11 @@ package frc.robot.subsystems;
 import frc.robot.constants.ExtenderConstants;
 
 import edu.wpi.first.wpilibj.CAN;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -13,6 +15,8 @@ public class ExtenderSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final CANSparkMax extenderMotor;
+
+
 
   public ExtenderSubsystem() {
     // Basic framework, unknown if this setup is correct

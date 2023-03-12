@@ -4,14 +4,19 @@
 
 package frc.robot;
 
+import java.util.function.Consumer;
+
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,14 +28,12 @@ import frc.robot.Constants.OIConstants;
 
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.TurnMotorFullSpeedCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
-
+import frc.robot.commands.ManualElevatorCmd;
 // Pneumatics Imports -- Could be reorganized by system
-import frc.robot.commands.pneumatics.CompressorOnOff;
-import frc.robot.commands.pneumatics.extendRetract;
+
 import frc.robot.commands.vision.TurnToZero;
 import frc.robot.subsystems.PneumaticsSubsystem;
 
@@ -40,8 +43,9 @@ import frc.robot.trajectories.Trajectories;
 
 // Intake imports
 import frc.robot.commands.intake.*;
+import frc.robot.commands.intake.IntakeCommand.IntakeDirection;
 import frc.robot.subsystems.IntakeSubsystem;
-
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtenderSubsystem;
 
 /**
@@ -61,6 +65,7 @@ public class RobotContainer {
   private final PneumaticsSubsystem pneumaticsSubsystem;
   private final ExtenderSubsystem extenderSubsystem;
   private final VisionSubsystem visionSubsystem;
+  private final ElevatorSubsystem elevatorSubsystem;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
@@ -70,6 +75,7 @@ public class RobotContainer {
     this.intakeSubsystem = new IntakeSubsystem();
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
+    this.elevatorSubsystem = new ElevatorSubsystem();
 
     // pipeline stuff not set up yet (do we even need?)
     this.visionSubsystem = new VisionSubsystem(0);
@@ -98,104 +104,71 @@ public class RobotContainer {
         () -> -this.driverController.getRightX())); // Rotate left on controller is - but rotate left on controller is +
 
     // When Y is pressed on driver controller, toggle field oriented
-    // new JoystickButton(this.driverController, XboxController.Button.kY.value)
-    // .whenPressed(new InstantCommand(() -> {
-    // this.swerveSubsystem.toggleFieldOriented();
-    // }));
+    this.driverController.y()
+        .whileTrue(new InstantCommand(() -> {
+          this.swerveSubsystem.toggleFieldOriented();
+        }));
 
-    // NOTE: Strikethrough caused by depreciated, but functional, software
+    // NOTE: Strikethrough caused by deprecated, but functional, software
     // FOR TESTING When Y is pressed, trigger gyro autocorrect command
     /*
      * new JoystickButton(this.driverController, XboxController.Button.kY.value)
      * .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
      */
-    driverController.y()
-        .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+    // this.driverController.y()
+    // .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
-    /*
-     * new JoystickButton(this.driverController, XboxController.Button.kX.value)
-     * .whenPressed(new InstantCommand(() -> {
-     * this.swerveSubsystem.zeroHeading();
-     * }));
-     */
-    driverController.x()
+    this.driverController.x()
         .whileTrue(new InstantCommand(() -> {
           this.swerveSubsystem.zeroHeading();
         }));
 
     // When B is pressed, make the wheels brake.
-    /*
-     * new JoystickButton(this.driverController, XboxController.Button.kB.value)
-     * .whenHeld(new BrakeCommand(this.swerveSubsystem));
-     */
-    driverController.b()
+    this.driverController.b()
         .whileTrue(new BrakeCommand(this.swerveSubsystem));
-
-    // new JoystickButton(this.driverController, XboxController.Button.kA.value)
-    // .whenHeld(new TurnMotorFullSpeedCommand(swerveSubsystem));
 
     // INTAKE CONTROLS
     // Right bumper for intake forward
-    driverController.rightBumper()
-        .whileTrue(new IntakeForward(this.intakeSubsystem))
-        .whileFalse(new IntakeStop(this.intakeSubsystem));
+    this.driverController.rightBumper()
+        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.FORWARD));
 
     // Left bumper for intake backward
-    driverController.leftBumper()
-        .whileTrue(new IntakeBackward(this.intakeSubsystem))
-        .whileFalse(new IntakeStop(this.intakeSubsystem));
+    this.driverController.leftBumper()
+        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.BACKWARD));
 
     // Button A to reverse intake (if that problem happens again...)
-
-    // turn to zero
-    driverController.back()
-        .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
   }
 
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
-    subsystemController.a()
-        .whileTrue(new CompressorOnOff(this.pneumaticsSubsystem));
+    this.subsystemController.a()
+    .whileTrue(new InstantCommand(() -> {
+    this.pneumaticsSubsystem.toggleCompressor();
+    }));
 
-    subsystemController.leftBumper()
-        .whileTrue(new extendRetract(this.pneumaticsSubsystem));
+    this.subsystemController.leftBumper()
+    .whileTrue(new InstantCommand(() -> {
+    this.pneumaticsSubsystem.togglePiston();
+    }));
 
     // TODO: Use parallel command group to run elevator and extender at the same
     // time
     // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
-    // new Trigger(() -> this.subsystemController.getLeftY() > 0.08 ||
-    // this.subsystemController.getLeftY() < -0.08)
-    // .whileTrue(new ExtenderControl(extenderSubsystem, () ->
-    // this.subsystemController.getLeftY()));
-
-    // EXTENDER CONTROLS
-    // //X button to extend to low level
-    // new Trigger(this.subsystemController::getXButtonPressed)
-    // .onTrue(new ExtenderOut(this.extenderSubsystem, 1));
 
     subsystemController.x()
         .whileTrue(new ExtenderOut(this.extenderSubsystem, 2))
         .whileFalse(new ExtenderStop(this.extenderSubsystem));
 
-    // //Y button to extend to mid level
-    // new Trigger(this.subsystemController::getYButtonPressed)
-    // .onTrue(new ExtenderOut(this.extenderSubsystem, 2));
+    // this.subsystemController.leftStick()
+    // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
+    // this.subsystemController.getLeftY()));
 
-    // //B button to extend to upper level
-    // new Trigger(this.subsystemController::getBButtonPressed)
-    // .onTrue(new ExtenderOut(this.extenderSubsystem, 3));
-
-    // //right bumper to bring all the way back to start
-    // new Trigger(this.subsystemController::getRightBumperPressed)
-    // .onTrue(new ExtenderIn(this.extenderSubsystem));
-
-    // //right stick button to stop extender
-    // new Trigger(this.subsystemController::getRightStickButtonPressed)
-    // .onTrue(new ExtenderStop(this.extenderSubsystem));
-
+    this.elevatorSubsystem.setDefaultCommand(
+        new ManualElevatorCmd(this.elevatorSubsystem,
+            () -> -this.subsystemController.getRightY())); // negative b/c y is inverted
   }
 
   /**
@@ -205,63 +178,57 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // The trajectory to follow
-    Trajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
-    Trajectory pathweavedTrajectory = Trajectories.generateTrajectory("ForwardMove.wpilib.json");
+    PathPlannerTrajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
+    // = Trajectories.ONE_METER_STRAIGHT;
+    // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
 
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
-    ProfiledPIDController thetaController = new ProfiledPIDController(
-        Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0,
-        Constants.AutoConstants.AUTO_THETACONTROLLER_CONSTRAINTS);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    PIDController thetaController = new PIDController(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0);
+    // ProfiledPIDController thetaController = new ProfiledPIDController(
+    // Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0,
+    // Constants.AutoConstants.AUTO_THETACONTROLLER_CONSTRAINTS);
+    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        plotTrajectory, // The trajectory to follow
-        swerveSubsystem::getPose, // The supplier of the robot's x/y position and heading
-        Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
-        xController, // The PID controller to correct error in the robot's x position
-        yController, // The PID controller to correct error in the robot's y position
-        thetaController, // The PID controller to correct error in the robot's heading
-        swerveSubsystem::setModuleStates, // The function to use to set the robot's module states
-        swerveSubsystem); // The subsystem to execute the command on
+    PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
+        plotTrajectory,
+        swerveSubsystem::getPose, // Pose supplier
+        Constants.DrivetrainConstants.DT_KINEMATICS, // SwerveDriveKinematics
+        xController,
+        yController,
+        thetaController,
+        new Consumer<SwerveModuleState[]>() {
+          @Override
+          public void accept(SwerveModuleState[] states) {
+            swerveSubsystem.setModuleStates(states, false);
+          }
+        }, // Module states consumer
+        true, // Should the path be automatically mirrored depending on alliance color.
+              // Optional, defaults to true
+        swerveSubsystem // Requires this drive subsystem
+    );
+
+    // SwerveControllerCommand swerveControllerCommand = new
+    // SwerveControllerCommand(
+    // plotTrajectory, // The trajectory to follow
+    // swerveSubsystem::getPose, // The supplier of the robot's x/y position and
+    // heading
+    // Constants.DrivetrainConstants.DT_KINEMATICS, // The kinematics of the robot
+    // xController, // The PID controller to correct error in the robot's x position
+    // yController, // The PID controller to correct error in the robot's y position
+    // thetaController, // The PID controller to correct error in the robot's
+    // heading
+    // swerveSubsystem::setModuleStates, // The function to use to set the robot's
+    // module states
+    // swerveSubsystem); // The subsystem to execute the command on
 
     return new SequentialCommandGroup(
         // Start the command by "placing" the robot at the beginning of the trajectory
         new InstantCommand(() -> swerveSubsystem.resetOdometry(
-        // trajectory.getInitialPose()
-        )),
+            plotTrajectory.getInitialHolonomicPose())),
         // Run the trajectory command
         swerveControllerCommand,
         // Stop the robot at the end of the trajectory
         new InstantCommand(() -> swerveSubsystem.stopModules()));
   }
 }
-
-// private Command generateRamseteCommand() {
-
-// RamseteCommand ramseteCommand = new RamseteCommand(
-// exampleTrajectory,
-// m_drivetrain::getPose,
-// new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-// new SimpleMotorFeedforward(DriveConstants.ksVolts,
-// DriveConstants.kvVoltSecondsPerMeter,
-// DriveConstants.kaVoltSecondsSquaredPerMeter),
-// DriveConstants.kDriveKinematics,
-// m_drivetrain::getWheelSpeeds,
-// new PIDController(DriveConstants.kPDriveVelLeft, 0, 0),
-// new PIDController(DriveConstants.kPDriveVelRight, 0, 0),
-// m_drivetrain::tankDriveVolts,
-// m_drivetrain);
-
-// // Set up a sequence of commands
-// // First, we want to reset the drivetrain odometry
-// return new InstantCommand(() ->
-// m_drivetrain.resetOdometry(exampleTrajectory.getInitialPose()), m_drivetrain)
-// // next, we run the actual ramsete command
-// .andThen(ramseteCommand)
-
-// // Finally, we make sure that the robot stops
-// .andThen(new InstantCommand(() -> m_drivetrain.tankDriveVolts(0, 0),
-// m_drivetrain));
-// }
-// }

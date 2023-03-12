@@ -2,6 +2,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
 public class BrakeCommand extends CommandBase {
@@ -19,12 +20,7 @@ public class BrakeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        SwerveModuleState frontLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-        SwerveModuleState frontRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-        SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(45));
-        SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(-45));
-        SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-        this.swerveSubsystem.setModuleStates(moduleStates);
+        this.swerveSubsystem.brake();
     }
 
     @Override
@@ -39,6 +35,6 @@ public class BrakeCommand extends CommandBase {
         SwerveModuleState backLeftState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(0));
         SwerveModuleState backRightState = new SwerveModuleState(0.001, Rotation2d.fromDegrees(0));
         SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-        this.swerveSubsystem.setModuleStates(moduleStates);
+        this.swerveSubsystem.setModuleStates(moduleStates, false);
     }
 }
