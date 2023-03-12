@@ -101,7 +101,8 @@ public class RobotContainer {
     this.swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(this.swerveSubsystem,
         () -> -this.driverController.getLeftY(), // Forward on controller is -Y but forward on robot is X.
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
-        () -> -this.driverController.getRightX())); // Rotate left on controller is - but rotate left on controller is +
+        // TODO: check if this direction is correct
+        () -> driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis())); // turbohack for ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
