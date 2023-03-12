@@ -40,7 +40,7 @@ public class GyroAutocorrectCommand extends CommandBase {
             SwerveModuleState backLeftState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
             SwerveModuleState backRightState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
             SwerveModuleState[] moduleStates = { frontLeftState, frontRightState, backLeftState, backRightState };
-            this.swerveSubsystem.setModuleStates(moduleStates);
+            this.swerveSubsystem.setModuleStates(moduleStates, false);
         }
         
         // Additional Safety -- untested

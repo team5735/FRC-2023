@@ -207,28 +207,30 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     /**
-     * Set desired X, Y, and angular velocity (through a ChassisSpeed object)
+     * Drive with open loop control (does not correct for error)
+     * @param chassisSpeeds
      */
-    public void setChassisSpeed(ChassisSpeeds chassisSpeeds) {
+    public void openLoopDrive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] moduleStates = Constants.DrivetrainConstants.DT_KINEMATICS
                 .toSwerveModuleStates(chassisSpeeds);
-        this.setModuleStates(moduleStates);
+
+        this.setModuleStates(moduleStates, true);
     }
 
     /**
-     * Sets the desired velocity and angle of all swerve modules
+     * Sets the desired velocity and angle of all swerve modules. Uses FF + PID control.
      * 
      * @param desiredStates
      */
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
+    public void setModuleStates(SwerveModuleState[] desiredStates, boolean isOpenLoop) {
         // Scales all desired states to the maximum speed of the robot
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates,
                 Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND);
 
-        frontLeft.setDesiredState(desiredStates[0]);
-        frontRight.setDesiredState(desiredStates[1]);
-        backLeft.setDesiredState(desiredStates[2]);
-        backRight.setDesiredState(desiredStates[3]);
+        frontLeft.setDesiredState(desiredStates[0], isOpenLoop);
+        frontRight.setDesiredState(desiredStates[1], isOpenLoop);
+        backLeft.setDesiredState(desiredStates[2], isOpenLoop);
+        backRight.setDesiredState(desiredStates[3], isOpenLoop);
     }
 
     /**
@@ -283,20 +285,12 @@ public class SwerveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("BR Wheel Speed",
         // Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
-        // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro
-        // orientation
-        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to
-                                                                      // battery
-        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation
-                                                                                                     // on the axis of
-                                                                                                     // the battery in
-                                                                                                     // Radians
-        SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
-        SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation
-                                                                                                    // on the axis of
-                                                                                                    // the battery in
-                                                                                                    // Radians
-        SmartDashboard.putNumber("Gyro Yaw", this.gyro.getYaw()); // Flat Axis -- Rotation
+        // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro orientation
+        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
+        // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation on the axis of the battery in Radians
+        // SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
+        // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation on the axis of the battery in Radians
+        // SmartDashboard.putNumber("Gyro Yaw", this.gyro.getYaw()); // Flat Axis -- Rotation
 
     }
 
@@ -314,6 +308,6 @@ public class SwerveSubsystem extends SubsystemBase {
      * Set the swerve drive to brake position, which is 45 degrees
      */
     public void brake() {
-        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE);
+        this.setModuleStates(Constants.DrivetrainConstants.STATE_BRAKE, false);
     }
 }

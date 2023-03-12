@@ -4,12 +4,18 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import cfutil.UnitConversion;
 
 public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
@@ -18,14 +24,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
 
+  private final DigitalInput bottomHallSensor, topHallSensor;
+
   private double heightSetpoint;
 
   public ElevatorSubsystem() {
     this.elevatorLeader = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_LEADER_MOTOR_ID);
+    this.elevatorLeader.setInverted(true);
     this.elevatorFollower = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_FOLLOWER_MOTOR_ID);
-    // Is the motor inverted? Based on how you set elevatorRight to negative, I'm
-    // gonna assume so.
-    this.elevatorFollower.setInverted(true);
+    this.elevatorFollower.setInverted(false);
     this.elevatorFollower.follow(this.elevatorLeader);
 
     this.elevatorFeedforward = new ElevatorFeedforward(
@@ -41,6 +48,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
     );
 
+    this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
+    this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
+
     this.resetMotors();
   }
 
@@ -53,17 +63,15 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Get the current elevator height in meters
    */
   private double getElevatorHeight() {
-    // Carson you can figure this out. Use the selected sensor position + gear ratio
-    // + possibly chain link?
-    return 0.0;
+    // Must have motor position reset to zero beforehand for this to work well
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
   }
 
   /**
    * Get elevator motor velocity in m/s
    */
   private double getElevatorVelocity() {
-    // Carson you can also figure this out, use same stuff as above and convert from falcon to meters (?)
-    return 0.0;
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
   }
 
   public void setSetpoint(double heightMeters) {
@@ -76,21 +84,28 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
-    // Acceleration is 0? could be totally wrong. Want to get to profiled pid controller velocity setpoint
-    voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
-    // Set the voltage
-    this.elevatorLeader.setVoltage(voltage);
+    // WARNING: UNTESTED
+
+    // double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
+    // // Acceleration is 0? could be totally wrong. Want to get to profiled pid controller velocity setpoint
+    // voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
+    // // Set the voltage
+    // this.elevatorLeader.setVoltage(voltage);
   }
 
-  // public void elevatorControl(double joystickInput) {
-  // elevatorLeft.set(joystickInput);
-  // elevatorRight.set(-joystickInput);
+  public void manualControl(double input) {
+    this.elevatorLeader.setVoltage(12.0 * input);
+  }
 
-  // }
+  public boolean isAtBottom() {
+    return this.bottomHallSensor.get();
+  }
 
-  // public void eleavtorStop() {
-  // elevatorLeft.stopMotor();
-  // elevatorRight.stopMotor();
-  // }
+  public boolean isAtTop() {
+    return this.topHallSensor.get();
+  }
+
+  public void stopMotors() {
+    this.elevatorLeader.stopMotor();
+  }
 }
