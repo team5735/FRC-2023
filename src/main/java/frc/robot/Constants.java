@@ -29,6 +29,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
+        public static class VisionConstants {
+                public static final long TURN_TIMEOUT = 3000;
+        }
+
         public static class SpeedConstants {
                 // TODO: Be aware these numbers were arbitrarily set -- How do we find and fix
                 // that?

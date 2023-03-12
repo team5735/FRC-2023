@@ -20,16 +20,25 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.JoystickButton; //Outdated
+
+import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OIConstants;
+
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.BrakeCommand;
-import frc.robot.commands.ExtendCommand;
+import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
 import frc.robot.commands.ManualElevatorCmd;
 // Pneumatics Imports -- Could be reorganized by system
+
+import frc.robot.commands.vision.TurnToZero;
 import frc.robot.subsystems.PneumaticsSubsystem;
 
 import frc.robot.subsystems.swerve.SwerveSubsystem;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.trajectories.Trajectories;
 
 // Intake imports
@@ -49,13 +58,13 @@ import frc.robot.subsystems.ExtenderSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final CommandXboxController driverController;
-  private final CommandXboxController subsystemController;
+  private final CommandXboxController driverController, subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
   private final PneumaticsSubsystem pneumaticsSubsystem;
   private final ExtenderSubsystem extenderSubsystem;
+  private final VisionSubsystem visionSubsystem;
   private final ElevatorSubsystem elevatorSubsystem;
 
   /**
@@ -67,6 +76,9 @@ public class RobotContainer {
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
     this.elevatorSubsystem = new ElevatorSubsystem();
+
+    // pipeline stuff not set up yet (do we even need?)
+    this.visionSubsystem = new VisionSubsystem(0);
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
@@ -130,21 +142,25 @@ public class RobotContainer {
 
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
-    // this.subsystemController.a()
-    // .whileTrue(new InstantCommand(() -> {
-    // this.pneumaticsSubsystem.toggleCompressor();
-    // }));
+    this.subsystemController.a()
+    .whileTrue(new InstantCommand(() -> {
+    this.pneumaticsSubsystem.toggleCompressor();
+    }));
 
-    // this.subsystemController.leftBumper()
-    // .whileTrue(new InstantCommand(() -> {
-    // this.pneumaticsSubsystem.togglePiston();
-    // }));
+    this.subsystemController.leftBumper()
+    .whileTrue(new InstantCommand(() -> {
+    this.pneumaticsSubsystem.togglePiston();
+    }));
 
     // TODO: Use parallel command group to run elevator and extender at the same
     // time
     // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
+
+    subsystemController.x()
+        .whileTrue(new ExtenderOut(this.extenderSubsystem, 2))
+        .whileFalse(new ExtenderStop(this.extenderSubsystem));
 
     // this.subsystemController.leftStick()
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
