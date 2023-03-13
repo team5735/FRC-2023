@@ -29,24 +29,23 @@ public class ElevatorSubsystem extends SubsystemBase {
   private double heightSetpoint;
 
   public ElevatorSubsystem() {
-    this.elevatorLeader = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_LEADER_MOTOR_ID);
+    this.elevatorLeader = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_LEADER_MOTOR_ID);
     this.elevatorLeader.setInverted(true);
-    this.elevatorFollower = new WPI_TalonFX(Constants.MotorConstants.ELEVATOR_FOLLOWER_MOTOR_ID);
+    this.elevatorFollower = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_FOLLOWER_MOTOR_ID);
     this.elevatorFollower.setInverted(true);
     this.elevatorFollower.follow(this.elevatorLeader);
 
     this.elevatorFeedforward = new ElevatorFeedforward(
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getS(),
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getA());
-        //Constants from Characterization
-        // ks = 0.051528, kv = 7.8232, ka = 0.13338, kg = 0.27546
+      // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getS(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getA());
 
     this.elevatorFeedback = new ProfiledPIDController(
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP(),
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
-        Constants.MotorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
         new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
     );
 
@@ -76,6 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
   }
 
+  // TODO: Make the Joystick ending point a setpoint for the motor to stay at
   public void setSetpoint(double heightMeters) {
     if (heightMeters < 0.0 || heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
       return;
@@ -88,11 +88,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // WARNING: UNTESTED
 
-    // double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
+    double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
     // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid controller velocity setpoint
-    // voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
+    voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
     // // Set the voltage
-    // this.elevatorLeader.setVoltage(voltage);
+    this.elevatorLeader.setVoltage(voltage);
   }
 
   public void manualControl(double input) {
