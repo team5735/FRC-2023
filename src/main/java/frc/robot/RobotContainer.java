@@ -102,7 +102,8 @@ public class RobotContainer {
         () -> -this.driverController.getLeftY(), // Forward on controller is -Y but forward on robot is X.
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
         // TODO: check if this direction is correct
-        () -> (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()))); // turbohack for ergonomics
+        () -> (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()))); // turbohack for
+                                                                                                  // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
@@ -144,14 +145,14 @@ public class RobotContainer {
   private void configureSubsystemBindings() {
     // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
     this.subsystemController.a()
-    .whileTrue(new InstantCommand(() -> {
-    this.pneumaticsSubsystem.toggleCompressor();
-    }));
+        .whileTrue(new InstantCommand(() -> {
+          this.pneumaticsSubsystem.toggleCompressor();
+        }));
 
     this.subsystemController.leftBumper()
-    .whileTrue(new InstantCommand(() -> {
-    this.pneumaticsSubsystem.togglePiston();
-    }));
+        .whileTrue(new InstantCommand(() -> {
+          this.pneumaticsSubsystem.togglePiston();
+        }));
 
     // TODO: Use parallel command group to run elevator and extender at the same
     // time
@@ -164,8 +165,7 @@ public class RobotContainer {
         .whileFalse(new ExtenderStop(this.extenderSubsystem));
 
     subsystemController.b()
-      .whileTrue(new ExtenderIn(extenderSubsystem))
-      .whileFalse(new ExtenderStop(extenderSubsystem));
+        .whileTrue(new ExtenderIn(extenderSubsystem));
 
     // this.subsystemController.leftStick()
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->

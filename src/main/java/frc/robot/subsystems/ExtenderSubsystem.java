@@ -1,15 +1,14 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants;
 import frc.robot.constants.ExtenderConstants;
 
-import edu.wpi.first.wpilibj.CAN;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -24,7 +23,8 @@ public class ExtenderSubsystem extends SubsystemBase {
   public ExtenderSubsystem() {
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
 
-    // TODO: Find constants that work. Start with a small P value, velocity, and acceleration.
+    // TODO: Find constants that work. Start with a small P value, velocity, and
+    // acceleration.
     this.pidController = new ProfiledPIDController(
         0.01, // P value
         0.0, // I vaue
@@ -49,8 +49,8 @@ public class ExtenderSubsystem extends SubsystemBase {
   private double getExtenderPosition() {
     return this.extenderMotor.getEncoder()
         .getPosition() // in rotations
-        * .13335;
-        //5.25 inches per 1 motor rotation
+        * Units.inchesToMeters(5.25);
+    // 5.25 inches per 1 motor rotation
   }
 
   /**
@@ -58,7 +58,7 @@ public class ExtenderSubsystem extends SubsystemBase {
    */
   public void setSetpoint(double setpointMeters) {
     if (setpointMeters < 0.0
-        || setpointMeters > (76.0*.0254)) { // TODO: Find the "max length"
+        || setpointMeters > Constants.ExtenderConstants.EXTENDER_MAX_LENGTH) {
       return;
     }
     this.extenderSetpoint = setpointMeters;
@@ -69,14 +69,15 @@ public class ExtenderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run (every 20ms default)
 
     // WARNING: UNTESTED
-    // double voltage = this.pidController.calculate(
-    // this.getExtenderPosition(), // where the extender is right now
-    // this.extenderSetpoint // where you want the extender to be
-    // );
-    // // Set the voltage
-    // this.extenderMotor.setVoltage(voltage);
+    double voltage = this.pidController.calculate(
+        this.getExtenderPosition(), // where the extender is right now
+        this.extenderSetpoint // where you want the extender to be
+    );
+    // Set the voltage
+    this.extenderMotor.setVoltage(voltage);
 
-    this.extenderMotor.set(this.pidController.calculate(this.getExtenderPosition(), this.extenderSetpoint));
+    // this.extenderMotor.set(this.pidController.calculate(this.getExtenderPosition(),
+    // this.extenderSetpoint));
 
     SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
   }

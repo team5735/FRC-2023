@@ -235,6 +235,10 @@ public final class Constants {
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
         }
 
+        public static class ExtenderConstants {
+                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(76.0);
+        }
+
         public static class IntakeConstants {
                 public static final int INTAKE_MOTOR_ID = 13;
                 public static final int CONVEYOR_MOTOR_ID = 9;
