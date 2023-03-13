@@ -22,7 +22,7 @@ public class ExtenderCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    extenderSubsystem.moveForward(.5);
+    this.extenderSubsystem.setSetpoint(.25);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -31,7 +31,9 @@ public class ExtenderCommand extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    this.extenderSubsystem.setSetpoint(0);
+  }
 
   // Returns true when the command should end.
   @Override

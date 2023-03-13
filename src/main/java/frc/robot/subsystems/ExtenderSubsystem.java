@@ -49,9 +49,8 @@ public class ExtenderSubsystem extends SubsystemBase {
   private double getExtenderPosition() {
     return this.extenderMotor.getEncoder()
         .getPosition() // in rotations
-        * 1.0; // TODO: Find conversion from meters to rotations
-        //3 rotation neo axle = 1 rotation gearbox axle = /3
-        //b/c get meters for 1 rotation of gearbox axle --> so one rotation of neo did 1/3 distance
+        * .13335;
+        //5.25 inches per 1 motor rotation
   }
 
   /**
@@ -65,12 +64,6 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderSetpoint = setpointMeters;
   }
 
-  public void moveForward(double setpoint) {
-    this.setSetpoint(setpoint);
-    double speed = pidController.calculate(this.getExtenderPosition(), this.extenderSetpoint);
-    extenderMotor.set(speed);
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run (every 20ms default)
@@ -82,6 +75,8 @@ public class ExtenderSubsystem extends SubsystemBase {
     // );
     // // Set the voltage
     // this.extenderMotor.setVoltage(voltage);
+
+    this.extenderMotor.set(this.pidController.calculate(this.getExtenderPosition(), this.extenderSetpoint));
 
     SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
   }
