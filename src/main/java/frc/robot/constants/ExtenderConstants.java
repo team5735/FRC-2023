@@ -4,20 +4,22 @@
 
 package frc.robot.constants;
 
+import java.util.Arrays;
+
 /** Add your docs here. */
 public class ExtenderConstants {
 
     public static final double EXTEND_MOTOR_OUT_SPEED = .1;
     public static final double EXTEND_MOTOR_IN_SPEED = -.1;
 
-    public static final int EXTEND_MOTOR_ID = 5;
+    public static final int EXTEND_MOTOR_ID = 12;
 
-    //Encoder values for each extension level
     //TODO: get actual values for this
+    //Extension encoder values
+    public static final Double [] LEVEL_ENCODER_VALS = {20.0, 30.0, 40.0};
+    public static final double EXTEND_MAX_ENCODER = 50;
+    public static final double EXTEND_MIN_ENCODER = 0;
 
-    //Use an array instead? Not working for some reason
-    public static final double LOWER_EXTEND_ENCODER = 20;
-    public static final double MID_EXTEND_ENCODER = 3;
-    public static final double UPPER_EXTEND_ENCODER = 5;
+    public static final double EXTEND_SLOW_DISTANCE = 2;
 
 }
