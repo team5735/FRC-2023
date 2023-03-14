@@ -46,7 +46,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   /**
    * Gets how far the extender has extended, in meters
    */
-  private double getExtenderPosition() {
+  public double getExtenderPosition() {
     return this.extenderMotor.getEncoder()
         .getPosition() // in rotations
         * Units.inchesToMeters(5.25);
