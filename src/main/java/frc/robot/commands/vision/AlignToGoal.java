@@ -16,10 +16,10 @@ public class AlignToGoal extends CommandBase {
     private boolean isFinished;
     private long startTime;
 
-
-    //TODO(malish): Tune PID
+    // TODO(malish): Tune PID
     private PIDController pidX = new PIDController(0, 0, 0);
-    private PIDController pidY = new PIDController(0, 0, 0);
+    private PIDController pidZ = new PIDController(0, 0, 0);
+
     public AlignToGoal(VisionSubsystem v, SwerveSubsystem s) {
         vision = v;
         drivetrain = s;
@@ -31,7 +31,7 @@ public class AlignToGoal extends CommandBase {
     public void initialize() {
         startTime = System.currentTimeMillis();
         pidX.reset();
-        pidY.reset();
+        pidZ.reset();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AlignToGoal extends CommandBase {
             return;
         }
         // Cancel if it doesn't see a team target
-        if (!vision.seesTeamTarget()){
+        if (!vision.seesTeamTarget()) {
             isFinished = true;
             return;
         }
@@ -55,20 +55,22 @@ public class AlignToGoal extends CommandBase {
 
         double[] reallyCoolNumbers = vision.getOffsetCameraspace();
         var x = reallyCoolNumbers[0];
-        var y = reallyCoolNumbers[2];
-        
-        // I solved control theory but apparently the code was "already tried and bad." George orwell predicted this    
-        //worse solution:
+
+        var z = reallyCoolNumbers[2];
+
+        // I solved control theory but apparently the code was "already tried" and
+        // "bad."
+        // George orwell predicted this.
         var desx = pidX.calculate(x, 0.3); // Source: I made it up \
-        
-        var desy = pidY.calculate(y, 0);
-        //TODO: Ask Mingle why this is wrong
-        //drivetrain.setChassisSpeed(new ChassisSpeeds(desx, desy, 0));
+
+        var desy = pidZ.calculate(z, 0);
+        // TODO: Ask Mingle why this is wrong
+        // drivetrain.setChassisSpeed(new ChassisSpeeds(desx, desy, 0));
         drivetrain.openLoopDrive(new ChassisSpeeds(desx, desy, 0));
     }
 
     @Override
     public boolean isFinished() {
-        return isFinished;    
+        return isFinished;
     }
 }

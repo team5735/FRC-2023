@@ -20,7 +20,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     // checks if limelight sees anything
     public boolean seesTarget() {
-        // Would you rather have the ability to see into empty boxes or speak four different dead languages fluently?
+        // Would you rather have the ability to see into empty boxes or speak four
+        // different dead languages fluently?
         // Food for thought.
         return limelightTable.getEntry("tv").getBoolean(false);
     }
@@ -38,7 +39,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         // red community: 1, 2, 3
-        if (a == DriverStation.Alliance.Red &&  tid > 0 && tid < 4) {
+        if (a == DriverStation.Alliance.Red && tid > 0 && tid < 4) {
             return true;
         }
 
@@ -47,14 +48,16 @@ public class VisionSubsystem extends SubsystemBase {
             return true;
         }
 
-         // community/troll target (possible strategy to consider while people are wasting time in the stands)
+        // community/troll target (possible strategy to consider while people are
+        // wasting time in the stands)
         return false;
     }
 
     // TODO(ari): maybe add seesTeamSubstation to turn to drop thingy
 
     // public void toggleAnnoyingMode() {
-    //     limelightTable.getEntry("ledMode").setNumber(limelightTable.getEntry("ledMode").getNumber(2) == (Number)(2) ? 0 : 2);   
+    // limelightTable.getEntry("ledMode").setNumber(limelightTable.getEntry("ledMode").getNumber(2)
+    // == (Number)(2) ? 0 : 2);
     // }
 
     public double getPipelineLatency() {
@@ -68,6 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
     public double[] getOffsetCameraspace() {
         return limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
     }
+
     public double[] getOffsetTargetspace() {
         return limelightTable.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
     }
@@ -86,6 +90,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     public double getYaw() {
         // i'm like 80% sure this is yaw
-        return getOffsetCameraspace()[6];
+        return getOffsetCameraspace()[5];
     }
 }
