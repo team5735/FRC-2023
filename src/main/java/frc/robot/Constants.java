@@ -200,7 +200,7 @@ public final class Constants {
 
         // Carson: Convert all of this to meters / metric units please
         public static class ElevatorConstants {
-                //Constants from Characterization
+                // Constants from Characterization
                 // ks = 0.051528, kg = 0.27546, kv = 7.8232, ka = 0.13338
                 // kp = 697.8, ki = 0, kd = 9.0346
                 public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
@@ -227,7 +227,7 @@ public final class Constants {
                                 *
                                 Constants.ElevatorConstants.ELEVATOR_SPROCKET_NUM_TEETH *
                                 Constants.ElevatorConstants.ELEVATOR_CHAIN_LINK_LENGTH;
-                                
+
                 // TODO: Update Sensor IDs
                 public static final int BOTTOM_HALL_SENSOR_ID = 6;
                 public static final int TOP_HALL_SENSOR_ID = 7;
@@ -247,6 +247,10 @@ public final class Constants {
                 public static final double INTAKE_OUT_SPEED = -.5;
                 public static final double CONVEYOR_IN_SPEED = .3;
                 public static final double CONVEYOR_OUT_SPEED = -.3;
+        }
+
+        public static class VisionConstants {
+                public static final int TURN_TIMEOUT = 3000;
         }
 
         // OI means Operater Interface :D
