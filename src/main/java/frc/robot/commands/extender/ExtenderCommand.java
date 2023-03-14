@@ -4,39 +4,42 @@
 
 package frc.robot.commands.extender;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtenderSubsystem;
-import frc.robot.constants.ExtenderConstants;
 
-public class ExtenderIn extends CommandBase {
+public class ExtenderCommand extends CommandBase {
+  /** Creates a new ExtenderCommand. */
 
   private final ExtenderSubsystem extenderSubsystem;
-  /** Creates a new ExtenderIn. */
-  public ExtenderIn(ExtenderSubsystem extenderSubsystem) {
+  private final boolean extendOutwards;
+
+  public ExtenderCommand(ExtenderSubsystem extenderSubsystem, boolean extendOutwards) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.extenderSubsystem = extenderSubsystem;
+    this.extendOutwards = extendOutwards;
+
+    addRequirements(extenderSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    extenderSubsystem.extenderMove(ExtenderConstants.EXTEND_MOTOR_IN_SPEED);
-    SmartDashboard.putString("in ext", "running");
+    if (this.extendOutwards == true) {
+      this.extenderSubsystem.setSetpoint(.25);
+    }
+    else {
+      this.extenderSubsystem.setSetpoint(0);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    if (extenderSubsystem.getCurrentEncoderPosition() < (ExtenderConstants.EXTEND_MIN_ENCODER + ExtenderConstants.EXTEND_SLOW_DISTANCE)) {
-          extenderSubsystem.extenderStop();
-    }
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    extenderSubsystem.extenderStop();
+    this.extenderSubsystem.setSetpoint(this.extenderSubsystem.getExtenderPosition());
   }
 
   // Returns true when the command should end.

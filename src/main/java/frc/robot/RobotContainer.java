@@ -100,7 +100,9 @@ public class RobotContainer {
     this.swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(this.swerveSubsystem,
         () -> -this.driverController.getLeftY(), // Forward on controller is -Y but forward on robot is X.
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
-        () -> -this.driverController.getRightX())); // Rotate left on controller is - but rotate left on controller is +
+        // TODO: check if this direction is correct
+        () -> (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()))); // turbohack for
+                                                                                                  // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
@@ -162,8 +164,10 @@ public class RobotContainer {
     // :: similar to a lambda
 
     subsystemController.x()
-        .whileTrue(new ExtenderOut(this.extenderSubsystem, 2))
-        .whileFalse(new ExtenderStop(this.extenderSubsystem));
+        .whileTrue(new ExtenderCommand(this.extenderSubsystem, true));
+
+    subsystemController.b()
+        .whileTrue(new ExtenderCommand(this.extenderSubsystem, false));
 
     this.subsystemController.b()
         .whileTrue(new ExtenderIn(extenderSubsystem))

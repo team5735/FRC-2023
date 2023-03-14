@@ -28,6 +28,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
         } else {
             this.compressorOn();
         }
+        System.out.println("COMPRESSOR TOGGLED");
     }
 
     /**
@@ -41,6 +42,7 @@ public class PneumaticsSubsystem extends SubsystemBase {
             this.pistonRetract();
             this.pistonExtended = false;
         }
+        System.out.println("PISTON TOGGLED");
     }
 
     private void pistonExtend() {

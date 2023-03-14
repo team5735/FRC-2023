@@ -29,10 +29,6 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
 
-        public static class VisionConstants {
-                public static final long TURN_TIMEOUT = 3000;
-        }
-
         public static class SpeedConstants {
                 // TODO: Be aware these numbers were arbitrarily set -- How do we find and fix
                 // that?
@@ -176,12 +172,6 @@ public final class Constants {
                 // .setFeedbackConstants(4.3347, 0.0, 0.15614)
                 // .build();
 
-                public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
-                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
-                public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0, 0, 0, 0)
-                                .setFeedbackConstants(0, 0, 0)
-                                .build();
         }
 
         public static final class AutoConstants {
@@ -210,6 +200,16 @@ public final class Constants {
 
         // Carson: Convert all of this to meters / metric units please
         public static class ElevatorConstants {
+                //Constants from Characterization
+                // ks = 0.051528, kg = 0.27546, kv = 7.8232, ka = 0.13338
+                // kp = 697.8, ki = 0, kd = 9.0346
+                public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
+                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
+                public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
+                                .setFeedforwardConstants(0.051528, 0.27546, 7.8232, 0.13338)
+                                .setFeedbackConstants(697.8, 0, 9.0346)
+                                .build();
+
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
                 public static final double HEIGHT_LIMIT = Units.inchesToMeters(75);
                 public static final double ELEVATOR_CRUISING_VEL = 3.5;// Inches / sec, Could be increased
@@ -217,7 +217,7 @@ public final class Constants {
                 // Sec
 
                 // Physical Constants
-                public static final double ELEVATOR_GEAR_RATIO = 84 / 12.; // 12 teeth on gear attached to motor, 84 on
+                public static final double ELEVATOR_GEAR_RATIO = 12 / 84.; // 12 teeth on gear attached to motor, 84 on
                                                                            // gear attached to chain
                 public static final double ELEVATOR_CHAIN_LINK_LENGTH = Units.inchesToMeters(0.25); // inches
                 public static final double ELEVATOR_TRAVEL_LENGTH = Units.inchesToMeters(33.375); // inches
@@ -233,6 +233,10 @@ public final class Constants {
                 public static final int TOP_HALL_SENSOR_ID = 7;
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
+        }
+
+        public static class ExtenderConstants {
+                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(76.0);
         }
 
         public static class IntakeConstants {
