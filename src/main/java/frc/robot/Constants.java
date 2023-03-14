@@ -250,7 +250,7 @@ public final class Constants {
         }
 
         public static class VisionConstants {
-                public static final int TURN_TIMEOUT = 3000;
+                public static final long TURN_TIMEOUT = 3000;
         }
 
         // OI means Operater Interface :D

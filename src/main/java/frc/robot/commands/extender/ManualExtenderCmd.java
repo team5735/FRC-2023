@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.extender;
 
 import java.util.function.Supplier;
 
@@ -8,15 +8,16 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtenderSubsystem;
 import frc.robot.subsystems.swerve.SwerveSubsystem;
 
-public class ManualElevatorCmd extends CommandBase {
+public class ManualExtenderCmd extends CommandBase {
 
-    private final ElevatorSubsystem elevatorSubsystem;
+    private final ExtenderSubsystem extenderSubsystem;
     private final Supplier<Double> inputSupplier;
 
-    public ManualElevatorCmd(ElevatorSubsystem elevatorSubsystem, Supplier<Double> inputSupplier) {
-        this.elevatorSubsystem = elevatorSubsystem;
+    public ManualExtenderCmd(ExtenderSubsystem elevatorSubsystem, Supplier<Double> inputSupplier) {
+        this.extenderSubsystem = elevatorSubsystem;
         this.inputSupplier = inputSupplier;
         addRequirements(elevatorSubsystem);
     }
@@ -29,16 +30,8 @@ public class ManualElevatorCmd extends CommandBase {
     public void execute() {
         double input = this.inputSupplier.get();
         input = (Math.abs(input) > Constants.OIConstants.JOYSTICK_DEADBAND) ? input : 0.0;
-        // hall sensor not in use
-        // if (input <= 0 && this.elevatorSubsystem.isAtBottom()) {
-        //     return;
-        // }
-        // if (input >= 0 && this.elevatorSubsystem.isAtTop()) {
-        //     return;
-        // }
-
-        this.elevatorSubsystem.setSetpoint(
-            Constants.ElevatorConstants.HEIGHT_LIMIT * input * 0.5
+        this.extenderSubsystem.setSetpoint(
+            Constants.ExtenderConstants.EXTENDER_MAX_LENGTH * input * 0.5
         );
     }
 

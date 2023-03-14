@@ -177,6 +177,10 @@ public class RobotContainer {
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
     // this.subsystemController.getLeftY()));
 
+    this.extenderSubsystem.setDefaultCommand(
+        new ManualExtenderCmd(this.extenderSubsystem,
+            () -> -this.subsystemController.getLeftY()));
+
     this.elevatorSubsystem.setDefaultCommand(
         new ManualElevatorCmd(this.elevatorSubsystem,
             () -> -this.subsystemController.getRightY())); // negative b/c y is inverted

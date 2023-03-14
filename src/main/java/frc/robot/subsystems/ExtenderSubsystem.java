@@ -30,8 +30,8 @@ public class ExtenderSubsystem extends SubsystemBase {
         0.0, // I vaue
         0.0, // D value
         new TrapezoidProfile.Constraints(
-            0.01, // max velocity m/s
-            0.01 // max acceleration m/s/s
+            0.05, // max velocity m/s
+            0.05 // max acceleration m/s/s
         ));
 
     SmartDashboard.putString("extend", "created");
@@ -79,6 +79,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     // this.extenderMotor.set(this.pidController.calculate(this.getExtenderPosition(),
     // this.extenderSetpoint));
 
+    SmartDashboard.putNumber("Extender Setpoint", this.extenderSetpoint);
     SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
   }
 

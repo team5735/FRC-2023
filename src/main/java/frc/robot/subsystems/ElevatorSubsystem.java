@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -36,7 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.elevatorFollower.follow(this.elevatorLeader);
 
     this.elevatorFeedforward = new ElevatorFeedforward(
-      // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
+        // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getS(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
@@ -46,7 +47,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
-        new TrapezoidProfile.Constraints(0, 0) // need to tune max vel and accel in m/s and m/s/s
+        new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
     );
 
     this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
@@ -65,14 +66,16 @@ public class ElevatorSubsystem extends SubsystemBase {
    */
   private double getElevatorHeight() {
     // Must have motor position reset to zero beforehand for this to work well
-    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
+        * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
   }
 
   /**
    * Get elevator motor velocity in m/s
    */
   private double getElevatorVelocity() {
-    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
+        * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
   }
 
   // TODO: Make the Joystick ending point a setpoint for the motor to stay at
@@ -89,10 +92,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     // WARNING: UNTESTED
 
     double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
-    // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid controller velocity setpoint
+    // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid
+    // controller velocity setpoint
     voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
     // // Set the voltage
     this.elevatorLeader.setVoltage(voltage);
+
+    SmartDashboard.putNumber("Elevator Setpoint", this.heightSetpoint);
+    SmartDashboard.putNumber("Elevator Height", this.getElevatorHeight());
   }
 
   public void manualControl(double input) {
