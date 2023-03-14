@@ -26,12 +26,12 @@ public class ExtenderSubsystem extends SubsystemBase {
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
     this.pidController = new ProfiledPIDController(
-        0.01, // P value
+        5.5, // P value
         0.0, // I vaue
         0.0, // D value
         new TrapezoidProfile.Constraints(
-            0.05, // max velocity m/s
-            0.05 // max acceleration m/s/s
+            0.15, // max velocity m/s
+            0.25 // max acceleration m/s/s
         ));
 
     SmartDashboard.putString("extend", "created");
@@ -49,7 +49,7 @@ public class ExtenderSubsystem extends SubsystemBase {
   public double getExtenderPosition() {
     return this.extenderMotor.getEncoder()
         .getPosition() // in rotations
-        * Units.inchesToMeters(5.25);
+        * 0.14061; // meters / rotation
     // 5.25 inches per 1 motor rotation
   }
 
@@ -68,6 +68,10 @@ public class ExtenderSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run (every 20ms default)
 
+    if (this.getExtenderPosition() >= Constants.ExtenderConstants.EXTENDER_MAX_LENGTH - 0.05) {
+      return;
+    }
+
     // WARNING: UNTESTED
     double voltage = this.pidController.calculate(
         this.getExtenderPosition(), // where the extender is right now
@@ -81,6 +85,7 @@ public class ExtenderSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Extender Setpoint", this.extenderSetpoint);
     SmartDashboard.putNumber("Extender Position (m)", this.getExtenderPosition());
+    SmartDashboard.putNumber("Extender Motor Encoder", this.extenderMotor.getEncoder().getPosition());
   }
 
   // Bella's code

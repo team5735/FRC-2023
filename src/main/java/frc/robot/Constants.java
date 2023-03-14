@@ -206,8 +206,14 @@ public final class Constants {
                 public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
                 public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
                 public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.051528, 0.27546, 7.8232, 0.13338)
-                                .setFeedbackConstants(697.8, 0, 9.0346)
+                                .setFeedforwardConstants(0.051528, 
+                                0.27546, 
+                                7.8232,
+                                 0.13338)
+                                // .setFeedbackConstants(
+                                //         697.8, 
+                                //         0, 
+                                //         9.0346)
                                 .build();
 
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
@@ -236,7 +242,7 @@ public final class Constants {
         }
 
         public static class ExtenderConstants {
-                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(76.0);
+                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(46.0);
         }
 
         public static class IntakeConstants {

@@ -31,7 +31,7 @@ public class ManualExtenderCmd extends CommandBase {
         double input = this.inputSupplier.get();
         input = (Math.abs(input) > Constants.OIConstants.JOYSTICK_DEADBAND) ? input : 0.0;
         this.extenderSubsystem.setSetpoint(
-            Constants.ExtenderConstants.EXTENDER_MAX_LENGTH * input * 0.5
+            Constants.ExtenderConstants.EXTENDER_MAX_LENGTH * input
         );
     }
 
