@@ -163,15 +163,15 @@ public class RobotContainer {
     // () -> Creates a function, lambda operator
     // :: similar to a lambda
 
-    subsystemController.x()
-        .whileTrue(new ExtenderCommand(this.extenderSubsystem, true));
+    // subsystemController.x()
+    //     .whileTrue(new ExtenderCommand(this.extenderSubsystem, true));
 
-    subsystemController.b()
-        .whileTrue(new ExtenderCommand(this.extenderSubsystem, false));
+    // subsystemController.b()
+    //     .whileTrue(new ExtenderCommand(this.extenderSubsystem, false));
 
-    this.subsystemController.b()
-        .whileTrue(new ExtenderIn(extenderSubsystem))
-        .whileFalse(new ExtenderStop(extenderSubsystem));
+    // this.subsystemController.b()
+    //     .whileTrue(new ExtenderIn(extenderSubsystem))
+    //     .whileFalse(new ExtenderStop(extenderSubsystem));
 
     // this.subsystemController.leftStick()
     // .whileTrue(new ExtendCommand(extenderSubsystem, () ->

@@ -203,17 +203,17 @@ public final class Constants {
                 // Constants from Characterization
                 // ks = 0.051528, kg = 0.27546, kv = 7.8232, ka = 0.13338
                 // kp = 697.8, ki = 0, kd = 9.0346
-                public static final int ELEVATOR_LEADER_MOTOR_ID = 55;
-                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 57;
+                public static final int ELEVATOR_LEADER_MOTOR_ID = 57;
+                public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 55;
                 public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.051528, 
-                                0.27546, 
+                                0.77546, 
                                 7.8232,
                                  0.13338)
-                                // .setFeedbackConstants(
-                                //         697.8, 
-                                //         0, 
-                                //         9.0346)
+                                .setFeedbackConstants(
+                                        0.5, // 697.8, 
+                                        0, 
+                                        0)//9.0346)
                                 .build();
 
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches

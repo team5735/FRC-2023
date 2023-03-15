@@ -16,10 +16,10 @@ public class ManualExtenderCmd extends CommandBase {
     private final ExtenderSubsystem extenderSubsystem;
     private final Supplier<Double> inputSupplier;
 
-    public ManualExtenderCmd(ExtenderSubsystem elevatorSubsystem, Supplier<Double> inputSupplier) {
-        this.extenderSubsystem = elevatorSubsystem;
+    public ManualExtenderCmd(ExtenderSubsystem extenderSubsystem, Supplier<Double> inputSupplier) {
+        this.extenderSubsystem = extenderSubsystem;
         this.inputSupplier = inputSupplier;
-        addRequirements(elevatorSubsystem);
+        addRequirements(extenderSubsystem);
     }
 
     @Override

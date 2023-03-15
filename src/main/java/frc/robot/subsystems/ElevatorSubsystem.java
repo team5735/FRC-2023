@@ -86,10 +86,19 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     this.heightSetpoint = heightMeters;
   }
+  
+  public void setPercentHeight(double percentage) {
+    if(percentage <= 1) {
+      double height = percentage * Constants.ElevatorConstants.ELEVATOR_TRAVEL_LENGTH;
+      setSetpoint(height);
+    }
+    return;
+  }
+
 
   @Override
   public void periodic() {
-    // WARNING: UNTESTED
+    // WARNING: Semi TESTED
 
     double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
     // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid
@@ -100,6 +109,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Elevator Setpoint", this.heightSetpoint);
     SmartDashboard.putNumber("Elevator Height", this.getElevatorHeight());
+    SmartDashboard.putNumber("Elevator Master (Right) Encoder", elevatorLeader.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Elevator Follower (Left) Encoder", elevatorFollower.getSelectedSensorPosition());
   }
 
   public void manualControl(double input) {
