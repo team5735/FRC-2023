@@ -25,20 +25,20 @@ public class AutoMoveElevatorCommand extends CommandBase {
         // Could move to constants folder
         // Zero
         if(level == 0) {
-            elevatorSubsystem.setPercentHeight(0);
+            elevatorSubsystem.setSetpoint(0);
         }
         // Low
         else if(level == 1) {
-            elevatorSubsystem.setPercentHeight(0.1);
+            elevatorSubsystem.setSetpoint(0.2);
         }
         // Mid
         else if(level == 2) {
-            elevatorSubsystem.setPercentHeight(0.5);
+            elevatorSubsystem.setSetpoint(0.65);
         }
         // High
-        else if(level == 3) {
-            elevatorSubsystem.setPercentHeight(0.9);
-        }
+        // else if(level == 3) {
+        //     elevatorSubsystem.setSetpoint(0);
+        // }
         else{
             return;
         }

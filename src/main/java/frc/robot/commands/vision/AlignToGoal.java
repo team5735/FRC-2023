@@ -64,8 +64,6 @@ public class AlignToGoal extends CommandBase {
         var desx = pidX.calculate(x, 0.3); // Source: I made it up \
 
         var desy = pidZ.calculate(z, 0);
-        // TODO: Ask Mingle why this is wrong
-        // drivetrain.setChassisSpeed(new ChassisSpeeds(desx, desy, 0));
         drivetrain.openLoopDrive(new ChassisSpeeds(desx, desy, 0));
     }
 

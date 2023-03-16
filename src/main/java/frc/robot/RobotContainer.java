@@ -28,6 +28,7 @@ import frc.robot.Constants.OIConstants;
 
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.AutoMoveElevatorCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
@@ -164,10 +165,16 @@ public class RobotContainer {
     // :: similar to a lambda
 
     // subsystemController.x()
-    //     .whileTrue(new ExtenderCommand(this.extenderSubsystem, true));
+    //     .whileTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
 
-    // subsystemController.b()
-    //     .whileTrue(new ExtenderCommand(this.extenderSubsystem, false));
+    subsystemController.x()
+        .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 0));
+
+    subsystemController.y()
+    .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 1));
+    
+    this.subsystemController.b()
+    .onTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 2);}));
 
     // this.subsystemController.b()
     //     .whileTrue(new ExtenderIn(extenderSubsystem))

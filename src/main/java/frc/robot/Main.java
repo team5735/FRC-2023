@@ -20,7 +20,6 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    System.out.println("WARNING!!! SWITCH BACK TO MAIN BRANCH UNLESS YOU ARE WORKING ON LIMELIGHT!!");
     RobotBase.startRobot(Robot::new);
   }
 }

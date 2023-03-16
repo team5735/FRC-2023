@@ -207,13 +207,13 @@ public final class Constants {
                 public static final int ELEVATOR_FOLLOWER_MOTOR_ID = 55;
                 public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.051528, 
-                                0.77546, 
+                                0.71546, 
                                 7.8232,
                                  0.13338)
                                 .setFeedbackConstants(
-                                        0.5, // 697.8, 
+                                        6, // 697.8, 
                                         0, 
-                                        0)//9.0346)
+                                        0.5)//9.0346)
                                 .build();
 
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
