@@ -68,6 +68,10 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderSetpoint = setpointMeters;
   }
 
+  public double getSetpoint() {
+    return this.extenderSetpoint;
+  }
+
   public void setLevel(int level) {
     if(level == 0) {
         setSetpoint(0);
