@@ -102,7 +102,7 @@ public class RobotContainer {
         () -> -this.driverController.getLeftY(), // Forward on controller is -Y but forward on robot is X.
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
         // TODO: check if this direction is correct
-        () -> (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()))); // turbohack for
+        () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()))); // turbohack for
                                                                                                   // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
@@ -185,6 +185,8 @@ public class RobotContainer {
           new InstantCommand(() -> {this.extenderSubsystem.setLevel(3);})
         ));
 
+    this.subsystemController.rightTrigger()
+        .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
     // this.subsystemController.b()
     //     .whileTrue(new ExtenderIn(extenderSubsystem))
     //     .whileFalse(new ExtenderStop(extenderSubsystem));
