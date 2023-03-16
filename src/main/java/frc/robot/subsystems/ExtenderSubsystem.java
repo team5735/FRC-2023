@@ -68,6 +68,27 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderSetpoint = setpointMeters;
   }
 
+  public void setLevel(int level) {
+    if(level == 0) {
+        setSetpoint(0);
+    } 
+    // Low
+    else if(level == 1) {
+        setSetpoint(0.2);
+    }
+    // Mid
+    else if(level == 2) {
+        setSetpoint(0.65);
+    }
+    // High
+    else if(level == 3) {
+        setSetpoint(ExtenderConstants.EXTENDER_MAX_LENGTH - 0.1);
+    }
+    else{
+        return;
+    }
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run (every 20ms default)

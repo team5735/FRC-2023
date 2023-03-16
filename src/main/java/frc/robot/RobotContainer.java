@@ -29,8 +29,6 @@ import frc.robot.Constants.OIConstants;
 
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.AutoMoveElevatorCommand;
-import frc.robot.commands.AutoMoveExtenderCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
@@ -170,19 +168,23 @@ public class RobotContainer {
     //     .whileTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
 
     subsystemController.x()
-        .onTrue(new ParallelCommandGroup(
-        new AutoMoveElevatorCommand(this.elevatorSubsystem, 0), 
-        new AutoMoveExtenderCommand(this.extenderSubsystem, 0)));
+        .whileTrue(new ParallelCommandGroup(
+          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(0);}),
+          new InstantCommand(() -> {this.extenderSubsystem.setLevel(0);})
+        ));
 
     subsystemController.y()
-    .onTrue(new ParallelCommandGroup(
-        new AutoMoveElevatorCommand(this.elevatorSubsystem, 1), 
-        new AutoMoveExtenderCommand(this.extenderSubsystem, 1)));
-    
+        .whileTrue(new ParallelCommandGroup(
+          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(1);}),
+          new InstantCommand(() -> {this.extenderSubsystem.setLevel(1);})
+        ));
+        
     this.subsystemController.b()
-    .onTrue(new ParallelCommandGroup(
-      new AutoMoveElevatorCommand(this.elevatorSubsystem, 2), 
-      new AutoMoveExtenderCommand(this.extenderSubsystem, 3)));
+        .whileTrue(new ParallelCommandGroup(
+          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(2);}),
+          new InstantCommand(() -> {this.extenderSubsystem.setLevel(3);})
+        ));
+
     // this.subsystemController.b()
     //     .whileTrue(new ExtenderIn(extenderSubsystem))
     //     .whileFalse(new ExtenderStop(extenderSubsystem));

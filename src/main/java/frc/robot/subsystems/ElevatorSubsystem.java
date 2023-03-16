@@ -79,12 +79,17 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   // TODO: Make the Joystick ending point a setpoint for the motor to stay at
+  // TODO: Make sure that this doesn't cancel when the joystick is pressed high
   public void setSetpoint(double heightMeters) {
     if (heightMeters < 0.0 || heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
       return;
     }
 
     this.heightSetpoint = heightMeters;
+  }
+
+  public double getSetpoint() {
+    return this.heightSetpoint;
   }
   
   public void setPercentHeight(double percentage) {
@@ -93,6 +98,28 @@ public class ElevatorSubsystem extends SubsystemBase {
       setSetpoint(height);
     }
     return;
+  }
+
+  public void setLevel(int level) {
+
+    if(level == 0) {
+        setSetpoint(0);
+    }
+    // Low
+    else if(level == 1) {
+        setSetpoint(0.2);
+    }
+    // Mid
+    else if(level == 2) {
+        setSetpoint(0.65);
+    }
+    // High
+    // else if(level == 3) {
+    //     elevatorSubsystem.setSetpoint(0);
+    // }
+    else{
+        return;
+    }
   }
 
 
