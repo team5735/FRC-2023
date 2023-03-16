@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fasterxml.jackson.databind.cfg.ContextAttributes;
 
 import cfutil.UnitConversion;
 
@@ -25,7 +26,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
 
-  private final DigitalInput bottomHallSensor, topHallSensor;
+  private boolean reverseLimitSwitchLastPressed = false;
 
   private double heightSetpoint;
 
@@ -49,9 +50,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
         new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
     );
-
-    this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
-    this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
 
     this.resetMotors();
   }
@@ -95,16 +93,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     return;
   }
 
-
   @Override
   public void periodic() {
     // WARNING: Semi TESTED
 
+    if (isAtBottom()) {
+      SmartDashboard.putBoolean("Elevator isAtBootom", true);
+      SmartDashboard.putBoolean("Elevator reverseLimitSwitchLastPressed", this.reverseLimitSwitchLastPressed);
+    } else if (isAtTop()) {
+      SmartDashboard.putBoolean("Elevator isAtTop", true);
+    }
+
     double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
+
     // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid
     // controller velocity setpoint
     voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
-    // // Set the voltage
+
+    // Set the voltage
     this.elevatorLeader.setVoltage(voltage);
 
     SmartDashboard.putNumber("Elevator Setpoint", this.heightSetpoint);
@@ -117,15 +123,35 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.elevatorLeader.setVoltage(12.0 * input);
   }
 
-  public boolean isAtBottom() {
-    return this.bottomHallSensor.get();
-  }
-
-  public boolean isAtTop() {
-    return this.topHallSensor.get();
-  }
-
   public void stopMotors() {
     this.elevatorLeader.stopMotor();
   }
+
+  public boolean isAtBottom() {
+    if (this.elevatorLeader.getSensorCollection().isRevLimitSwitchClosed() == 1) {
+      if (!reverseLimitSwitchLastPressed) {
+        //TODO: figure what to call, perhaps setSetpoint?
+        setSetpoint(0.0);
+
+        reverseLimitSwitchLastPressed = true;
+      }
+
+      return true;
+    } else {
+      reverseLimitSwitchLastPressed = false;
+      return false;
+    }
+  }
+
+  public boolean isAtTop() {
+    if (this.elevatorLeader.getSensorCollection().isFwdLimitSwitchClosed() == 1) {
+      // TODO is height limit the right value here
+      setSetpoint(Constants.ElevatorConstants.HEIGHT_LIMIT);
+
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }
