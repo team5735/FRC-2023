@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -29,6 +30,7 @@ import frc.robot.Constants.OIConstants;
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.AutoMoveElevatorCommand;
+import frc.robot.commands.AutoMoveExtenderCommand;
 import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
@@ -168,13 +170,19 @@ public class RobotContainer {
     //     .whileTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
 
     subsystemController.x()
-        .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 0));
+        .onTrue(new ParallelCommandGroup(
+        new AutoMoveElevatorCommand(this.elevatorSubsystem, 0), 
+        new AutoMoveExtenderCommand(this.extenderSubsystem, 0)));
 
     subsystemController.y()
-    .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 1));
+    .onTrue(new ParallelCommandGroup(
+        new AutoMoveElevatorCommand(this.elevatorSubsystem, 1), 
+        new AutoMoveExtenderCommand(this.extenderSubsystem, 1)));
     
     this.subsystemController.b()
-    .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 2));
+    .onTrue(new ParallelCommandGroup(
+      new AutoMoveElevatorCommand(this.elevatorSubsystem, 2), 
+      new AutoMoveExtenderCommand(this.extenderSubsystem, 3)));
     // this.subsystemController.b()
     //     .whileTrue(new ExtenderIn(extenderSubsystem))
     //     .whileFalse(new ExtenderStop(extenderSubsystem));

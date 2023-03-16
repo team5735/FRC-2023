@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import frc.robot.constants.ExtenderConstants;
+import frc.robot.Constants.ExtenderConstants;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;

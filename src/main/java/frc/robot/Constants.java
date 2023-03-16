@@ -242,7 +242,21 @@ public final class Constants {
         }
 
         public static class ExtenderConstants {
-                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(46.0);
+                public static final double EXTENDER_MAX_LENGTH = Units.inchesToMeters(46.0); // 1.1684 meters
+
+                public static final double EXTEND_MOTOR_OUT_SPEED = -.1;
+                public static final double EXTEND_MOTOR_IN_SPEED = .1;
+                
+                public static final int EXTEND_MOTOR_ID = 14;
+                
+                //TODO: get actual values for this
+                //Extension encoder values
+                public static final Double [] LEVEL_ENCODER_VALS = {2.0, 3.0, 4.0};
+                public static final double EXTEND_MAX_ENCODER = 50;
+                public static final double EXTEND_MIN_ENCODER = 0;
+                
+                public static final double EXTEND_SLOW_DISTANCE = 2;
+                    
         }
 
         public static class IntakeConstants {
