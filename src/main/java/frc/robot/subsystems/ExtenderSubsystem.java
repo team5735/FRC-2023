@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants;
 import frc.robot.constants.ExtenderConstants;
-
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -16,16 +16,20 @@ public class ExtenderSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final CANSparkMax extenderMotor;
-  private final ProfiledPIDController pidController;
+  private final ElevatorFeedforward extenderFeedForward;
+  private final ProfiledPIDController extenderFeedback;
 
   private double extenderSetpoint; // where you want the extender to be, in meters
 
   public ExtenderSubsystem() {
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
+    this.extenderFeedForward = new ElevatorFeedforward(
+        // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
+        0, 1, 0, 0);
 
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
-    this.pidController = new ProfiledPIDController(
+    this.extenderFeedback = new ProfiledPIDController(
         7, // P value
         0.0, // I vaue
         0.0, // D value
@@ -73,10 +77,8 @@ public class ExtenderSubsystem extends SubsystemBase {
     }
 
     // WARNING: UNTESTED
-    double voltage = this.pidController.calculate(
-        this.getExtenderPosition(), // where the extender is right now
-        this.extenderSetpoint // where you want the extender to be
-    );
+    double voltage = this.extenderFeedback.calculate(this.getExtenderPosition(), this.extenderSetpoint);
+    voltage += this.extenderFeedForward.calculate(this.extenderFeedback.getSetpoint().velocity);
     // Set the voltage
     this.extenderMotor.setVoltage(voltage);
 
