@@ -30,9 +30,9 @@ public class ManualExtenderCmd extends CommandBase {
     public void execute() {
         double input = this.inputSupplier.get();
         input = (Math.abs(input) > Constants.OIConstants.JOYSTICK_DEADBAND) ? input : 0.0;
-        this.extenderSubsystem.setSetpoint(
-            Constants.ExtenderConstants.EXTENDER_MAX_LENGTH * input
-        );
+        if (input > 0 || input < 0) {
+            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() + 0.1 * input);
+        }
     }
 
     @Override
