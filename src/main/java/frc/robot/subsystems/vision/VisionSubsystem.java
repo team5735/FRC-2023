@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Using limelight 3D support
 
@@ -23,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase {
         // Would you rather have the ability to see into empty boxes or speak four
         // different dead languages fluently?
         // Food for thought.
-        return limelightTable.getEntry("tv").getBoolean(false);
+        return limelightTable.getEntry("tv").getInteger(0) > 0;
     }
 
     // different teams have different AprilTags, this takes that into account.
@@ -90,6 +91,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     public double getYaw() {
         // i'm like 80% sure this is yaw
-        return getOffsetCameraspace()[5];
+        return getOffsetCameraspace()[4];
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("LIMELIGHT YAW VALUE!!!", getOffsetCameraspace()[4]);
+        SmartDashboard.putBoolean("sees target", seesTeamTarget());
+        SmartDashboard.putNumber("target ID", getPrimaryTargetID());
     }
 }

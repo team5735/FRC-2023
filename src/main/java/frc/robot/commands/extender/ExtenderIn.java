@@ -7,7 +7,7 @@ package frc.robot.commands.extender;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ExtenderSubsystem;
-import frc.robot.constants.ExtenderConstants;
+import frc.robot.Constants.ExtenderConstants;
 
 public class ExtenderIn extends CommandBase {
 

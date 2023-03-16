@@ -11,7 +11,6 @@ import frc.robot.Constants.VisionConstants;
 public class TurnToZero extends CommandBase {
     private SwerveSubsystem drivetrain;
     private VisionSubsystem vision;
-    private boolean isFinished;
     private long startTime;
 
     // private static final SwerveModuleState[] DONT_SEE_STATES = {
@@ -20,7 +19,7 @@ public class TurnToZero extends CommandBase {
 
     // TODO: Calibrate PID. These values are arbitrary and I don't know if they're
     // good.
-    private PIDController pid = new PIDController(0.0727, 0, 0);
+    private PIDController pid = new PIDController(0.00727, 0, 0);
 
     public TurnToZero(VisionSubsystem v, SwerveSubsystem s) {
         vision = v;
@@ -37,19 +36,18 @@ public class TurnToZero extends CommandBase {
 
     @Override
     public void execute() {
-        isFinished = false;
 
-        if (System.currentTimeMillis() - startTime > VisionConstants.TURN_TIMEOUT) {
-            isFinished = true;
-            return;
-        }
+        // if (System.currentTimeMillis() - startTime > VisionConstants.TURN_TIMEOUT) {
+        //     isFinished = true;
+        //     return;
+        // }
 
         // check for team target (important, don't want to be lining up with the
         // opponents' target)
         // ChassisSpeed uses CCW rotation.
         if (!vision.seesTeamTarget()) {
             // maybe too fast?
-            ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(90));
+            ChassisSpeeds turn = new ChassisSpeeds(0, 0, Units.degreesToRadians(45));
             // this.drivetrain.setChassisSpeed(turn);
             drivetrain.openLoopDrive(turn);
             return;
@@ -65,10 +63,8 @@ public class TurnToZero extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return isFinished;
+        return vision.seesTeamTarget() && vision.getYaw() <= 5 && vision.getYaw() >= -5;
     }
-    
-
     
     @Override    
     public void end(boolean interrupted) {
