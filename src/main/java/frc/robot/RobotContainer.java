@@ -174,8 +174,7 @@ public class RobotContainer {
     .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 1));
     
     this.subsystemController.b()
-    .onTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 2);}));
-
+    .onTrue(new AutoMoveElevatorCommand(this.elevatorSubsystem, 2));
     // this.subsystemController.b()
     //     .whileTrue(new ExtenderIn(extenderSubsystem))
     //     .whileFalse(new ExtenderStop(extenderSubsystem));
