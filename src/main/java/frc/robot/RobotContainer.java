@@ -155,7 +155,7 @@ public class RobotContainer {
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
         // TODO: check if this direction is correct
         () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()),
-        () -> this.driverController.leftBumper().getAsBoolean())); // turbohack for
+        () -> this.driverController.a().getAsBoolean())); // turbohack for
                                                                    // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
@@ -175,12 +175,12 @@ public class RobotContainer {
         .whileTrue(new BrakeCommand(this.swerveSubsystem));
 
     // INTAKE CONTROLS
-    // this.driverController.rightTrigger()
-    // .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
+    this.driverController.rightBumper()
+    .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
 
     // // Left bumper for intake backward
-    // this.driverController.leftTrigger()
-    // .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
+    this.driverController.leftBumper()
+    .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
     // Button A to reverse intake (if that problem happens again...)
 
