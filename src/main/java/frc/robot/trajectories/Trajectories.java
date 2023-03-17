@@ -28,7 +28,8 @@ public class Trajectories {
                 "AutoPos1Item1",
                 "SpitAndBalanceLShape",
                 "SpitAndBalanceReverse",
-                "SpitAndMoveOut"
+                "SpitAndMoveOut",
+                "MoveForwardTurnLeft"
         );
 
         public static final PathPlannerTrajectory DO_NOT_MOVE = PathPlanner.generatePath(
