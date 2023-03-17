@@ -94,7 +94,13 @@ public class SwerveJoystickCmd extends CommandBase {
             chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
         }
 
-        swerveSubsystem.openLoopDrive(chassisSpeeds);
+        // OPEN LOOP DRIVING
+        // swerveSubsystem.openLoopDrive(chassisSpeeds);
+
+        // CLOSED LOOP DRIVING
+        SwerveModuleState[] moduleStates = Constants.DrivetrainConstants.DT_KINEMATICS
+                .toSwerveModuleStates(chassisSpeeds);
+        this.swerveSubsystem.setModuleStates(moduleStates, false);
     }
 
     @Override

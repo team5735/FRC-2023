@@ -9,8 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -24,6 +26,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -112,14 +115,28 @@ public class RobotContainer {
   }
 
   private void populatePathChooser() {
-    for (String pathName : Trajectories.PATH_FILENAMES) {
-      this.autoPathChooser.addOption(pathName, pathName);
+    // Read files in deploy/pathplanner directory
+    try {
+      try (Stream<Path> walk = Files.walk(Filesystem.getDeployDirectory().toPath().resolve("pathplanner"))) {
+        List<String> fileNames = walk
+            .filter(p -> !Files.isDirectory(p))
+            .map(p -> p.getFileName().toString()) // turns files into file names
+            .filter(f -> f.endsWith(".path")) // gets ones ending in .path
+            .map(n -> n.split(".path")[0]) // gets the file name excluding .path
+            .collect(Collectors.toList());
+
+        for (String pathName : fileNames) {
+          this.autoPathChooser.addOption(pathName, pathName);
+        }
+    
+        this.autoPathChooser.setDefaultOption(
+            fileNames.get(0),
+            fileNames.get(0));
+      }
+    } catch (Exception e) {
+      System.out.println("##### ERROR: No paths found!");
     }
-
-    this.autoPathChooser.setDefaultOption(
-        Trajectories.PATH_FILENAMES.get(0),
-        Trajectories.PATH_FILENAMES.get(0));
-
+    
     SmartDashboard.putData("Auto Path Chooser", this.autoPathChooser);
   }
 
@@ -379,11 +396,11 @@ public class RobotContainer {
     // );
   }
 
-  public void resetAllPositions() {
+  /**
+   * Resets setpoints to 0 on disable and init
+   */
+  public void resetSetpoints() {
     this.elevatorSubsystem.setSetpoint(0);
     this.extenderSubsystem.setSetpoint(0);
-    this.elevatorSubsystem.resetMotors();
-    this.extenderSubsystem.resetMotors();
-    this.swerveSubsystem.resetOdometry(new Pose2d());
   }
 }

@@ -1,6 +1,7 @@
 package frc.robot.trajectories;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,8 @@ import frc.robot.Constants;
 
 // Pathweaver Interpretation Imports
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -23,14 +26,14 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 public class Trajectories {
 
-        public static final List<String> PATH_FILENAMES = List.of(
-                "MoveForwardBalance",
-                "AutoPos1Item1",
-                "SpitAndBalanceLShape",
-                "SpitAndBalanceReverse",
-                "SpitAndMoveOut",
-                "MoveForwardTurnLeft"
-        );
+        // TODO: Should read automatically from deploy/pathplanner. TEST!
+        // public static final List<String> PATH_FILENAMES = List.of(
+        //                 "MoveForwardBalance",
+        //                 "AutoPos1Item1",
+        //                 "SpitAndBalanceLShape",
+        //                 "SpitAndBalanceReverse",
+        //                 "SpitAndMoveOut",
+        //                 "MoveForwardTurnLeft");
 
         public static final PathPlannerTrajectory DO_NOT_MOVE = PathPlanner.generatePath(
                         Constants.AutoConstants.PP_AUTO_CONSTRAINTS,
@@ -79,8 +82,9 @@ public class Trajectories {
         /**
          * Reads a PathPlanner trajectory and generates it with the constraints.
          * 
-         * @param file Name of the file, excluding the .path extension and pathplanner folder
-         * e.g. if path is in 'pathplanner/Auto.path', file = 'Auto'
+         * @param file Name of the file, excluding the .path extension and pathplanner
+         *             folder
+         *             e.g. if path is in 'pathplanner/Auto.path', file = 'Auto'
          */
         public static final PathPlannerTrajectory loadTrajectory(String file) {
                 PathPlannerTrajectory path = PathPlanner.loadPath(file, Constants.AutoConstants.PP_AUTO_CONSTRAINTS);
