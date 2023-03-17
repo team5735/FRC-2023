@@ -279,9 +279,13 @@ public class RobotContainer {
               this.extenderSubsystem.setLevel(2);
             }))));
 
-    eventMap.put("runIntake",
+    eventMap.put("runIntakeIn",
         // Run the intake
         new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
+
+    eventMap.put("runIntakeOut",
+        // Run the intake
+        new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
         plotTrajectory,
