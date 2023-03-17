@@ -23,6 +23,14 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 
 public class Trajectories {
 
+        public static final List<String> PATH_FILENAMES = List.of(
+                "MoveForwardBalance",
+                "AutoPos1Item1",
+                "SpitAndBalanceLShape",
+                "SpitAndBalanceReverse",
+                "SpitAndMoveOut"
+        );
+
         public static final PathPlannerTrajectory DO_NOT_MOVE = PathPlanner.generatePath(
                         Constants.AutoConstants.PP_AUTO_CONSTRAINTS,
                         new PathPoint(
@@ -70,11 +78,13 @@ public class Trajectories {
         /**
          * Reads a PathPlanner trajectory and generates it with the constraints.
          * 
-         * @param file Name of the file, excluding the .path extension
+         * @param file Name of the file, excluding the .path extension and pathplanner folder
+         * e.g. if path is in 'pathplanner/Auto.path', file = 'Auto'
          */
         public static final PathPlannerTrajectory loadTrajectory(String file) {
                 PathPlannerTrajectory path = PathPlanner.loadPath(file, Constants.AutoConstants.PP_AUTO_CONSTRAINTS);
                 if (path == null) {
+                        System.out.println("#### Could not find path: " + file);
                         // return some empty path
                         return Trajectories.DO_NOT_MOVE;
                 }

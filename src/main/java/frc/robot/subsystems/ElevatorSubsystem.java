@@ -22,11 +22,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final WPI_TalonFX elevatorLeft, elevatorRight;
-  private final ElevatorFeedforward elevatorFeedforward;
-  private final ProfiledPIDController elevatorFeedback;
-
-  // To correct for sag
-  private final PIDController elevatorLeftPID, elevatorRightPID;
+  private final ElevatorFeedforward leftFeedforward, rightFeedforward;
+  private final ProfiledPIDController leftFeedback, rightFeedback;
 
   private final DigitalInput bottomHallSensor, topHallSensor;
 
@@ -39,22 +36,33 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.elevatorRight.setInverted(true);
     // this.elevatorFollower.follow(this.elevatorLeader);
 
-    this.elevatorFeedforward = new ElevatorFeedforward(
+    this.leftFeedforward = new ElevatorFeedforward(
         // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getS(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getA());
 
-    this.elevatorFeedback = new ProfiledPIDController(
+    this.rightFeedforward = new ElevatorFeedforward(
+        // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getS(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getG(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getV(),
+        Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getA());
+
+    this.leftFeedback = new ProfiledPIDController(
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
         Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
         new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
     );
 
-    this.elevatorLeftPID = new PIDController(0, 0, 0);
-    this.elevatorRightPID = new PIDController(0.6, 0, 0);
+    this.rightFeedback = new ProfiledPIDController(
+      Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP() + 0.1, // compensate sag
+      Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
+      Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
+        new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
+    );
 
     this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
     this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
@@ -71,9 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
    * Get the current elevator height in meters
    */
   public double getElevatorHeight() {
-    // Must have motor position reset to zero beforehand for this to work well
-    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
-        * UnitConversion.falconToRotations(elevatorLeft.getSelectedSensorPosition());
+    return (this.getLeftMotorHeight() + this.getRightMotorHeight()) / 2.0;
   }
 
   public double getLeftMotorHeight() {
@@ -148,17 +154,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // WARNING: Semi TESTED
 
-    double voltage = this.elevatorFeedback.calculate(this.getElevatorHeight(), this.heightSetpoint);
-    // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid
-    // controller velocity setpoint
-    voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
+    double leftVoltage = this.leftFeedback.calculate(this.getLeftMotorHeight(), this.heightSetpoint);
+    leftVoltage += this.leftFeedforward.calculate(this.leftFeedback.getSetpoint().velocity);
+    
+    double rightVoltage = this.rightFeedback.calculate(this.getRightMotorHeight(), this.heightSetpoint);
+    rightVoltage += this.rightFeedforward.calculate(this.rightFeedback.getSetpoint().velocity);
 
-    // Correct for sag
-    double leftMotorCorrectionVolts = this.elevatorLeftPID.calculate(this.getLeftMotorHeight(), this.heightSetpoint);
-    double rightMotorCorrectionVolts = this.elevatorRightPID.calculate(this.getRightMotorHeight(), this.heightSetpoint);
     // Set the voltage
-    this.elevatorLeft.setVoltage(voltage + leftMotorCorrectionVolts);
-    this.elevatorRight.setVoltage(voltage + rightMotorCorrectionVolts);
+    this.elevatorLeft.setVoltage(leftVoltage);
+    this.elevatorRight.setVoltage(rightVoltage);
 
     SmartDashboard.putNumber("Elevator Setpoint", this.heightSetpoint);
     SmartDashboard.putNumber("Elevator Height", this.getElevatorHeight());

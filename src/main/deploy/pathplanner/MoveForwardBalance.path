@@ -43,7 +43,7 @@
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "before",
-        "waitTime": 0
+        "waitTime": 1.0
       }
     }
   ],

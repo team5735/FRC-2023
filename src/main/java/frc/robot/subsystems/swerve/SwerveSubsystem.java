@@ -40,7 +40,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private final SwerveDriveOdometry odometer;
     private final Field2d m_field = new Field2d();
 
-    private boolean isFieldOrientedEnabled = false;
+    private boolean isFieldOrientedEnabled = true;
 
     public SwerveSubsystem() {
 
@@ -184,6 +184,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // this.backRight.resetEncoders();
         // this.gyro.reset();
         this.odometer.resetPosition(
+            // initialPose.getRotation(),
                 this.gyro.getRotation2d(),
                 // new Rotation2d(),
                 new SwerveModulePosition[] {
@@ -247,8 +248,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         m_field.setRobotPose(this.odometer.getPoseMeters());
 
-        // SmartDashboard.putData("Field", m_field);
-        // SmartDashboard.putString("Odometry", this.odometer.getPoseMeters().toString());
+        SmartDashboard.putData("Field", m_field);
+        SmartDashboard.putString("Odometry", this.odometer.getPoseMeters().toString());
 
         // SmartDashboard.putNumber("FL Drive Pos", this.frontLeft.getDriveWheelPosition());
         // SmartDashboard.putNumber("FR Drive Pos", this.frontRight.getDriveWheelPosition());
@@ -286,9 +287,9 @@ public class SwerveSubsystem extends SubsystemBase {
         // Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
         // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro orientation
-        // SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
+        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
         // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation on the axis of the battery in Radians
-        // SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
+        SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
         // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation on the axis of the battery in Radians
         // SmartDashboard.putNumber("Gyro Yaw", this.gyro.getYaw()); // Flat Axis -- Rotation
 

@@ -4,10 +4,19 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -17,9 +26,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -70,6 +82,10 @@ public class RobotContainer {
   private final VisionSubsystem visionSubsystem;
   private final ElevatorSubsystem elevatorSubsystem;
 
+  private Map<String, Command> eventMap = new HashMap<>();
+
+  private final SendableChooser<String> autoPathChooser = new SendableChooser<>();
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
    */
@@ -89,6 +105,22 @@ public class RobotContainer {
     // Configure the button bindings
     this.configureDriverBindings();
     this.configureSubsystemBindings();
+
+    this.populateEventMap();
+
+    this.populatePathChooser();
+  }
+
+  private void populatePathChooser() {
+    for (String pathName : Trajectories.PATH_FILENAMES) {
+      this.autoPathChooser.addOption(pathName, pathName);
+    }
+
+    this.autoPathChooser.setDefaultOption(
+        Trajectories.PATH_FILENAMES.get(0),
+        Trajectories.PATH_FILENAMES.get(0));
+
+    SmartDashboard.putData("Auto Path Chooser", this.autoPathChooser);
   }
 
   /**
@@ -107,22 +139,13 @@ public class RobotContainer {
         // TODO: check if this direction is correct
         () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()),
         () -> this.driverController.leftBumper().getAsBoolean())); // turbohack for
-                                                                                                   // ergonomics
+                                                                   // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
         .whileTrue(new InstantCommand(() -> {
           this.swerveSubsystem.toggleFieldOriented();
         }));
-
-    // NOTE: Strikethrough caused by deprecated, but functional, software
-    // FOR TESTING When Y is pressed, trigger gyro autocorrect command
-    /*
-     * new JoystickButton(this.driverController, XboxController.Button.kY.value)
-     * .whenHeld(new GyroAutocorrectCommand(this.swerveSubsystem));
-     */
-    // this.driverController.y()
-    // .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // When X is pressed, reset gyro to 0
     this.driverController.x()
@@ -135,19 +158,18 @@ public class RobotContainer {
         .whileTrue(new BrakeCommand(this.swerveSubsystem));
 
     // INTAKE CONTROLS
-    // Right bumper for intake forward
     // this.driverController.rightTrigger()
-    //     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
+    // .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
 
     // // Left bumper for intake backward
     // this.driverController.leftTrigger()
-    //     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
+    // .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
     // Button A to reverse intake (if that problem happens again...)
 
     // turn to zero
-    this.driverController.back()
-        .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
+    // this.driverController.back()
+    // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
   }
 
   private void configureSubsystemBindings() {
@@ -162,16 +184,6 @@ public class RobotContainer {
         .whileTrue(new InstantCommand(() -> {
           this.pneumaticsSubsystem.togglePiston();
         }));
-
-    // TODO: Use parallel command group to run elevator and extender at the same
-    // time
-    // TODO: Determine if this Trigger is reasonable (shortcutted for convenience)
-    // () -> Creates a function, lambda operator
-    // :: similar to a lambda
-
-    // subsystemController.x()
-    // .whileTrue(new InstantCommand(() -> {new
-    // AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
 
     // COMMAND: Brings to level 0 (bottom)
     // subsystemController.x()
@@ -227,22 +239,7 @@ public class RobotContainer {
     // () -> -this.subsystemController.getRightY())); // negative b/c y is inverted
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // The trajectory to follow
-    PathPlannerTrajectory plotTrajectory = Trajectories.ONE_METER_STRAIGHT;
-    // = Trajectories.ONE_METER_STRAIGHT;
-    // = Trajectories.loadTrajectory("ForwardMove.wpilib.json");
-
-    PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
-    PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
-    PIDController thetaController = new PIDController(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0);
-
-    HashMap<String, Command> eventMap = new HashMap<>();
+  private void populateEventMap() {
     // Carson: Put the event marker name and the command to run, like this:
     // TODO: Then put the event markers with these exact names in the path
     eventMap.put("toggleCompressor", new InstantCommand(() -> {
@@ -280,30 +277,77 @@ public class RobotContainer {
             }))));
 
     eventMap.put("runIntakeIn",
-        // Run the intake
-        new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
+        new ParallelDeadlineGroup(
+            new WaitCommand(1),
+            // Run the intake
+            new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN)));
 
     eventMap.put("runIntakeOut",
-        // Run the intake
-        new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
+        new ParallelDeadlineGroup(
+            new WaitCommand(1),
+            // Run the intake
+            new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT)));
 
-    PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
-        plotTrajectory,
-        swerveSubsystem::getPose, // Pose supplier
-        Constants.DrivetrainConstants.DT_KINEMATICS, // SwerveDriveKinematics
-        xController,
-        yController,
-        thetaController,
+    eventMap.put("gyroBalance",
+        new GyroAutocorrectCommand(swerveSubsystem));
+  }
+
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    // The trajectory to follow
+    PathPlannerTrajectory plotTrajectory
+    // = Trajectories.ONE_METER_STRAIGHT;
+    // = Trajectories.ONE_METER_STRAIGHT;
+        = Trajectories.loadTrajectory(this.autoPathChooser.getSelected());
+
+    // PIDController xController = new
+    // PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
+    // PIDController yController = new
+    // PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
+    // PIDController thetaController = new
+    // PIDController(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0);
+
+    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+        swerveSubsystem::getPose,
+        swerveSubsystem::resetOdometry,
+        Constants.DrivetrainConstants.DT_KINEMATICS,
+        new PIDConstants(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0),
+        new PIDConstants(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0),
         new Consumer<SwerveModuleState[]>() {
           @Override
           public void accept(SwerveModuleState[] states) {
             swerveSubsystem.setModuleStates(states, false);
           }
-        }, // Module states consumer
-        true, // Should the path be automatically mirrored depending on alliance color.
-              // Optional, defaults to true
-        swerveSubsystem // Requires this drive subsystem
-    );
+        },
+        eventMap,
+        true,
+        swerveSubsystem);
+
+    return autoBuilder.fullAuto(plotTrajectory);
+
+    // PPSwerveControllerCommand swerveControllerCommand = new
+    // PPSwerveControllerCommand(
+    // plotTrajectory,
+    // swerveSubsystem::getPose, // Pose supplier
+    // Constants.DrivetrainConstants.DT_KINEMATICS, // SwerveDriveKinematics
+    // xController,
+    // yController,
+    // thetaController,
+    // new Consumer<SwerveModuleState[]>() {
+    // @Override
+    // public void accept(SwerveModuleState[] states) {
+    // swerveSubsystem.setModuleStates(states, false);
+    // }
+    // }, // Module states consumer
+    // true, // Should the path be automatically mirrored depending on alliance
+    // color.
+    // // Optional, defaults to true
+    // swerveSubsystem // Requires this drive subsystem
+    // );
 
     // SwerveControllerCommand swerveControllerCommand = new
     // SwerveControllerCommand(
@@ -319,14 +363,20 @@ public class RobotContainer {
     // module states
     // swerveSubsystem); // The subsystem to execute the command on
 
-    return new SequentialCommandGroup(
-        // Start the command by "placing" the robot at the beginning of the trajectory
-        new InstantCommand(() -> swerveSubsystem.resetOdometry(
-            plotTrajectory.getInitialHolonomicPose())),
-        // Run the trajectory command
-        swerveControllerCommand,
-        // Stop the robot at the end of the trajectory
-        new InstantCommand(() -> swerveSubsystem.stopModules()));
+    // return new SequentialCommandGroup(
+    // // Start the command by "placing" the robot at the beginning of the
+    // trajectory
+    // new InstantCommand(() -> swerveSubsystem.resetOdometry(
+    // plotTrajectory.getInitialHolonomicPose())),
+    // // Run the trajectory command
+    // new FollowPathWithEvents(
+    // swerveControllerCommand,
+    // plotTrajectory.getMarkers(),
+    // eventMap)
+    // // ,
+    // // // Stop the robot at the end of the trajectory
+    // new InstantCommand(() -> swerveSubsystem.stopModules())
+    // );
   }
 
   public void resetAllPositions() {
