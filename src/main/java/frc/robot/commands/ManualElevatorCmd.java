@@ -40,11 +40,11 @@ public class ManualElevatorCmd extends CommandBase {
         // }
         if (input > 0) {
             this.elevatorSubsystem.setSetpoint(
-                this.elevatorSubsystem.getSetpoint() + 0.02
+                this.elevatorSubsystem.getSetpoint() + 0.05
             );
         } else {
             this.elevatorSubsystem.setSetpoint(
-                this.elevatorSubsystem.getSetpoint() - 0.02
+                this.elevatorSubsystem.getSetpoint() - 0.05
             );
         }
         // if (input > 0 || input < 0) {

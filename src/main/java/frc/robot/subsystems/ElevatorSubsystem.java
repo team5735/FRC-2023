@@ -54,7 +54,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     );
 
     this.elevatorLeftPID = new PIDController(0, 0, 0);
-    this.elevatorRightPID = new PIDController(1, 0, 0);
+    this.elevatorRightPID = new PIDController(0.6, 0, 0);
 
     this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
     this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
