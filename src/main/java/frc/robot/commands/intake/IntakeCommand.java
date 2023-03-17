@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class IntakeCommand extends CommandBase {
 
   public enum IntakeDirection {
-    FORWARD, BACKWARD
+    IN, OUT
   }
 
   private final IntakeSubsystem intakeSubsystem;
@@ -31,10 +31,10 @@ public class IntakeCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (direction == IntakeDirection.FORWARD) {
-      this.intakeSubsystem.intakeForward();
+    if (direction == IntakeDirection.IN) {
+      this.intakeSubsystem.intakeIn();
     } else {
-      this.intakeSubsystem.intakeBackward();
+      this.intakeSubsystem.intakeOut();
     }
   }
 

@@ -15,10 +15,12 @@ public class ManualExtenderCmd extends CommandBase {
 
     private final ExtenderSubsystem extenderSubsystem;
     private final Supplier<Double> inputSupplier;
+    private final Supplier<Double> currentElevatorHeight;
 
-    public ManualExtenderCmd(ExtenderSubsystem extenderSubsystem, Supplier<Double> inputSupplier) {
+    public ManualExtenderCmd(ExtenderSubsystem extenderSubsystem, Supplier<Double> inputSupplier, Supplier<Double> currentElevatorHeight) {
         this.extenderSubsystem = extenderSubsystem;
         this.inputSupplier = inputSupplier;
+        this.currentElevatorHeight = currentElevatorHeight;
         addRequirements(extenderSubsystem);
     }
 
@@ -28,10 +30,17 @@ public class ManualExtenderCmd extends CommandBase {
 
     @Override
     public void execute() {
+        if (this.currentElevatorHeight.get() < Constants.ExtenderConstants.EXTENDER_ELEVATOR_MIN_HEIGHT) {
+            return;
+        }
+
         double input = this.inputSupplier.get();
-        input = (Math.abs(input) > Constants.OIConstants.JOYSTICK_DEADBAND) ? input : 0.0;
-        if (input > 0 || input < 0) {
-            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() + 0.1 * input);
+        input = (Math.abs(input) > 0.5) ? input : 0.0; // if trigger not halfway down, don't do anything
+        
+        if (input > 0) {
+            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() + 0.5);
+        } else if (input < 0) {
+            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() - 0.5);
         }
     }
 

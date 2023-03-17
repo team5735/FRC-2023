@@ -96,8 +96,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("LIMELIGHT YAW VALUE!!!", getOffsetCameraspace()[4]);
-        SmartDashboard.putBoolean("sees target", seesTeamTarget());
-        SmartDashboard.putNumber("target ID", getPrimaryTargetID());
+        // SmartDashboard.putNumber("LIMELIGHT YAW VALUE!!!", getOffsetCameraspace()[4]);
+        // SmartDashboard.putBoolean("sees target", seesTeamTarget());
+        // SmartDashboard.putNumber("target ID", getPrimaryTargetID());
     }
 }

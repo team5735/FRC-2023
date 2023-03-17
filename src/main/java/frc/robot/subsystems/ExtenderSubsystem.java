@@ -25,12 +25,12 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
     this.extenderFeedForward = new ElevatorFeedforward(
         // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
-        0, 1, 0, 0);
+        0, 0.3, 0, 0);
 
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
     this.extenderFeedback = new ProfiledPIDController(
-        10, // P value
+        10.5, // P value
         0.0, // I vaue
         1, // D value
         new TrapezoidProfile.Constraints(
@@ -43,7 +43,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.resetMotors();
   }
 
-  private void resetMotors() {
+  public void resetMotors() {
     this.extenderMotor.getEncoder().setPosition(0);
   }
 
@@ -61,10 +61,16 @@ public class ExtenderSubsystem extends SubsystemBase {
    * Move the extender out to X meters
    */
   public void setSetpoint(double setpointMeters) {
-    if (setpointMeters < 0.0
-        || setpointMeters > Constants.ExtenderConstants.EXTENDER_MAX_LENGTH) {
+    if (setpointMeters < 0.0) {
+      this.extenderSetpoint = 0.0;
       return;
     }
+
+    if (setpointMeters > Constants.ExtenderConstants.EXTENDER_MAX_LENGTH) {
+      this.extenderSetpoint = Constants.ExtenderConstants.EXTENDER_MAX_LENGTH;
+      return;
+    }
+
     this.extenderSetpoint = setpointMeters;
   }
 
@@ -78,16 +84,16 @@ public class ExtenderSubsystem extends SubsystemBase {
     } 
     // Low
     else if(level == 1) {
-        setSetpoint(0.2);
+        setSetpoint(0.35);
     }
     // Mid
     else if(level == 2) {
-        setSetpoint(0.65);
-    }
-    // High
-    else if(level == 3) {
         setSetpoint(ExtenderConstants.EXTENDER_MAX_LENGTH - 0.1);
     }
+    // // High
+    // else if(level == 3) {
+    //     setSetpoint();
+    // }
     else{
         return;
     }
@@ -115,25 +121,12 @@ public class ExtenderSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Extender Motor Encoder", this.extenderMotor.getEncoder().getPosition());
   }
 
-  // Bella's code
 
-  public void extenderMove(double speed) {
-    extenderMotor.set(speed);
-  }
-
-  public void extenderStop() {
-    extenderMotor.set(0);
-  }
-
-  public double getCurrentEncoderPosition() {
-    return extenderMotor.getEncoder().getPosition();
-  }
-
-  // Based on desired level and current encoder value, figure out what encoder
-  // value need to reach
-  public double setGoalEncoderPosition(int desiredLevel) {
-    desiredLevel--;
-    return ExtenderConstants.LEVEL_ENCODER_VALS[desiredLevel];
+  /**
+   * Returns whether the extender is fully in, aka level 0
+   */
+  public boolean isFullyRetracted() {
+    return this.getExtenderPosition() <= Constants.ExtenderConstants.EXTENDER_RETRACT_THRESHOLD;
   }
 
 }

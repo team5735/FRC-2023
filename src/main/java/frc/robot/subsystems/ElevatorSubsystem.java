@@ -21,20 +21,23 @@ import cfutil.UnitConversion;
 public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
-  private final WPI_TalonFX elevatorLeader, elevatorFollower;
+  private final WPI_TalonFX elevatorLeft, elevatorRight;
   private final ElevatorFeedforward elevatorFeedforward;
   private final ProfiledPIDController elevatorFeedback;
+
+  // To correct for sag
+  private final PIDController elevatorLeftPID, elevatorRightPID;
 
   private final DigitalInput bottomHallSensor, topHallSensor;
 
   private double heightSetpoint;
 
   public ElevatorSubsystem() {
-    this.elevatorLeader = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_LEADER_MOTOR_ID);
-    this.elevatorLeader.setInverted(true);
-    this.elevatorFollower = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_FOLLOWER_MOTOR_ID);
-    this.elevatorFollower.setInverted(true);
-    this.elevatorFollower.follow(this.elevatorLeader);
+    this.elevatorLeft = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
+    this.elevatorLeft.setInverted(true);
+    this.elevatorRight = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
+    this.elevatorRight.setInverted(true);
+    // this.elevatorFollower.follow(this.elevatorLeader);
 
     this.elevatorFeedforward = new ElevatorFeedforward(
         // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
@@ -50,24 +53,37 @@ public class ElevatorSubsystem extends SubsystemBase {
         new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
     );
 
+    this.elevatorLeftPID = new PIDController(0, 0, 0);
+    this.elevatorRightPID = new PIDController(1, 0, 0);
+
     this.bottomHallSensor = new DigitalInput(Constants.ElevatorConstants.BOTTOM_HALL_SENSOR_ID);
     this.topHallSensor = new DigitalInput(Constants.ElevatorConstants.TOP_HALL_SENSOR_ID);
 
     this.resetMotors();
   }
 
-  private void resetMotors() {
-    this.elevatorLeader.setSelectedSensorPosition(0);
-    this.elevatorFollower.setSelectedSensorPosition(0);
+  public void resetMotors() {
+    this.elevatorLeft.setSelectedSensorPosition(0);
+    this.elevatorRight.setSelectedSensorPosition(0);
   }
 
   /**
    * Get the current elevator height in meters
    */
-  private double getElevatorHeight() {
+  public double getElevatorHeight() {
     // Must have motor position reset to zero beforehand for this to work well
     return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
-        * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorPosition());
+        * UnitConversion.falconToRotations(elevatorLeft.getSelectedSensorPosition());
+  }
+
+  public double getLeftMotorHeight() {
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
+        * UnitConversion.falconToRotations(elevatorLeft.getSelectedSensorPosition());
+  }
+
+  public double getRightMotorHeight() {
+    return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
+        * UnitConversion.falconToRotations(elevatorRight.getSelectedSensorPosition());
   }
 
   /**
@@ -75,13 +91,19 @@ public class ElevatorSubsystem extends SubsystemBase {
    */
   private double getElevatorVelocity() {
     return Constants.ElevatorConstants.ELEVATORS_METERS_PER_ROTATION
-        * UnitConversion.falconToRotations(elevatorLeader.getSelectedSensorVelocity());
+        * UnitConversion.falconToRotations(elevatorLeft.getSelectedSensorVelocity());
   }
 
   // TODO: Make the Joystick ending point a setpoint for the motor to stay at
   // TODO: Make sure that this doesn't cancel when the joystick is pressed high
   public void setSetpoint(double heightMeters) {
-    if (heightMeters < 0.0 || heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
+    if (heightMeters < 0.0) {
+      this.heightSetpoint = 0.0;
+      return;
+    }
+
+    if (heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
+      this.heightSetpoint = Constants.ElevatorConstants.HEIGHT_LIMIT;
       return;
     }
 
@@ -91,9 +113,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public double getSetpoint() {
     return this.heightSetpoint;
   }
-  
+
   public void setPercentHeight(double percentage) {
-    if(percentage <= 1) {
+    if (percentage <= 1) {
       double height = percentage * Constants.ElevatorConstants.ELEVATOR_TRAVEL_LENGTH;
       setSetpoint(height);
     }
@@ -102,26 +124,25 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setLevel(int level) {
 
-    if(level == 0) {
-        setSetpoint(0);
+    if (level == 0) {
+      setSetpoint(0);
     }
     // Low
-    else if(level == 1) {
-        setSetpoint(0.2);
+    else if (level == 1) {
+      setSetpoint(0.4);
     }
     // Mid
-    else if(level == 2) {
-        setSetpoint(0.65);
+    else if (level == 2) {
+      setSetpoint(0.65);
     }
     // High
     // else if(level == 3) {
-    //     elevatorSubsystem.setSetpoint(0);
+    // elevatorSubsystem.setSetpoint(0);
     // }
-    else{
-        return;
+    else {
+      return;
     }
   }
-
 
   @Override
   public void periodic() {
@@ -131,17 +152,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     // // Acceleration is 0? could be totally wrong. Want to get to p0rofiled pid
     // controller velocity setpoint
     voltage += this.elevatorFeedforward.calculate(this.elevatorFeedback.getSetpoint().velocity);
-    // // Set the voltage
-    this.elevatorLeader.setVoltage(voltage);
+
+    // Correct for sag
+    double leftMotorCorrectionVolts = this.elevatorLeftPID.calculate(this.getLeftMotorHeight(), this.heightSetpoint);
+    double rightMotorCorrectionVolts = this.elevatorRightPID.calculate(this.getRightMotorHeight(), this.heightSetpoint);
+    // Set the voltage
+    this.elevatorLeft.setVoltage(voltage + leftMotorCorrectionVolts);
+    this.elevatorRight.setVoltage(voltage + rightMotorCorrectionVolts);
 
     SmartDashboard.putNumber("Elevator Setpoint", this.heightSetpoint);
     SmartDashboard.putNumber("Elevator Height", this.getElevatorHeight());
-    SmartDashboard.putNumber("Elevator Master (Right) Encoder", elevatorLeader.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Elevator Follower (Left) Encoder", elevatorFollower.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Elevator Master (Right) Encoder", elevatorLeft.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Elevator Follower (Left) Encoder", elevatorRight.getSelectedSensorPosition());
   }
 
   public void manualControl(double input) {
-    this.elevatorLeader.setVoltage(12.0 * input);
+    this.elevatorLeft.setVoltage(12.0 * input);
   }
 
   public boolean isAtBottom() {
@@ -153,6 +179,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void stopMotors() {
-    this.elevatorLeader.stopMotor();
+    this.elevatorLeft.stopMotor();
   }
 }

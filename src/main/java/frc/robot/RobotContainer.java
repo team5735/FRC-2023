@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -11,6 +12,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 //import edu.wpi.first.wpilibj2.command.button.JoystickButton; //Outdated
@@ -102,8 +105,9 @@ public class RobotContainer {
         () -> -this.driverController.getLeftY(), // Forward on controller is -Y but forward on robot is X.
         () -> -this.driverController.getLeftX(), // Left on controller is -X but left on robot is +Y.
         // TODO: check if this direction is correct
-        () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()))); // turbohack for
-                                                                                                  // ergonomics
+        () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()),
+        () -> this.driverController.leftBumper().getAsBoolean())); // turbohack for
+                                                                                                   // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
@@ -132,12 +136,12 @@ public class RobotContainer {
 
     // INTAKE CONTROLS
     // Right bumper for intake forward
-    this.driverController.rightBumper()
-        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.FORWARD));
+    // this.driverController.rightTrigger()
+    //     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
 
-    // Left bumper for intake backward
-    this.driverController.leftBumper()
-        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.BACKWARD));
+    // // Left bumper for intake backward
+    // this.driverController.leftTrigger()
+    //     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
     // Button A to reverse intake (if that problem happens again...)
 
@@ -147,13 +151,14 @@ public class RobotContainer {
   }
 
   private void configureSubsystemBindings() {
-    // Button A on Subsystem Controller to trigger Compressor On (implement on/off)
-    this.subsystemController.a()
+    // Button Start (diagonal bottom right from Xbox center button) on Subsystem
+    // Controller to trigger Compressor On (implement on/off)
+    this.subsystemController.start()
         .whileTrue(new InstantCommand(() -> {
           this.pneumaticsSubsystem.toggleCompressor();
         }));
 
-    this.subsystemController.leftBumper()
+    this.subsystemController.a()
         .whileTrue(new InstantCommand(() -> {
           this.pneumaticsSubsystem.togglePiston();
         }));
@@ -165,43 +170,61 @@ public class RobotContainer {
     // :: similar to a lambda
 
     // subsystemController.x()
-    //     .whileTrue(new InstantCommand(() -> {new AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
+    // .whileTrue(new InstantCommand(() -> {new
+    // AutoMoveElevatorCommand(this.elevatorSubsystem, 0);}));
 
-    subsystemController.x()
-        .whileTrue(new ParallelCommandGroup(
-          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(0);}),
-          new InstantCommand(() -> {this.extenderSubsystem.setLevel(0);})
-        ));
+    // COMMAND: Brings to level 0 (bottom)
+    // subsystemController.x()
+    // .toggleOnTrue(new SequentialCommandGroup(
+    // new RetractExtenderCommand(this.extenderSubsystem),
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(0);
+    // })));
 
-    subsystemController.y()
-        .whileTrue(new ParallelCommandGroup(
-          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(1);}),
-          new InstantCommand(() -> {this.extenderSubsystem.setLevel(1);})
-        ));
-        
-    this.subsystemController.b()
-        .whileTrue(new ParallelCommandGroup(
-          new InstantCommand(() -> {this.elevatorSubsystem.setLevel(2);}),
-          new InstantCommand(() -> {this.extenderSubsystem.setLevel(3);})
-        ));
+    // COMMAND: Brings to level 1 (bottom scoring level)
+    // subsystemController.y()
+    // .toggleOnTrue(new ParallelCommandGroup(
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(1);
+    // }),
+    // new SequentialCommandGroup(
+    // new WaitCommand(1),
+    // new InstantCommand(() -> {
+    // this.extenderSubsystem.setLevel(1);
+    // }))));
 
-    this.subsystemController.rightTrigger()
-        .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
+    // COMMAND: Brings to level 2 (middle scoring level);
     // this.subsystemController.b()
-    //     .whileTrue(new ExtenderIn(extenderSubsystem))
-    //     .whileFalse(new ExtenderStop(extenderSubsystem));
+    // .toggleOnTrue(new ParallelCommandGroup(
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(2);
+    // }),
+    // new SequentialCommandGroup(
+    // new WaitCommand(1),
+    // new InstantCommand(() -> {
+    // this.extenderSubsystem.setLevel(2);
+    // }))));
 
-    // this.subsystemController.leftStick()
-    // .whileTrue(new ExtendCommand(extenderSubsystem, () ->
-    // this.subsystemController.getLeftY()));
+    // this.subsystemController.rightTrigger()
+    // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
 
     this.extenderSubsystem.setDefaultCommand(
         new ManualExtenderCmd(this.extenderSubsystem,
-            () -> -this.subsystemController.getLeftY()));
+            () -> this.subsystemController.getRightTriggerAxis() - this.subsystemController.getLeftTriggerAxis(),
+            () -> this.elevatorSubsystem.getElevatorHeight()));
 
-    this.elevatorSubsystem.setDefaultCommand(
-        new ManualElevatorCmd(this.elevatorSubsystem,
-            () -> -this.subsystemController.getRightY())); // negative b/c y is inverted
+    // Left + Right bumpers: Decrease / Increase elevator setpoint
+    this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
+      this.elevatorSubsystem.setSetpoint(this.elevatorSubsystem.getSetpoint() + 0.02);
+    }));
+
+    this.subsystemController.leftBumper().toggleOnTrue(new InstantCommand(() -> {
+      this.elevatorSubsystem.setSetpoint(this.elevatorSubsystem.getSetpoint() - 0.02);
+    }));
+
+    // this.elevatorSubsystem.setDefaultCommand(
+    // new ManualElevatorCmd(this.elevatorSubsystem,
+    // () -> -this.subsystemController.getRightY())); // negative b/c y is inverted
   }
 
   /**
@@ -218,10 +241,47 @@ public class RobotContainer {
     PIDController xController = new PIDController(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0);
     PIDController yController = new PIDController(Constants.AutoConstants.AUTO_YCONTROLLER_KP, 0, 0);
     PIDController thetaController = new PIDController(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0);
-    // ProfiledPIDController thetaController = new ProfiledPIDController(
-    // Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0,
-    // Constants.AutoConstants.AUTO_THETACONTROLLER_CONSTRAINTS);
-    // thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    HashMap<String, Command> eventMap = new HashMap<>();
+    // Carson: Put the event marker name and the command to run, like this:
+    // TODO: Then put the event markers with these exact names in the path
+    eventMap.put("toggleCompressor", new InstantCommand(() -> {
+      this.pneumaticsSubsystem.toggleCompressor();
+    }));
+
+    eventMap.put("togglePiston", new InstantCommand(() -> {
+      this.pneumaticsSubsystem.togglePiston();
+    }));
+
+    eventMap.put("level0", new SequentialCommandGroup(
+        new RetractExtenderCommand(this.extenderSubsystem),
+        new InstantCommand(() -> {
+          this.elevatorSubsystem.setLevel(0);
+        })));
+
+    eventMap.put("level1", new ParallelCommandGroup(
+        new InstantCommand(() -> {
+          this.elevatorSubsystem.setLevel(1);
+        }),
+        new SequentialCommandGroup(
+            new WaitCommand(1),
+            new InstantCommand(() -> {
+              this.extenderSubsystem.setLevel(1);
+            }))));
+
+    eventMap.put("level2", new ParallelCommandGroup(
+        new InstantCommand(() -> {
+          this.elevatorSubsystem.setLevel(2);
+        }),
+        new SequentialCommandGroup(
+            new WaitCommand(1),
+            new InstantCommand(() -> {
+              this.extenderSubsystem.setLevel(2);
+            }))));
+
+    eventMap.put("runIntake",
+        // Run the intake
+        new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
 
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
         plotTrajectory,
@@ -263,5 +323,13 @@ public class RobotContainer {
         swerveControllerCommand,
         // Stop the robot at the end of the trajectory
         new InstantCommand(() -> swerveSubsystem.stopModules()));
+  }
+
+  public void resetAllPositions() {
+    this.elevatorSubsystem.setSetpoint(0);
+    this.extenderSubsystem.setSetpoint(0);
+    this.elevatorSubsystem.resetMotors();
+    this.extenderSubsystem.resetMotors();
+    this.swerveSubsystem.resetOdometry(new Pose2d());
   }
 }

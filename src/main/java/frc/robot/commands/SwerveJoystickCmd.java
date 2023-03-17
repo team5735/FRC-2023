@@ -14,6 +14,7 @@ public class SwerveJoystickCmd extends CommandBase {
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private final Supplier<Boolean> slowMode;
 
     /**
      * Creates a new SwerveJoystickCmd to drive the robot using an Xbox controller.
@@ -24,11 +25,13 @@ public class SwerveJoystickCmd extends CommandBase {
      * @param turningSpdFunction A percentage of the right joystick on the X axis
      */
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
-            Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction) {
+            Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
+            Supplier<Boolean> slowMode) {
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
+        this.slowMode = slowMode;
         this.xLimiter = new SlewRateLimiter(Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND);
         this.yLimiter = new SlewRateLimiter(Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND);
         this.turningLimiter = new SlewRateLimiter(Constants.SpeedConstants.MAX_ANGULAR_SPEED_RADIANS_PER_SECOND);
@@ -46,15 +49,30 @@ public class SwerveJoystickCmd extends CommandBase {
         double ySpeed = Math.pow(ySpdFunction.get(), 3) * 0.5; // xbox controller
         double turningSpeed = Math.copySign(Math.pow(turningSpdFunction.get(), 2), turningSpdFunction.get()) * 0.25;
 
+        boolean slowMode = this.slowMode.get();
         // 2. Apply deadband
-        xSpeed = Math.abs(xSpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? xSpeed : 0.0;
-        ySpeed = Math.abs(ySpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? ySpeed : 0.0;
-        turningSpeed = Math.abs(turningSpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? turningSpeed : 0.0;
+        if (slowMode) {
+            xSpeed = Math.abs(xSpeed) > Constants.OIConstants.SLOW_MODE_JOYSTICK_DEADBAND ? xSpeed : 0.0;
+            ySpeed = Math.abs(ySpeed) > Constants.OIConstants.SLOW_MODE_JOYSTICK_DEADBAND ? ySpeed : 0.0;
+            turningSpeed = Math.abs(turningSpeed) > 0.01 ? turningSpeed : 0.0;
+        } else {
+            xSpeed = Math.abs(xSpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? xSpeed : 0.0;
+            ySpeed = Math.abs(ySpeed) > Constants.OIConstants.JOYSTICK_DEADBAND ? ySpeed : 0.0;
+            turningSpeed = Math.abs(turningSpeed) > 0.02 ? turningSpeed : 0.0;
+        }
 
         // 2.5 Limit speed
         xSpeed *= Constants.OIConstants.SPEED_LIMIT_XY;
         ySpeed *= Constants.OIConstants.SPEED_LIMIT_XY;
         turningSpeed *= Constants.OIConstants.SPEED_LIMIT_TURN;
+
+        // 2.75 Limit speed if slow mode
+
+        if (slowMode) {
+            xSpeed *= 0.4;
+            ySpeed *= 0.4;
+            turningSpeed *= 0.4;
+        }
 
         // 3. Make the driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * Constants.SpeedConstants.MAX_SPEED_METERS_PER_SECOND; // returns desired

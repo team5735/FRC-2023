@@ -23,6 +23,8 @@ public class ManualElevatorCmd extends CommandBase {
 
     @Override
     public void initialize() {
+
+        this.elevatorSubsystem.resetMotors();
     }
 
     @Override
@@ -36,9 +38,18 @@ public class ManualElevatorCmd extends CommandBase {
         // if (input >= 0 && this.elevatorSubsystem.isAtTop()) {
         //     return;
         // }
-        if (input > 0 || input < 0) {
-            elevatorSubsystem.setSetpoint(elevatorSubsystem.getSetpoint() + 0.1 * input);
+        if (input > 0) {
+            this.elevatorSubsystem.setSetpoint(
+                this.elevatorSubsystem.getSetpoint() + 0.02
+            );
+        } else {
+            this.elevatorSubsystem.setSetpoint(
+                this.elevatorSubsystem.getSetpoint() - 0.02
+            );
         }
+        // if (input > 0 || input < 0) {
+        //     elevatorSubsystem.setSetpoint(elevatorSubsystem.getSetpoint() + 0.1 * input);
+        // }
         // this.elevatorSubsystem.setSetpoint(
         //     Constants.ElevatorConstants.HEIGHT_LIMIT * input * 0.5
         // );

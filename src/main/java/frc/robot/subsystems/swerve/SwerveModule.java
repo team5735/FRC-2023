@@ -144,7 +144,7 @@ public class SwerveModule {
 
     public void driveFullPower() {
         this.driveMotor.set(ControlMode.PercentOutput, 1.0);
-        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed", this.getDriveWheelVelocity());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed", this.getDriveWheelVelocity());
     }
 
     public void turnFullPower() {
@@ -208,9 +208,9 @@ public class SwerveModule {
         this.turnMotor.setVoltage(turnVoltage);
 
         // Logging
-        SmartDashboard.putString("Swerve[" + this.moduleId + "] state", state.toString());
-        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
-                this.turnAbsoluteEncoder.get());
+        // SmartDashboard.putString("Swerve[" + this.moduleId + "] state", state.toString());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
+                // this.turnAbsoluteEncoder.get());
     }
 
     /**

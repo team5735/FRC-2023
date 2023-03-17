@@ -47,7 +47,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.frontLeft = new SwerveModule(
                 Constants.MotorConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.FRONT_LEFT_TURN_MOTOR_ID,
-                false, // drive motor reversed
+                true, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.FRONT_LEFT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.FRONT_LEFT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -58,7 +58,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.frontRight = new SwerveModule(
                 Constants.MotorConstants.FRONT_RIGHT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.FRONT_RIGHT_TURN_MOTOR_ID,
-                false, // drive motor reversed
+                true, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.FRONT_RIGHT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.FRONT_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -69,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.backLeft = new SwerveModule(
                 Constants.MotorConstants.BACK_LEFT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.BACK_LEFT_TURN_MOTOR_ID,
-                false, // drive motor reversed
+                true, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.BACK_LEFT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.BACK_LEFT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -80,7 +80,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.backRight = new SwerveModule(
                 Constants.MotorConstants.BACK_RIGHT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.BACK_RIGHT_TURN_MOTOR_ID,
-                false, // drive motor reversed
+                true, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.BACK_RIGHT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.BACK_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -247,13 +247,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
         m_field.setRobotPose(this.odometer.getPoseMeters());
 
-        SmartDashboard.putData("Field", m_field);
-        SmartDashboard.putString("Odometry", this.odometer.getPoseMeters().toString());
+        // SmartDashboard.putData("Field", m_field);
+        // SmartDashboard.putString("Odometry", this.odometer.getPoseMeters().toString());
 
-        SmartDashboard.putNumber("FL Drive Pos", this.frontLeft.getDriveWheelPosition());
-        SmartDashboard.putNumber("FR Drive Pos", this.frontRight.getDriveWheelPosition());
-        SmartDashboard.putNumber("BL Drive Pos", this.backLeft.getDriveWheelPosition());
-        SmartDashboard.putNumber("BR Drive Pos", this.backRight.getDriveWheelPosition());
+        // SmartDashboard.putNumber("FL Drive Pos", this.frontLeft.getDriveWheelPosition());
+        // SmartDashboard.putNumber("FR Drive Pos", this.frontRight.getDriveWheelPosition());
+        // SmartDashboard.putNumber("BL Drive Pos", this.backLeft.getDriveWheelPosition());
+        // SmartDashboard.putNumber("BR Drive Pos", this.backRight.getDriveWheelPosition());
 
 
         // SmartDashboard.putString("Odometry",
@@ -265,10 +265,10 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("Robot Location (m)", this.getPose().getTranslation().toString());
         SmartDashboard.putBoolean("Field Oriented Enabled", this.isFieldOrientedEnabled);
 
-        SmartDashboard.putNumber("FL Wheel Angle", Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
-        SmartDashboard.putNumber("FR Wheel Angle", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
-        SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
-        SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("FL Wheel Angle", Units.radiansToDegrees(frontLeft.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("FR Wheel Angle", Units.radiansToDegrees(frontRight.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
+        // SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
         // SmartDashboard.putNumber("FL Absolute Encoder", frontLeft.getTurnMotorInRotations());
         // SmartDashboard.putNumber("FR Absolute Encoder", frontRight.getTurnMotorInRotations());
@@ -286,7 +286,7 @@ public class SwerveSubsystem extends SubsystemBase {
         // Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
         // Returns in Degrees -- Pitch and Roll subject to change depending upon gyro orientation
-        SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
+        // SmartDashboard.putNumber("Gyro Pitch", this.gyro.getPitch()); // Returns rotation on axis perpendicular to battery
         // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getPitch())); // Returns rotation on the axis of the battery in Radians
         // SmartDashboard.putNumber("Gyro Roll", this.gyro.getRoll()); // Returns rotation on the axis of the battery
         // SmartDashboard.putNumber("Gyro Roll radians", Units.degreesToRadians(this.gyro.getRoll())); // Returns rotation on the axis of the battery in Radians

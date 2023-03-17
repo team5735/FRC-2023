@@ -38,17 +38,17 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     // Check motor direction
-    SmartDashboard.putNumber("intake motor direction", intakeMotor.get());
-    SmartDashboard.putNumber("conveyor motor direction", conveyorMotor.get());
+    // SmartDashboard.putNumber("intake motor direction", intakeMotor.get());
+    // SmartDashboard.putNumber("conveyor motor direction", conveyorMotor.get());
   }
 
   // TODO: Has the commands set as proxies for these methods, worth reconsidering
-  public void intakeForward() {
+  public void intakeIn() {
     intakeMotor.set(Constants.IntakeConstants.INTAKE_IN_SPEED);
     conveyorMotor.set(Constants.IntakeConstants.CONVEYOR_IN_SPEED);
   }
 
-  public void intakeBackward() {
+  public void intakeOut() {
     intakeMotor.set(Constants.IntakeConstants.INTAKE_OUT_SPEED);
     conveyorMotor.set(Constants.IntakeConstants.CONVEYOR_OUT_SPEED);
   }

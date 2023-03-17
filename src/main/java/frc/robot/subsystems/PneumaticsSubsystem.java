@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PneumaticsSubsystem extends SubsystemBase {
 
@@ -17,6 +18,11 @@ public class PneumaticsSubsystem extends SubsystemBase {
         this.solenoid = new DoubleSolenoid(11, PneumaticsModuleType.CTREPCM, 1, 0);
         this.pcmCompressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
         this.pcmCompressor.disable();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Compressor Pressure PSI", this.pcmCompressor.getPressure());
     }
 
     /**
