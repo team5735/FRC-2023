@@ -25,16 +25,16 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderMotor = new CANSparkMax(ExtenderConstants.EXTEND_MOTOR_ID, MotorType.kBrushless);
     this.extenderFeedForward = new ElevatorFeedforward(
         // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
-        0, 0.3, 0, 0);
+        0, 0.3, 2, 0);
 
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
     this.extenderFeedback = new ProfiledPIDController(
-        7.5, // P value
+        10.5, // P value
         0.0, // I vaue
         0.105, // D value
         new TrapezoidProfile.Constraints(
-            0.3, // max velocity m/s
+            0.5, // max velocity m/s
             0.25 // max acceleration m/s/s
         ));
 
@@ -88,7 +88,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     }
     // Mid
     else if(level == 2) {
-        setSetpoint(ExtenderConstants.EXTENDER_MAX_LENGTH - 0.1);
+        setSetpoint(ExtenderConstants.EXTENDER_MAX_LENGTH ); // -0.01
     }
     // // High
     // else if(level == 3) {

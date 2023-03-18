@@ -231,11 +231,9 @@ public class RobotContainer {
     new InstantCommand(() -> {
     this.elevatorSubsystem.setLevel(2);
     }),
-    new SequentialCommandGroup(
-    new WaitCommand(0.5),
     new InstantCommand(() -> {
     this.extenderSubsystem.setLevel(2);
-    }))));
+    })));
 
     this.subsystemController.b()
     .toggleOnTrue(

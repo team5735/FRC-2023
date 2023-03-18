@@ -284,8 +284,8 @@ public final class Constants {
                 public static final double JOYSTICK_DEADBAND = 0.06;
                 public static final double SLOW_MODE_JOYSTICK_DEADBAND = 0.03;
 
-                public static double SPEED_LIMIT_XY = 0.75;
-                public static double SPEED_LIMIT_TURN = 0.15;
+                public static double SPEED_LIMIT_XY = 1;
+                public static double SPEED_LIMIT_TURN = 0.2;
         }
 
 }
