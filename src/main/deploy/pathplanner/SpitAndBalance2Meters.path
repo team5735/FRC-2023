@@ -41,9 +41,10 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "gyroBalance"
+          "gyroBalance",
+          "brake"
         ],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
