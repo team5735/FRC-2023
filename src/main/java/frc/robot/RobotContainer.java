@@ -182,6 +182,9 @@ public class RobotContainer {
     this.driverController.leftBumper()
     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
+    this.driverController.start()
+    .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+
     // Button A to reverse intake (if that problem happens again...)
 
     // turn to zero
