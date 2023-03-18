@@ -115,6 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
      */
     public void toggleFieldOriented() {
         this.isFieldOrientedEnabled = !this.isFieldOrientedEnabled;
+        System.out.println("TOGGLED FIELD ORIENTED");
     }
 
     /**
@@ -271,10 +272,10 @@ public class SwerveSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("BL Wheel Angle", Units.radiansToDegrees(backLeft.getTurnMotorAngle()));
         // SmartDashboard.putNumber("BR Wheel Angle", Units.radiansToDegrees(backRight.getTurnMotorAngle()));
 
-        // SmartDashboard.putNumber("FL Absolute Encoder", frontLeft.getTurnMotorInRotations());
-        // SmartDashboard.putNumber("FR Absolute Encoder", frontRight.getTurnMotorInRotations());
-        // SmartDashboard.putNumber("BL Absolute Encoder", backLeft.getTurnMotorInRotations());
-        // SmartDashboard.putNumber("BR Absolute Encoder", backRight.getTurnMotorInRotations());
+        SmartDashboard.putNumber("FL Absolute Encoder", frontLeft.getTurnMotorInRotations());
+        SmartDashboard.putNumber("FR Absolute Encoder", frontRight.getTurnMotorInRotations());
+        SmartDashboard.putNumber("BL Absolute Encoder", backLeft.getTurnMotorInRotations());
+        SmartDashboard.putNumber("BR Absolute Encoder", backRight.getTurnMotorInRotations());
 
         // Doesn't actually do what its supposed to do
         // SmartDashboard.putNumber("FL Wheel Speed",

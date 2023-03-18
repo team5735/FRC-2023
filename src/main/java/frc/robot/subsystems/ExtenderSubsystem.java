@@ -30,7 +30,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
     this.extenderFeedback = new ProfiledPIDController(
-        10.5, // P value
+        7.5, // P value
         0.0, // I vaue
         0.105, // D value
         new TrapezoidProfile.Constraints(

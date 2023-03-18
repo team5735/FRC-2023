@@ -38,9 +38,9 @@ public class ManualExtenderCmd extends CommandBase {
         input = (Math.abs(input) > 0.5) ? input : 0.0; // if trigger not halfway down, don't do anything
         
         if (input > 0) {
-            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() + 0.5);
+            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() + 0.2); //0.5
         } else if (input < 0) {
-            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() - 0.5);
+            extenderSubsystem.setSetpoint(extenderSubsystem.getSetpoint() - 0.2); //0.5
         }
     }
 

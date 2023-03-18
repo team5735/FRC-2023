@@ -182,6 +182,9 @@ public class RobotContainer {
     this.driverController.leftBumper()
     .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
+    this.driverController.start()
+    .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+
     // Button A to reverse intake (if that problem happens again...)
 
     // turn to zero
@@ -203,36 +206,36 @@ public class RobotContainer {
         }));
 
     // COMMAND: Brings to level 0 (bottom)
-    // subsystemController.x()
-    // .toggleOnTrue(new SequentialCommandGroup(
-    // new RetractExtenderCommand(this.extenderSubsystem),
-    // new InstantCommand(() -> {
-    // this.elevatorSubsystem.setLevel(0);
-    // })));
+    subsystemController.x()
+    .toggleOnTrue(new SequentialCommandGroup(
+    new RetractExtenderCommand(this.extenderSubsystem),
+    new InstantCommand(() -> {
+    this.elevatorSubsystem.setLevel(0);
+    })));
 
     // COMMAND: Brings to level 1 (bottom scoring level)
     // subsystemController.y()
-    // .toggleOnTrue(new ParallelCommandGroup(
-    // new InstantCommand(() -> {
-    // this.elevatorSubsystem.setLevel(1);
+    //   .toggleOnTrue(new ParallelCommandGroup(
+    //   new InstantCommand(() -> {
+    //   this.elevatorSubsystem.setLevel(1);
     // }),
     // new SequentialCommandGroup(
-    // new WaitCommand(1),
-    // new InstantCommand(() -> {
-    // this.extenderSubsystem.setLevel(1);
+    //     new WaitCommand(0.5),
+    //     new InstantCommand(() -> {
+    //     this.extenderSubsystem.setLevel(1);
     // }))));
 
     // COMMAND: Brings to level 2 (middle scoring level);
-    // this.subsystemController.b()
-    // .toggleOnTrue(new ParallelCommandGroup(
-    // new InstantCommand(() -> {
-    // this.elevatorSubsystem.setLevel(2);
-    // }),
-    // new SequentialCommandGroup(
-    // new WaitCommand(1),
-    // new InstantCommand(() -> {
-    // this.extenderSubsystem.setLevel(2);
-    // }))));
+    this.subsystemController.y()
+    .toggleOnTrue(new ParallelCommandGroup(
+    new InstantCommand(() -> {
+    this.elevatorSubsystem.setLevel(2);
+    }),
+    new SequentialCommandGroup(
+    new WaitCommand(0.5),
+    new InstantCommand(() -> {
+    this.extenderSubsystem.setLevel(2);
+    }))));
 
     // this.subsystemController.rightTrigger()
     // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
