@@ -237,6 +237,12 @@ public class RobotContainer {
     this.extenderSubsystem.setLevel(2);
     }))));
 
+    this.subsystemController.b()
+    .toggleOnTrue(
+    new InstantCommand(() -> {
+      this.elevatorSubsystem.setLevel(2);
+    }));
+
     // this.subsystemController.rightTrigger()
     // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
 

@@ -217,7 +217,7 @@ public final class Constants {
                                 .build();
 
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
-                public static final double HEIGHT_LIMIT = Units.inchesToMeters(26.5); // 0.6731m
+                public static final double HEIGHT_LIMIT = Units.inchesToMeters(29.5); // 0.6731m
                 public static final double ELEVATOR_CRUISING_VEL = 3.5;// Inches / sec, Could be increased
                 // private static final double acceleration = 2; // Time to Cruising Velocity
                 // Sec

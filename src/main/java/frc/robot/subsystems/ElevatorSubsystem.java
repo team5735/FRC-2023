@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Constants.ElevatorConstants;
 
 import java.util.function.Supplier;
 
@@ -139,7 +140,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     // Mid
     else if (level == 2) {
-      setSetpoint(0.65);
+      setSetpoint(ElevatorConstants.HEIGHT_LIMIT);
     }
     // High
     // else if(level == 3) {
