@@ -307,6 +307,9 @@ public class RobotContainer {
 
     eventMap.put("gyroBalance",
         new GyroAutocorrectCommand(swerveSubsystem));
+        
+    eventMap.put("brake",
+        new BrakeCommand(swerveSubsystem));
   }
 
   /**

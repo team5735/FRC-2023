@@ -32,7 +32,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     this.extenderFeedback = new ProfiledPIDController(
         10.5, // P value
         0.0, // I vaue
-        1, // D value
+        0.105, // D value
         new TrapezoidProfile.Constraints(
             0.3, // max velocity m/s
             0.25 // max acceleration m/s/s
