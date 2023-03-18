@@ -30,9 +30,9 @@ public class ManualExtenderCmd extends CommandBase {
 
     @Override
     public void execute() {
-        if (this.currentElevatorHeight.get() < Constants.ExtenderConstants.EXTENDER_ELEVATOR_MIN_HEIGHT) {
-            return;
-        }
+        // if (this.currentElevatorHeight.get() < Constants.ExtenderConstants.EXTENDER_ELEVATOR_MIN_HEIGHT) {
+        //     return;
+        // }
 
         double input = this.inputSupplier.get();
         input = (Math.abs(input) > 0.5) ? input : 0.0; // if trigger not halfway down, don't do anything

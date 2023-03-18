@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +43,10 @@ public class Robot extends TimedRobot {
     for (int port = 5800; port <= 5805; port++) {
       PortForwarder.add(port, "limelight.local", port);
     }
+
+    var cam = CameraServer.startAutomaticCapture();
+    cam.setResolution(320, 240);
+    
   }
 
   /**

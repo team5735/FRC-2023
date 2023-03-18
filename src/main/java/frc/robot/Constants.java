@@ -247,7 +247,7 @@ public final class Constants {
                 public static final double EXTEND_MOTOR_OUT_SPEED = -.1;
                 public static final double EXTEND_MOTOR_IN_SPEED = .1;
                 
-                public static final int EXTEND_MOTOR_ID = 14;
+                public static final int EXTEND_MOTOR_ID = 10;
                 
                 //TODO: get actual values for this
                 //Extension encoder values

@@ -59,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     );
 
     this.rightFeedback = new ProfiledPIDController(
-      Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP() + 0.05, // compensate sag
+      Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getP() + 0.025, // compensate sag +0.05
       Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getI(),
       Constants.ElevatorConstants.ELEVATOR_CHARACTERIZATION_CONSTANTS.getD(),
         new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
@@ -109,12 +109,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       return;
     }
 
+    this.heightSetpoint = heightMeters;
+
     if (heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
       this.heightSetpoint = Constants.ElevatorConstants.HEIGHT_LIMIT;
       return;
     }
-
-    this.heightSetpoint = heightMeters;
   }
 
   public double getSetpoint() {

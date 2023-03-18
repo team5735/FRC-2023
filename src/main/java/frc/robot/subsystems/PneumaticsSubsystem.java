@@ -23,6 +23,8 @@ public class PneumaticsSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Compressor Pressure PSI", this.pcmCompressor.getPressure());
+        SmartDashboard.putBoolean("Compressor On", this.statusOfCompressor());
+
     }
 
     /**

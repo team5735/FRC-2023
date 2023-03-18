@@ -206,11 +206,19 @@ public class RobotContainer {
         }));
 
     // COMMAND: Brings to level 0 (bottom)
-    subsystemController.x()
-    .toggleOnTrue(new SequentialCommandGroup(
-    new RetractExtenderCommand(this.extenderSubsystem),
+    // subsystemController.x()
+    // .toggleOnTrue(new SequentialCommandGroup(
+    // new RetractExtenderCommand(this.extenderSubsystem),
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(0);
+    // })));
+    this.subsystemController.x()
+    .toggleOnTrue(new ParallelCommandGroup(
     new InstantCommand(() -> {
     this.elevatorSubsystem.setLevel(0);
+    }),
+    new InstantCommand(() -> {
+    this.extenderSubsystem.setLevel(0);
     })));
 
     // COMMAND: Brings to level 1 (bottom scoring level)

@@ -30,9 +30,9 @@ public class ExtenderSubsystem extends SubsystemBase {
     // TODO: Find constants that work. Start with a small P value, velocity, and
     // acceleration.
     this.extenderFeedback = new ProfiledPIDController(
-        10.5, // P value
+        13, // P value
         0.0, // I vaue
-        0.105, // D value
+        0.125, // D value
         new TrapezoidProfile.Constraints(
             0.5, // max velocity m/s
             0.25 // max acceleration m/s/s
@@ -104,7 +104,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run (every 20ms default)
 
     if (this.getExtenderPosition() >= Constants.ExtenderConstants.EXTENDER_MAX_LENGTH - 0.05) {
-      this.setSetpoint(this.getExtenderPosition()-.1);
+      this.setSetpoint(this.getExtenderPosition()-.05);
     }
 
     // WARNING: UNTESTED
