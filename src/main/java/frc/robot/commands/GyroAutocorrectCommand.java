@@ -25,7 +25,7 @@ public class GyroAutocorrectCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double proportional = this.swerveSubsystem.getGyroPitchRad() * 0.7;
+        double proportional = - this.swerveSubsystem.getGyroPitchRad() * 0.7;
 
         // for safety
         if(proportional > 0.25 || proportional < -0.25) {
