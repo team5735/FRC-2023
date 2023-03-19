@@ -25,16 +25,16 @@ public class GyroAutocorrectCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double proportional = - this.swerveSubsystem.getGyroPitchRad() * 0.7;
+        double proportional = - this.swerveSubsystem.getGyroPitchRad() * 1;
 
         // for safety
-        if(proportional > 0.25 || proportional < -0.25) {
+        if(proportional > 0.35 || proportional < -0.35) {
             this.swerveSubsystem.brake();
             enabled = false;
             return;
         }
 
-        else if((proportional > 0.05 || proportional < -0.05) && enabled) {
+        else if((proportional > 0.072 || proportional < -0.072) && enabled) {
             SwerveModuleState frontLeftState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
             SwerveModuleState frontRightState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
             SwerveModuleState backLeftState = new SwerveModuleState(proportional, Rotation2d.fromDegrees(0));
@@ -44,7 +44,7 @@ public class GyroAutocorrectCommand extends CommandBase {
         }
         
         // Additional Safety -- untested
-        if(proportional < 0.05 && proportional > -0.05) {
+        if(proportional < 0.072 && proportional > -0.072) {
             this.swerveSubsystem.brake();
             enabled = false;
             return;

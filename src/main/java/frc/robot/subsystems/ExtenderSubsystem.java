@@ -104,7 +104,7 @@ public class ExtenderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run (every 20ms default)
 
     if (this.getExtenderPosition() >= Constants.ExtenderConstants.EXTENDER_MAX_LENGTH - 0.05) {
-      this.setSetpoint(this.getExtenderPosition()-.05);
+      this.setSetpoint(this.getExtenderPosition() - 0.025);
     }
 
     // WARNING: UNTESTED
