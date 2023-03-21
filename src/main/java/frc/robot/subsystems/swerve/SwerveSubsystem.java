@@ -47,7 +47,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.frontLeft = new SwerveModule(
                 Constants.MotorConstants.FRONT_LEFT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.FRONT_LEFT_TURN_MOTOR_ID,
-                true, // drive motor reversed
+                false, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.FRONT_LEFT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.FRONT_LEFT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -58,7 +58,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.frontRight = new SwerveModule(
                 Constants.MotorConstants.FRONT_RIGHT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.FRONT_RIGHT_TURN_MOTOR_ID,
-                true, // drive motor reversed
+                false, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.FRONT_RIGHT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.FRONT_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -69,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.backLeft = new SwerveModule(
                 Constants.MotorConstants.BACK_LEFT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.BACK_LEFT_TURN_MOTOR_ID,
-                true, // drive motor reversed
+                false, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.BACK_LEFT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.BACK_LEFT_ABS_ENCODER_OFFSET_ROTATIONS,
@@ -80,7 +80,7 @@ public class SwerveSubsystem extends SubsystemBase {
         this.backRight = new SwerveModule(
                 Constants.MotorConstants.BACK_RIGHT_DRIVE_MOTOR_ID,
                 Constants.MotorConstants.BACK_RIGHT_TURN_MOTOR_ID,
-                true, // drive motor reversed
+                false, // drive motor reversed
                 false, // turn motor reversed
                 Constants.MotorConstants.BACK_RIGHT_ABS_ENCODER_CHANNEL,
                 Constants.MotorConstants.BACK_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS,
