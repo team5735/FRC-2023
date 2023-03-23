@@ -198,7 +198,31 @@ public final class Constants {
                                 AUTO_MAX_SPEED_METERS_PER_SECOND, AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ);
         }
 
-        // Carson: Convert all of this to meters / metric units please
+        // TODO: Measure required physical constants
+        public static class ArmConstants {
+                public static final int ARM_LEFT_MOTOR_ID = 57;
+                public static final int ARM_RIGHT_MOTOR_ID = 55;
+                public static final CharacterizationConstants ARM_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
+                                .setFeedforwardConstants(0,0,0,0)
+                                .setFeedbackConstants(0,0,0)
+                                .build();
+
+                public static final double ARM_ERROR_THRESHOLD = 0;
+                public static final double ARM_ROTATION_LIMIT = 0; //?
+                public static final double ARM_RADIANS_PER_ROTATION = 0;
+
+                // Physical Constants
+                public static final double ARM_GEAR_RATIO = 12 / 84.; // 12 teeth on gear attached to motor, 84 on
+                                                                           // gear attached to chain
+                public static final double PIVOT_POINT_GEAR_RATIO = 64 / 16.;
+                public static final double CHAIN_LINK_LENGTH = Units.inchesToMeters(0.25); // inches
+                // public static final double ELEVATOR_TRAVEL_LENGTH = Units.inchesToMeters(33.375); // inches
+                public static final int ARM_SPROCKET_NUM_TEETH = 16;
+
+                // private static final double encoderTicksPerRevolution = 4096; Outdated
+        }
+
+
         public static class ElevatorConstants {
                 // Constants from Characterization
                 // ks = 0.051528, kg = 0.27546, kv = 7.8232, ka = 0.13338
