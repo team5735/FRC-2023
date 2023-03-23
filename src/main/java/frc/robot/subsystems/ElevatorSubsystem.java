@@ -34,7 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     this.elevatorLeft = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_LEFT_MOTOR_ID);
     this.elevatorLeft.setInverted(true);
     this.elevatorRight = new WPI_TalonFX(Constants.ElevatorConstants.ELEVATOR_RIGHT_MOTOR_ID);
-    this.elevatorRight.setInverted(true);
+    this.elevatorRight.setInverted(false);
     // this.elevatorFollower.follow(this.elevatorLeader);
 
     this.leftFeedforward = new ElevatorFeedforward(
