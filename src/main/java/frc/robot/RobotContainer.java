@@ -47,7 +47,9 @@ import frc.robot.Constants.OIConstants;
 
 // Commands Import
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.GrabberCommand.GrabberDirection;
 import frc.robot.commands.BrakeCommand;
+import frc.robot.commands.GrabberCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
 import frc.robot.commands.ManualElevatorCmd;
@@ -65,6 +67,7 @@ import frc.robot.commands.intake.IntakeCommand.IntakeDirection;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtenderSubsystem;
+import frc.robot.subsystems.GrabberSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -84,6 +87,7 @@ public class RobotContainer {
   private final ExtenderSubsystem extenderSubsystem;
   private final VisionSubsystem visionSubsystem;
   private final ElevatorSubsystem elevatorSubsystem;
+  private final GrabberSubsystem grabberSubsystem;
 
   private Map<String, Command> eventMap = new HashMap<>();
 
@@ -98,6 +102,7 @@ public class RobotContainer {
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
     this.elevatorSubsystem = new ElevatorSubsystem();
+    this.grabberSubsystem = new GrabberSubsystem();
 
     // pipeline stuff not set up yet (do we even need?)
     this.visionSubsystem = new VisionSubsystem(0);
@@ -200,10 +205,13 @@ public class RobotContainer {
           this.pneumaticsSubsystem.toggleCompressor();
         }));
 
+    // this.subsystemController.a()
+    //     .whileTrue(new InstantCommand(() -> {
+    //       this.pneumaticsSubsystem.togglePiston();
+    //     }));
+
     this.subsystemController.a()
-        .whileTrue(new InstantCommand(() -> {
-          this.pneumaticsSubsystem.togglePiston();
-        }));
+      .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
 
     // COMMAND: Brings to level 0 (bottom)
     // subsystemController.x()
@@ -213,13 +221,13 @@ public class RobotContainer {
     // this.elevatorSubsystem.setLevel(0);
     // })));
     this.subsystemController.x()
-    .toggleOnTrue(new ParallelCommandGroup(
-    new InstantCommand(() -> {
-    this.elevatorSubsystem.setLevel(0);
-    }),
-    new InstantCommand(() -> {
-    this.extenderSubsystem.setLevel(0);
-    })));
+      .toggleOnTrue(new ParallelCommandGroup(
+      new InstantCommand(() -> {
+        this.elevatorSubsystem.setLevel(0);
+      }),
+      new InstantCommand(() -> {
+        this.extenderSubsystem.setLevel(0);
+      })));
 
     // COMMAND: Brings to level 1 (bottom scoring level)
     // subsystemController.y()

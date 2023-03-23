@@ -247,7 +247,7 @@ public final class Constants {
                 public static final double EXTEND_MOTOR_OUT_SPEED = .1;
                 public static final double EXTEND_MOTOR_IN_SPEED = -.1;
                 
-                public static final int EXTEND_MOTOR_ID = 10;
+                public static final int EXTEND_MOTOR_ID = 23;
                 
                 //TODO: get actual values for this
                 //Extension encoder values
@@ -261,6 +261,13 @@ public final class Constants {
 
                 public static final double EXTENDER_RETRACT_THRESHOLD = 0.6; // max extender position to be qualified as "retracted"
                     
+        }
+
+        public static class GrabberConstants {
+                public static final int GRABBER_MOTOR_ID = 10;
+
+                public static final double GRABBER_IN_SPEED = +.3;
+                public static final double GRABBER_OUT_SPEED = -.3;
         }
 
         public static class IntakeConstants {
