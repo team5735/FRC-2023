@@ -15,15 +15,15 @@ public class PneumaticsSubsystem extends SubsystemBase {
     private Compressor pcmCompressor;
 
     public PneumaticsSubsystem() {
-        this.solenoid = new DoubleSolenoid(11, PneumaticsModuleType.CTREPCM, 1, 0);
-        this.pcmCompressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
-        this.pcmCompressor.disable();
+        // this.solenoid = new DoubleSolenoid(11, PneumaticsModuleType.CTREPCM, 1, 0);
+        // this.pcmCompressor = new Compressor(11, PneumaticsModuleType.CTREPCM);
+        // this.pcmCompressor.disable();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Compressor Pressure PSI", this.pcmCompressor.getPressure());
-        SmartDashboard.putBoolean("Compressor On", this.statusOfCompressor());
+        // SmartDashboard.putNumber("Compressor Pressure PSI", this.pcmCompressor.getPressure());
+        // SmartDashboard.putBoolean("Compressor On", this.statusOfCompressor());
 
     }
 

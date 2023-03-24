@@ -87,7 +87,8 @@ public final class Constants {
                 public static final int BACK_RIGHT_DRIVE_MOTOR_ID = 7;
                 public static final int BACK_RIGHT_TURN_MOTOR_ID = 8;
                 public static final int BACK_RIGHT_ABS_ENCODER_CHANNEL = 4;
-                public static final double BACK_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS = 0.792; //0.293;//0.793; // 1.302;// 2.794;
+                public static final double BACK_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS = 0.792; // 0.293;//0.793; //
+                                                                                            // 1.302;// 2.794;
                 public static final CharacterizationConstants BACK_RIGHT_DRIVE_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.60709, 2.7646, 0.15464)
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
@@ -105,7 +106,8 @@ public final class Constants {
                 public static final int BACK_LEFT_DRIVE_MOTOR_ID = 5;
                 public static final int BACK_LEFT_TURN_MOTOR_ID = 6;
                 public static final int BACK_LEFT_ABS_ENCODER_CHANNEL = 3;
-                public static final double BACK_LEFT_ABS_ENCODER_OFFSET_ROTATIONS = 0.864; //0.3625; // 0.8625; // 2.362;// 1.857;
+                public static final double BACK_LEFT_ABS_ENCODER_OFFSET_ROTATIONS = 0.864; // 0.3625; // 0.8625; //
+                                                                                           // 2.362;// 1.857;
                 public static final CharacterizationConstants BACK_LEFT_DRIVE_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.49831, 2.6069, 0.13338)
                                 .setFeedbackConstants(2.5147, 0.0, 0.0)
@@ -120,7 +122,8 @@ public final class Constants {
                 public static final int FRONT_RIGHT_DRIVE_MOTOR_ID = 3;
                 public static final int FRONT_RIGHT_TURN_MOTOR_ID = 4;
                 public static final int FRONT_RIGHT_ABS_ENCODER_CHANNEL = 2;
-                public static final double FRONT_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS = 0.136; //0.639; //0.139; // 2.632;// 1.113;
+                public static final double FRONT_RIGHT_ABS_ENCODER_OFFSET_ROTATIONS = 0.136; // 0.639; //0.139; //
+                                                                                             // 2.632;// 1.113;
                 public static final CharacterizationConstants FRONT_RIGHT_DRIVE_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.60709, 2.7646, 0.15464)
                                 .setFeedbackConstants(2.64, 0.0, 0.0)
@@ -138,7 +141,8 @@ public final class Constants {
                 public static final int FRONT_LEFT_DRIVE_MOTOR_ID = 1;
                 public static final int FRONT_LEFT_TURN_MOTOR_ID = 2;
                 public static final int FRONT_LEFT_ABS_ENCODER_CHANNEL = 1;
-                public static final double FRONT_LEFT_ABS_ENCODER_OFFSET_ROTATIONS = 0.928; //0.4238; //0.9238; // 1.432;// 0.928;
+                public static final double FRONT_LEFT_ABS_ENCODER_OFFSET_ROTATIONS = 0.928; // 0.4238; //0.9238; //
+                                                                                            // 1.432;// 0.928;
                 public static final CharacterizationConstants FRONT_LEFT_DRIVE_MOTOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
                                 .setFeedforwardConstants(0.49831, 2.6069, 0.13338)
                                 .setFeedbackConstants(2.5147, 0.0, 0.0) // 2.3645
@@ -200,28 +204,41 @@ public final class Constants {
 
         // TODO: Measure required physical constants
         public static class ArmConstants {
+                // AXIS: Straight out is 0 degrees, unit circle style
+
+                // CHARACTERIZATION GEAR RATIO:
+                // (12 / 84) * (16 / 64) = 0.0357142857. One rotation of falcon = 0.0357142857
+                // rotation of arm.
+                // Thus, 1 / 0.0357142857 = 28 : 1 <-- GEAR RATIO FOR CHARACTERIZATION
+
                 public static final int ARM_LEFT_MOTOR_ID = 57;
                 public static final int ARM_RIGHT_MOTOR_ID = 55;
                 public static final CharacterizationConstants ARM_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0,0,0,0)
-                                .setFeedbackConstants(0,0,0)
+                                // .setFeedforwardConstants(0.03424, 0.95, 2.8521, 0.04607)
+                                // .setFeedforwardConstants(0.07687, 1.7679, 2.03363, 0.05392)
+                                .setFeedbackConstants(7, 0.08, 0)
+                                // .setFeedbackConstants(7.3529,0,0.86523)
                                 .build();
 
-                public static final double ARM_ERROR_THRESHOLD = 0;
-                public static final double ARM_ROTATION_LIMIT = 0; //?
-                public static final double ARM_RADIANS_PER_ROTATION = 0;
+                public static final double ARM_POSITION_START_RAD = -Math.PI / 2; // straight down
+
+                public static final double ARM_MIN_ANGLE = ARM_POSITION_START_RAD; // slightly left of straight
+                                                                                         // down
+                public static final double ARM_MAX_ANGLE = Units.degreesToRadians(10); // top right diagonal
 
                 // Physical Constants
                 public static final double ARM_GEAR_RATIO = 12 / 84.; // 12 teeth on gear attached to motor, 84 on
-                                                                           // gear attached to chain
-                public static final double PIVOT_POINT_GEAR_RATIO = 64 / 16.;
+                                                                      // gear attached to chain
+                public static final double PIVOT_POINT_GEAR_RATIO = 16 / 64.; // 16 teeth on gear attached to same axle
+                                                                              // of 84 gear
+
                 public static final double CHAIN_LINK_LENGTH = Units.inchesToMeters(0.25); // inches
-                // public static final double ELEVATOR_TRAVEL_LENGTH = Units.inchesToMeters(33.375); // inches
+                // public static final double ELEVATOR_TRAVEL_LENGTH =
+                // Units.inchesToMeters(33.375); // inches
                 public static final int ARM_SPROCKET_NUM_TEETH = 16;
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
         }
-
 
         public static class ElevatorConstants {
                 // Constants from Characterization
@@ -230,14 +247,14 @@ public final class Constants {
                 public static final int ELEVATOR_LEFT_MOTOR_ID = 57;
                 public static final int ELEVATOR_RIGHT_MOTOR_ID = 55;
                 public static final CharacterizationConstants ELEVATOR_CHARACTERIZATION_CONSTANTS = new CharacterizationConstants.Builder()
-                                .setFeedforwardConstants(0.051528, 
-                                0.71546, 
-                                7.8232,
-                                 0.13338)
+                                .setFeedforwardConstants(0.051528,
+                                                0.71546,
+                                                7.8232,
+                                                0.13338)
                                 .setFeedbackConstants(
-                                        9, // 7 , 
-                                        0, 
-                                        0.5)//9.0346)
+                                                9, // 7 ,
+                                                0,
+                                                0.5)// 9.0346)
                                 .build();
 
                 public static final double ELEVATOR_ERROR_THRESHOLD = Units.inchesToMeters(1); // Inches
@@ -270,21 +287,23 @@ public final class Constants {
 
                 public static final double EXTEND_MOTOR_OUT_SPEED = .1;
                 public static final double EXTEND_MOTOR_IN_SPEED = -.1;
-                
+
                 public static final int EXTEND_MOTOR_ID = 23;
-                
-                //TODO: get actual values for this
-                //Extension encoder values
-                public static final Double [] LEVEL_ENCODER_VALS = {2.0, 3.0, 4.0};
+
+                // TODO: get actual values for this
+                // Extension encoder values
+                public static final Double[] LEVEL_ENCODER_VALS = { 2.0, 3.0, 4.0 };
                 public static final double EXTEND_MAX_ENCODER = 50;
                 public static final double EXTEND_MIN_ENCODER = 0;
-                
+
                 public static final double EXTEND_SLOW_DISTANCE = 2;
 
-                public static final double EXTENDER_ELEVATOR_MIN_HEIGHT = 0.16; // elevator needs to be 0.16 meters or above to extend extender
+                public static final double EXTENDER_ELEVATOR_MIN_HEIGHT = 0.16; // elevator needs to be 0.16 meters or
+                                                                                // above to extend extender
 
-                public static final double EXTENDER_RETRACT_THRESHOLD = 0.6; // max extender position to be qualified as "retracted"
-                    
+                public static final double EXTENDER_RETRACT_THRESHOLD = 0.6; // max extender position to be qualified as
+                                                                             // "retracted"
+
         }
 
         public static class GrabberConstants {

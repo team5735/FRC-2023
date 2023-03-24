@@ -26,6 +26,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -52,6 +53,7 @@ import frc.robot.commands.BrakeCommand;
 import frc.robot.commands.GrabberCommand;
 import frc.robot.commands.extender.*;
 import frc.robot.commands.GyroAutocorrectCommand;
+import frc.robot.commands.ManualArmCmd;
 import frc.robot.commands.ManualElevatorCmd;
 // Pneumatics Imports -- Could be reorganized by system
 import frc.robot.commands.vision.TurnToZero;
@@ -65,6 +67,7 @@ import frc.robot.trajectories.Trajectories;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.IntakeCommand.IntakeDirection;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtenderSubsystem;
 import frc.robot.subsystems.GrabberSubsystem;
@@ -87,6 +90,7 @@ public class RobotContainer {
   private final ExtenderSubsystem extenderSubsystem;
   private final VisionSubsystem visionSubsystem;
   private final ElevatorSubsystem elevatorSubsystem;
+  private final ArmSubsystem armSubsystem;
   private final GrabberSubsystem grabberSubsystem;
 
   private Map<String, Command> eventMap = new HashMap<>();
@@ -102,6 +106,7 @@ public class RobotContainer {
     this.pneumaticsSubsystem = new PneumaticsSubsystem();
     this.extenderSubsystem = new ExtenderSubsystem();
     this.elevatorSubsystem = new ElevatorSubsystem();
+    this.armSubsystem = new ArmSubsystem();
     this.grabberSubsystem = new GrabberSubsystem();
 
     // pipeline stuff not set up yet (do we even need?)
@@ -133,7 +138,7 @@ public class RobotContainer {
         for (String pathName : fileNames) {
           this.autoPathChooser.addOption(pathName, pathName);
         }
-    
+
         this.autoPathChooser.setDefaultOption(
             fileNames.get(0),
             fileNames.get(0));
@@ -141,7 +146,7 @@ public class RobotContainer {
     } catch (Exception e) {
       System.out.println("##### ERROR: No paths found!");
     }
-    
+
     SmartDashboard.putData("Auto Path Chooser", this.autoPathChooser);
   }
 
@@ -161,7 +166,7 @@ public class RobotContainer {
         // TODO: check if this direction is correct
         () -> (-driverController.getRightTriggerAxis() + driverController.getLeftTriggerAxis()),
         () -> this.driverController.a().getAsBoolean())); // turbohack for
-                                                                   // ergonomics
+                                                          // ergonomics
 
     // When Y is pressed on driver controller, toggle field oriented
     this.driverController.y()
@@ -181,14 +186,14 @@ public class RobotContainer {
 
     // INTAKE CONTROLS
     this.driverController.rightBumper()
-    .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
+        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN));
 
     // // Left bumper for intake backward
     this.driverController.leftBumper()
-    .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
+        .whileTrue(new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT));
 
     this.driverController.start()
-    .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
+        .whileTrue(new GyroAutocorrectCommand(this.swerveSubsystem));
 
     // Button A to reverse intake (if that problem happens again...)
 
@@ -206,16 +211,15 @@ public class RobotContainer {
         }));
 
     // this.subsystemController.a()
-    //     .whileTrue(new InstantCommand(() -> {
-    //       this.pneumaticsSubsystem.togglePiston();
-    //     }));
+    // .whileTrue(new InstantCommand(() -> {
+    // this.pneumaticsSubsystem.togglePiston();
+    // }));
 
     this.subsystemController.a()
-      .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
 
     this.subsystemController.b()
-      .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
-
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
     // COMMAND: Brings to level 0 (bottom)
     // subsystemController.x()
     // .toggleOnTrue(new SequentialCommandGroup(
@@ -223,28 +227,28 @@ public class RobotContainer {
     // new InstantCommand(() -> {
     // this.elevatorSubsystem.setLevel(0);
     // })));
-    this.subsystemController.x()
-      .toggleOnTrue(new ParallelCommandGroup(
-      new InstantCommand(() -> {
-        this.elevatorSubsystem.setLevel(0);
-      }),
-      new InstantCommand(() -> {
-        this.extenderSubsystem.setLevel(0);
-      })));
-
-    // COMMAND: Brings to level 1 (bottom scoring level)
-    // subsystemController.y()
-    //   .toggleOnTrue(new ParallelCommandGroup(
-    //   new InstantCommand(() -> {
-    //   this.elevatorSubsystem.setLevel(1);
+    // this.subsystemController.x()
+    // .toggleOnTrue(new ParallelCommandGroup(
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(0);
     // }),
-    // new SequentialCommandGroup(
-    //     new WaitCommand(0.5),
-    //     new InstantCommand(() -> {
-    //     this.extenderSubsystem.setLevel(1);
-    // }))));
+    // new InstantCommand(() -> {
+    // this.extenderSubsystem.setLevel(0);
+    // })));
 
-    // COMMAND: Brings to level 2 (middle scoring level);
+    // // COMMAND: Brings to level 1 (bottom scoring level)
+    // // subsystemController.y()
+    // // .toggleOnTrue(new ParallelCommandGroup(
+    // // new InstantCommand(() -> {
+    // // this.elevatorSubsystem.setLevel(1);
+    // // }),
+    // // new SequentialCommandGroup(
+    // // new WaitCommand(0.5),
+    // // new InstantCommand(() -> {
+    // // this.extenderSubsystem.setLevel(1);
+    // // }))));
+
+    // // COMMAND: Brings to level 2 (middle scoring level);
     // this.subsystemController.y()
     // .toggleOnTrue(new ParallelCommandGroup(
     // new InstantCommand(() -> {
@@ -257,25 +261,35 @@ public class RobotContainer {
     // this.subsystemController.b()
     // .toggleOnTrue(
     // new InstantCommand(() -> {
-    //   this.elevatorSubsystem.setLevel(2);
+    // this.elevatorSubsystem.setLevel(2);
     // }));
 
     // this.subsystemController.rightTrigger()
     // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
 
-    this.extenderSubsystem.setDefaultCommand(
-        new ManualExtenderCmd(this.extenderSubsystem,
-            () -> this.subsystemController.getRightTriggerAxis() - this.subsystemController.getLeftTriggerAxis(),
-            () -> this.elevatorSubsystem.getElevatorHeight()));
+    // this.extenderSubsystem.setDefaultCommand(
+    // new ManualExtenderCmd(this.extenderSubsystem,
+    // () -> this.subsystemController.getRightTriggerAxis() -
+    // this.subsystemController.getLeftTriggerAxis(),
+    // () -> this.elevatorSubsystem.getElevatorHeight()));
+
+    // this.subsystemController.b().toggleOnTrue(new InstantCommand(() -> {
+    // this.armSubsystem.setSetpoint(Units.degreesToRadians(0));
+    // }));
+
+    // this.armSubsystem.setDefaultCommand(new ManualArmCmd(this.armSubsystem, () ->
+    // -this.subsystemController.getRightY()));
 
     // Left + Right bumpers: Decrease / Increase elevator setpoint
     this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
-      this.elevatorSubsystem.setSetpoint(this.elevatorSubsystem.getSetpoint() + 0.02);
+      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() + 0.1);
     }));
 
     this.subsystemController.leftBumper().toggleOnTrue(new InstantCommand(() -> {
-      this.elevatorSubsystem.setSetpoint(this.elevatorSubsystem.getSetpoint() - 0.02);
+      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() - 0.1);
     }));
+
+    // this.armSubsystem.setDefaultCommand(new InstantCommand());
 
     // this.elevatorSubsystem.setDefaultCommand(
     // new ManualElevatorCmd(this.elevatorSubsystem,
@@ -333,7 +347,7 @@ public class RobotContainer {
 
     eventMap.put("gyroBalance",
         new GyroAutocorrectCommand(swerveSubsystem));
-        
+
     eventMap.put("brake",
         new BrakeCommand(swerveSubsystem));
   }
@@ -431,5 +445,6 @@ public class RobotContainer {
   public void resetSetpoints() {
     this.elevatorSubsystem.setSetpoint(0);
     this.extenderSubsystem.setSetpoint(0);
+    this.armSubsystem.setSetpoint(Constants.ArmConstants.ARM_POSITION_START_RAD);
   }
 }
