@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,9 +63,9 @@ public class RobotContainer {
   private final ArmSubsystem armSubsystem;
   private final GrabberSubsystem grabberSubsystem;
 
-  private Map<String, Command> eventMap = new HashMap<>();
-
   private final SendableChooser<String> autoPathChooser = new SendableChooser<>();
+
+  private final AutoCommands autoCommands;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands(?)
@@ -77,24 +79,24 @@ public class RobotContainer {
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
+    this.autoCommands = new AutoCommands(swerveSubsystem, intakeSubsystem, armSubsystem, grabberSubsystem);
+
     // Configure the button bindings
     this.configureDriverBindings();
     this.configureSubsystemBindings();
-
-    this.populateEventMap();
 
     this.populatePathChooser();
   }
 
   // Populates it with the Auto Cmd Map
   private void populatePathChooser() {
-    for (String cmdName : AutoCommands.AUTO_CMD_MAP.keySet()) {
+    for (String cmdName : this.autoCommands.AUTO_CMD_MAP.keySet()) {
       this.autoPathChooser.addOption(cmdName, cmdName);
     }
 
     this.autoPathChooser.setDefaultOption(
-        AutoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get(),
-        AutoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get());
+        this.autoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get(),
+        this.autoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get());
 
     SmartDashboard.putData("Auto Path Chooser", this.autoPathChooser);
   }
@@ -151,6 +153,19 @@ public class RobotContainer {
     this.subsystemController.b()
         .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
 
+    this.subsystemController.rightTrigger()
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT));
+
+    this.subsystemController.x()
+        .toggleOnTrue(new InstantCommand(() -> {
+          this.armSubsystem.setLevel(0);
+        }));
+
+    this.subsystemController.y()
+        .toggleOnTrue(new InstantCommand(() -> {
+          this.armSubsystem.setLevel(2);
+        }));
+
     // Left + Right bumpers: Decrease / Increase elevator setpoint
     this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
       this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() + 0.1);
@@ -161,25 +176,6 @@ public class RobotContainer {
     }));
   }
 
-  private void populateEventMap() {
-    eventMap.put("runIntakeIn",
-        new ParallelDeadlineGroup(
-            new WaitCommand(1),
-            // Run the intake
-            new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN)));
-
-    eventMap.put("runIntakeOut",
-        new ParallelDeadlineGroup(
-            new WaitCommand(1),
-            // Run the intake
-            new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT)));
-
-    eventMap.put("gyroBalance",
-        new GyroAutocorrectCommand(swerveSubsystem));
-
-    eventMap.put("brake",
-        new BrakeCommand(swerveSubsystem));
-  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -188,12 +184,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     String selected = this.autoPathChooser.getSelected();
-    return AutoCommands.AUTO_CMD_MAP.get(selected).apply(
-        this.swerveSubsystem,
-        this.armSubsystem,
-        this.grabberSubsystem,
-        this.intakeSubsystem,
-        this.eventMap);
+    return this.autoCommands.AUTO_CMD_MAP.get(selected).get();
   }
 
   /**

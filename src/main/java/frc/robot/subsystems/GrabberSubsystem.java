@@ -17,11 +17,20 @@ public class GrabberSubsystem extends SubsystemBase {
   /** Creates a new GrabberSubsystem. */
   public GrabberSubsystem() {
     grabberMotor = new CANSparkMax(GrabberConstants.GRABBER_MOTOR_ID, MotorType.kBrushless);
+    grabberMotor.setInverted(true);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public void grabberSlowIn() {
+    grabberMotor.set(GrabberConstants.GRABBER_SLOW_SPEED);
+  }
+
+  public void grabberSlowOut() {
+    grabberMotor.set(-GrabberConstants.GRABBER_SLOW_SPEED);
   }
 
   public void grabberIn() {

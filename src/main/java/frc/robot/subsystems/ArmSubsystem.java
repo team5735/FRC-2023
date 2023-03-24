@@ -98,15 +98,11 @@ public class ArmSubsystem extends SubsystemBase {
   public void setLevel(int level) {
 
     if (level == 0) {
-      setSetpoint(Units.degreesToRadians(-90));
-    }
-    // Low
-    // else if (level == 1) {
-    // setSetpoint(0.4); // ? -- To Test
-    // }
-    // Mid
-    else if (level == 1) {
-      setSetpoint(0);
+      setSetpoint(Constants.ArmConstants.ARM_MIN_ANGLE);
+    } else if (level == 1) {
+      setSetpoint(Constants.ArmConstants.ARM_MID_CONE_ANGLE);
+    } else if (level == 2) {
+      setSetpoint(Constants.ArmConstants.ARM_MAX_ANGLE);
     } else {
       return;
     }

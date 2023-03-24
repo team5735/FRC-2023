@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class GrabberCommand extends CommandBase {
 
   public enum GrabberDirection {
-    IN, OUT
+    IN, OUT, SLOW_IN, SLOW_OUT
   }
 
   private final GrabberSubsystem grabberSubsystem;
@@ -33,8 +33,12 @@ public class GrabberCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (direction == GrabberDirection.IN) {
+    if (direction == GrabberDirection.SLOW_IN) {
+      this.grabberSubsystem.grabberSlowIn();
+    } else if (direction == GrabberDirection.IN) {
       this.grabberSubsystem.grabberIn();
+    } else if (direction == GrabberDirection.SLOW_OUT) {
+      this.grabberSubsystem.grabberSlowOut();
     } else {
       this.grabberSubsystem.grabberOut();
     }

@@ -224,6 +224,7 @@ public final class Constants {
 
                 public static final double ARM_MIN_ANGLE = ARM_POSITION_START_RAD; // slightly left of straight
                                                                                          // down
+                public static final double ARM_MID_CONE_ANGLE = Units.degreesToRadians(10);
                 public static final double ARM_MAX_ANGLE = Units.degreesToRadians(10); // top right diagonal
 
                 // Physical Constants
@@ -306,8 +307,9 @@ public final class Constants {
         public static class GrabberConstants {
                 public static final int GRABBER_MOTOR_ID = 10;
 
+                public static final double GRABBER_SLOW_SPEED = +0.1;
                 public static final double GRABBER_IN_SPEED = +.3;
-                public static final double GRABBER_OUT_SPEED = -.3;
+                public static final double GRABBER_OUT_SPEED = -.8;
         }
 
         public static class IntakeConstants {

@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
     }
 
     var cam = CameraServer.startAutomaticCapture();
+    cam.setFPS(15);
     cam.setResolution(320, 240);
     
   }
