@@ -132,7 +132,11 @@ public class AutoCommands {
         // The dropdown select options
         public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
                         .of(
-                                        "PlaceConeGrabCubeAndSpit", () -> {
-                                                return this.PlaceConeGrabCubeAndSpit();
-                                        });
+                                "PlaceConeGrabCubeAndSpit", () -> {
+                                        return this.PlaceConeGrabCubeAndSpit();
+                                },
+                                "SpitMoveOutBackAndBalance", () -> {
+                                        return this.SpitMoveOutBackAndBalance();
+                                }
+                        );
 }
