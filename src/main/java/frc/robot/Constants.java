@@ -231,11 +231,8 @@ public final class Constants {
                                                                       // gear attached to chain
                 public static final double PIVOT_POINT_GEAR_RATIO = 16 / 64.; // 16 teeth on gear attached to same axle
                                                                               // of 84 gear
-
-                public static final double CHAIN_LINK_LENGTH = Units.inchesToMeters(0.25); // inches
-                // public static final double ELEVATOR_TRAVEL_LENGTH =
-                // Units.inchesToMeters(33.375); // inches
-                public static final int ARM_SPROCKET_NUM_TEETH = 16;
+                
+                public static final double ARM_SETPOINT_THRESHOLD = Units.degreesToRadians(10); // in radians
 
                 // private static final double encoderTicksPerRevolution = 4096; Outdated
         }

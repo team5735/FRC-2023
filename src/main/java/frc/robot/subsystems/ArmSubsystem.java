@@ -27,7 +27,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final ArmFeedforward armFF;
   private final ProfiledPIDController armFeedback;
 
-  private double angleSetpoint = Constants.ArmConstants.ARM_POSITION_START_RAD;
+  private Double angleSetpoint;
   private double lastVelocitySetpoint;
 
   public ArmSubsystem() {
@@ -38,17 +38,16 @@ public class ArmSubsystem extends SubsystemBase {
     // this.armRight.follow(this.armLeft);
 
     this.armFF = new ArmFeedforward(
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getS(),
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getG(),
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getV(),
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getA()
-    );
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getS(),
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getG(),
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getV(),
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getA());
 
     this.armFeedback = new ProfiledPIDController(
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getP(),
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getI(),
-      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getD(),
-      new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 4) // Pi/2 rad / s, in 2 second
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getP(),
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getI(),
+        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getD(),
+        new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 4) // Pi/2 rad / s, in 2 second
     );
 
     this.resetMotors();
@@ -71,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     return (UnitConversion.falconToRotations(this.armLeft.getSelectedSensorPosition())
         * Constants.ArmConstants.ARM_GEAR_RATIO
         * Constants.ArmConstants.PIVOT_POINT_GEAR_RATIO
-        * 2 * Math.PI) 
+        * 2 * Math.PI)
         + Constants.ArmConstants.ARM_POSITION_START_RAD; // when sensor position is 0, the angle is actually -90deg
   }
 
@@ -103,54 +102,51 @@ public class ArmSubsystem extends SubsystemBase {
     }
     // Low
     // else if (level == 1) {
-    //   setSetpoint(0.4); // ? -- To Test
+    // setSetpoint(0.4); // ? -- To Test
     // }
     // Mid
     else if (level == 1) {
       setSetpoint(0);
-    }
-    else {
+    } else {
       return;
     }
   }
 
   public boolean isAtSetpoint() {
-      if(getArmLeftAngle() < getSetpoint() + 0.05 && getArmLeftAngle() > getSetpoint() - 0.05) {
-          return true;
-      }
-      return false;
+    return Math.abs(this.getArmLeftAngle() - this.getSetpoint()) < Constants.ArmConstants.ARM_SETPOINT_THRESHOLD;
   }
 
   @Override
   public void periodic() {
-    double voltage = this.armFeedback.calculate(this.getArmLeftAngle(), this.angleSetpoint);
-    voltage += this.armFF.calculate(this.getArmLeftAngle(), this.armFeedback.getSetpoint().velocity, (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
+    // Should fix the weird setpoint jump-to-0 error
+    if (this.angleSetpoint == null) {
+      return;
+    }
 
+    double voltage = this.armFeedback.calculate(this.getArmLeftAngle(), this.angleSetpoint);
+    voltage += this.armFF.calculate(this.getArmLeftAngle(), this.armFeedback.getSetpoint().velocity,
+        (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
+
+    // It should work the same if right was follower of left but somehow it doesn't.
     this.armLeft.setVoltage(voltage);
     this.armRight.setVoltage(voltage);
 
-    // double leftVoltage = this.leftFeedback.calculate(this.getLeftMotorRotations(), this.heightSetpoint);
-    // leftVoltage += this.leftFeedforward.calculate(this.getLeftMotorRotations(),
-    //     this.leftFeedback.getSetpoint().velocity);
-
-    // double rightVoltage = this.rightFeedback.calculate(this.getRightMotorRotations(), this.heightSetpoint);
-    // rightVoltage += this.rightFeedforward.calculate(this.getRightMotorRotations(),
-    //     this.rightFeedback.getSetpoint().velocity);
-
-    // // Set the voltage
-    // this.armLeft.setVoltage(leftVoltage);
-    // this.armRight.setVoltage(rightVoltage);
-
-    // SmartDashboard.putNumber("Arm Curr Setpoint Accel", (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
-    // SmartDashboard.putNumber("Arm Curr Setpoint Pos", this.armFeedback.getSetpoint().position);
-    // SmartDashboard.putNumber("Arm Curr Setpoint Vel", this.armFeedback.getSetpoint().velocity);
+    // SmartDashboard.putNumber("Arm Curr Setpoint Accel",
+    // (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) /
+    // 0.02);
+    // SmartDashboard.putNumber("Arm Curr Setpoint Pos",
+    // this.armFeedback.getSetpoint().position);
+    // SmartDashboard.putNumber("Arm Curr Setpoint Vel",
+    // this.armFeedback.getSetpoint().velocity);
     // SmartDashboard.putNumber("Arm Goal", this.angleSetpoint);
     // SmartDashboard.putNumber("Arm Angle", this.getArmLeftAngle());
     // // SmartDashboard.putNumber("Arm Voltage FF+FB", voltage);
-    // SmartDashboard.putNumber("Arm Motor L Amps", this.armLeft.getStatorCurrent());
-    // SmartDashboard.putNumber("Arm Motor R Amps", this.armRight.getStatorCurrent());
+    // SmartDashboard.putNumber("Arm Motor L Amps",
+    // this.armLeft.getStatorCurrent());
+    // SmartDashboard.putNumber("Arm Motor R Amps",
+    // this.armRight.getStatorCurrent());
     // SmartDashboard.putNumber("Arm Height", this.getArmCurrentRotations());
-    
+
     this.lastVelocitySetpoint = this.armFeedback.getSetpoint().velocity;
   }
 
