@@ -134,14 +134,14 @@ public class ArmSubsystem extends SubsystemBase {
     // this.armLeft.setVoltage(leftVoltage);
     // this.armRight.setVoltage(rightVoltage);
 
-    SmartDashboard.putNumber("Arm Curr Setpoint Accel", (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
-    SmartDashboard.putNumber("Arm Curr Setpoint Pos", this.armFeedback.getSetpoint().position);
-    SmartDashboard.putNumber("Arm Curr Setpoint Vel", this.armFeedback.getSetpoint().velocity);
-    SmartDashboard.putNumber("Arm Goal", this.angleSetpoint);
-    SmartDashboard.putNumber("Arm Angle", this.getArmLeftAngle());
-    // SmartDashboard.putNumber("Arm Voltage FF+FB", voltage);
-    SmartDashboard.putNumber("Arm Motor L Amps", this.armLeft.getStatorCurrent());
-    SmartDashboard.putNumber("Arm Motor R Amps", this.armRight.getStatorCurrent());
+    // SmartDashboard.putNumber("Arm Curr Setpoint Accel", (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
+    // SmartDashboard.putNumber("Arm Curr Setpoint Pos", this.armFeedback.getSetpoint().position);
+    // SmartDashboard.putNumber("Arm Curr Setpoint Vel", this.armFeedback.getSetpoint().velocity);
+    // SmartDashboard.putNumber("Arm Goal", this.angleSetpoint);
+    // SmartDashboard.putNumber("Arm Angle", this.getArmLeftAngle());
+    // // SmartDashboard.putNumber("Arm Voltage FF+FB", voltage);
+    // SmartDashboard.putNumber("Arm Motor L Amps", this.armLeft.getStatorCurrent());
+    // SmartDashboard.putNumber("Arm Motor R Amps", this.armRight.getStatorCurrent());
     // SmartDashboard.putNumber("Arm Height", this.getArmCurrentRotations());
     
     this.lastVelocitySetpoint = this.armFeedback.getSetpoint().velocity;
