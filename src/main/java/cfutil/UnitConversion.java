@@ -58,4 +58,8 @@ public class UnitConversion {
     public static double falconToRotations(double distanceFalconUnits) {
         return (distanceFalconUnits) / UnitConversion.FALCON_ENCODER_CPR;
     }
+
+    public static double rotationsToFalcon(double rotations) {
+        return rotations * FALCON_ENCODER_CPR;
+    }
 }

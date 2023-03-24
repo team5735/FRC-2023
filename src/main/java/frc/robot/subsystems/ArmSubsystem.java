@@ -24,45 +24,31 @@ public class ArmSubsystem extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
 
   private final WPI_TalonFX armLeft, armRight;
-  private final ArmFeedforward leftFeedforward, rightFeedforward;
-  private final ProfiledPIDController leftFeedback, rightFeedback;
+  private final ArmFeedforward armFF;
+  private final ProfiledPIDController armFeedback;
 
-  private double heightSetpoint;
+  private double angleSetpoint = Constants.ArmConstants.ARM_POSITION_START_RAD;
+  private double lastVelocitySetpoint;
 
   public ArmSubsystem() {
     this.armLeft = new WPI_TalonFX(Constants.ArmConstants.ARM_LEFT_MOTOR_ID);
     this.armLeft.setInverted(true);
     this.armRight = new WPI_TalonFX(Constants.ArmConstants.ARM_RIGHT_MOTOR_ID);
-    this.armRight.setInverted(true);
-    // this.elevatorFollower.follow(this.elevatorLeader);
+    this.armRight.setInverted(false);
+    // this.armRight.follow(this.armLeft);
 
-    this.leftFeedforward = new ArmFeedforward(
-        // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getS(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getG(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getV(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getA());
-
-    this.rightFeedforward = new ArmFeedforward(
-        // V = kG + kS*sgn(d) + kV d/dt + kA d/dt^2, sgn = signum which returns the sign
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getS(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getG(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getV(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getA());
-
-    this.leftFeedback = new ProfiledPIDController(
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getP(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getI(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getD(),
-        new TrapezoidProfile.Constraints(0.25, 0.25) // need to tune max vel and accel in m/s and m/s/s
+    this.armFF = new ArmFeedforward(
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getS(),
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getG(),
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getV(),
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getA()
     );
 
-    this.rightFeedback = new ProfiledPIDController(
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getP() + 0.025, // Compensate for sag?
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getI(),
-        Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getD(),
-        new TrapezoidProfile.Constraints(0.25, 0.25) 
-        // need to tune max vel and accel in m/s and m/s^2 -- Could be why the elevator wasn't super fast
+    this.armFeedback = new ProfiledPIDController(
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getP(),
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getI(),
+      Constants.ArmConstants.ARM_CHARACTERIZATION_CONSTANTS.getD(),
+      new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 4) // Pi/2 rad / s, in 2 second
     );
 
     this.resetMotors();
@@ -70,79 +56,59 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void resetMotors() {
     this.armLeft.setSelectedSensorPosition(0);
-    this.armRight.setSelectedSensorPosition(0);
   }
 
   /**
-   * Get the current elevator height in meters
+   * Get current arm left angle in radians
    */
-  public double getArmCurrentRotations() {
-    return (this.getLeftMotorRotations() + this.getRightMotorRotations()) / 2.0;
-  }
-
-  public double getLeftMotorRotations() {
-    return Constants.ArmConstants.ARM_RADIANS_PER_ROTATION
-        * UnitConversion.falconToRotations(armLeft.getSelectedSensorPosition());
-  }
-
-  public double getRightMotorRotations() {
-    return Constants.ArmConstants.ARM_RADIANS_PER_ROTATION
-        * UnitConversion.falconToRotations(armRight.getSelectedSensorPosition());
+  public double getArmLeftAngle() {
+    // 1 rotation of falcon motor
+    // * (12 / 84) # rotation of 84 tooth gear; falcon gear has 12 teeth attached to
+    // 84 teeth gear
+    // * 1 84 tooth and 16 tooth gear are on same axle, same # rotations
+    // * (16 / 64) # rotation of 64 tooth gear up top
+    // * 2 * Math.PI # rotation -> radians
+    return (UnitConversion.falconToRotations(this.armLeft.getSelectedSensorPosition())
+        * Constants.ArmConstants.ARM_GEAR_RATIO
+        * Constants.ArmConstants.PIVOT_POINT_GEAR_RATIO
+        * 2 * Math.PI) 
+        + Constants.ArmConstants.ARM_POSITION_START_RAD; // when sensor position is 0, the angle is actually -90deg
   }
 
   /**
-   * Get elevator motor velocity in m/s
+   * Angle in radians
    */
-//   private double getElevatorVelocity() {
-//     return Constants.ArmConstants.ARM_RADIANS_PER_ROTATION
-//         * UnitConversion.falconToRotations(armLeft.getSelectedSensorVelocity());
-//   }
-
-  // TODO: Make the Joystick ending point a setpoint for the motor to stay at
-  // TODO: Make sure that this doesn't cancel when the joystick is pressed high
-  public void setSetpoint(double heightMeters) {
-    if (heightMeters < 0.0) {
-      this.heightSetpoint = 0.0;
+  public void setSetpoint(double angleSetpoint) {
+    if (angleSetpoint < Constants.ArmConstants.ARM_MIN_ANGLE) {
+      this.angleSetpoint = Constants.ArmConstants.ARM_MIN_ANGLE;
       return;
     }
 
-    this.heightSetpoint = heightMeters;
-
-    if (heightMeters > Constants.ElevatorConstants.HEIGHT_LIMIT) {
-      this.heightSetpoint = Constants.ElevatorConstants.HEIGHT_LIMIT;
+    if (angleSetpoint > Constants.ArmConstants.ARM_MAX_ANGLE) {
+      this.angleSetpoint = Constants.ArmConstants.ARM_MAX_ANGLE;
       return;
     }
+
+    this.angleSetpoint = angleSetpoint;
   }
 
   public double getSetpoint() {
-    return this.heightSetpoint;
-  }
-
-  public void setPercentHeight(double percentage) {
-    if (percentage <= 1) {
-      double height = percentage * Constants.ArmConstants.ARM_ROTATION_LIMIT;
-      setSetpoint(height);
-    }
-    return;
+    return this.angleSetpoint;
   }
 
   public void setLevel(int level) {
 
     if (level == 0) {
-      setSetpoint(0);
+      setSetpoint(Units.degreesToRadians(-90));
     }
     // Low
     else if (level == 1) {
-      setSetpoint(0.4); // ? -- To Test
+      setSetpoint(Units.degreesToRadians(-10)); // ? -- To Test
     }
     // Mid
     else if (level == 2) {
-      setSetpoint(ArmConstants.ARM_ROTATION_LIMIT);
+      setSetpoint(Constants.ArmConstants.ARM_MAX_ANGLE);
     }
-    // High
-    // else if(level == 3) {
-    // elevatorSubsystem.setSetpoint(0);
-    // }
     else {
       return;
     }
@@ -150,26 +116,40 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // WARNING: Semi TESTED
+    double voltage = this.armFeedback.calculate(this.getArmLeftAngle(), this.angleSetpoint);
+    voltage += this.armFF.calculate(this.getArmLeftAngle(), this.armFeedback.getSetpoint().velocity, (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
 
-    double leftVoltage = this.leftFeedback.calculate(this.getLeftMotorRotations(), this.heightSetpoint);
-    leftVoltage += this.leftFeedforward.calculate(this.getLeftMotorRotations(), this.leftFeedback.getSetpoint().velocity);
+    this.armLeft.setVoltage(voltage);
+    this.armRight.setVoltage(voltage);
+
+    // double leftVoltage = this.leftFeedback.calculate(this.getLeftMotorRotations(), this.heightSetpoint);
+    // leftVoltage += this.leftFeedforward.calculate(this.getLeftMotorRotations(),
+    //     this.leftFeedback.getSetpoint().velocity);
+
+    // double rightVoltage = this.rightFeedback.calculate(this.getRightMotorRotations(), this.heightSetpoint);
+    // rightVoltage += this.rightFeedforward.calculate(this.getRightMotorRotations(),
+    //     this.rightFeedback.getSetpoint().velocity);
+
+    // // Set the voltage
+    // this.armLeft.setVoltage(leftVoltage);
+    // this.armRight.setVoltage(rightVoltage);
+
+    SmartDashboard.putNumber("Arm Curr Setpoint Accel", (this.armFeedback.getSetpoint().velocity - this.lastVelocitySetpoint) / 0.02);
+    SmartDashboard.putNumber("Arm Curr Setpoint Pos", this.armFeedback.getSetpoint().position);
+    SmartDashboard.putNumber("Arm Curr Setpoint Vel", this.armFeedback.getSetpoint().velocity);
+    SmartDashboard.putNumber("Arm Goal", this.angleSetpoint);
+    SmartDashboard.putNumber("Arm Angle", this.getArmLeftAngle());
+    // SmartDashboard.putNumber("Arm Voltage FF+FB", voltage);
+    SmartDashboard.putNumber("Arm Motor L Amps", this.armLeft.getStatorCurrent());
+    SmartDashboard.putNumber("Arm Motor R Amps", this.armRight.getStatorCurrent());
+    // SmartDashboard.putNumber("Arm Height", this.getArmCurrentRotations());
     
-    double rightVoltage = this.rightFeedback.calculate(this.getRightMotorRotations(), this.heightSetpoint);
-    rightVoltage += this.rightFeedforward.calculate(this.getRightMotorRotations(), this.rightFeedback.getSetpoint().velocity);
-
-    // Set the voltage
-    this.armLeft.setVoltage(leftVoltage);
-    this.armRight.setVoltage(rightVoltage);
-
-    SmartDashboard.putNumber("Arm Setpoint", this.heightSetpoint);
-    SmartDashboard.putNumber("Arm Height", this.getArmCurrentRotations());
-    SmartDashboard.putNumber("Arm Master (Right) Encoder", armLeft.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Follower (Left) Encoder", armRight.getSelectedSensorPosition());
+    this.lastVelocitySetpoint = this.armFeedback.getSetpoint().velocity;
   }
 
   public void manualControl(double input) {
-    this.armLeft.setVoltage(12.0 * input);
+    this.armLeft.setVoltage(12.0 * input * 0.25);
+    this.armRight.setVoltage(12.0 * input * 0.25);
   }
 
   public void stopMotors() {

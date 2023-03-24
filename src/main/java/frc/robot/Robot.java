@@ -36,6 +36,8 @@ public class Robot extends TimedRobot {
     // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.resetSetpoints();
+    
     // Make sure you only configure port forwarding once in your robot code.
     // Do not place these function calls in any periodic functions
     
