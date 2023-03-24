@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.auto.AutoCommands;
 import frc.robot.commands.grabber.GrabberCommand;
 import frc.robot.commands.grabber.GrabberCommand.GrabberDirection;
 // Pneumatics Imports -- Could be reorganized by system
@@ -85,28 +86,15 @@ public class RobotContainer {
     this.populatePathChooser();
   }
 
+  // Populates it with the Auto Cmd Map
   private void populatePathChooser() {
-    // Read files in deploy/pathplanner directory
-    try {
-      try (Stream<Path> walk = Files.walk(Filesystem.getDeployDirectory().toPath().resolve("pathplanner"))) {
-        List<String> fileNames = walk
-            .filter(p -> !Files.isDirectory(p))
-            .map(p -> p.getFileName().toString()) // turns files into file names
-            .filter(f -> f.endsWith(".path")) // gets ones ending in .path
-            .map(n -> n.split(".path")[0]) // gets the file name excluding .path
-            .collect(Collectors.toList());
-
-        for (String pathName : fileNames) {
-          this.autoPathChooser.addOption(pathName, pathName);
-        }
-
-        this.autoPathChooser.setDefaultOption(
-            fileNames.get(0),
-            fileNames.get(0));
-      }
-    } catch (Exception e) {
-      System.out.println("##### ERROR: No paths found!");
+    for (String cmdName : AutoCommands.AUTO_CMD_MAP.keySet()) {
+      this.autoPathChooser.addOption(cmdName, cmdName);
     }
+
+    this.autoPathChooser.setDefaultOption(
+        AutoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get(),
+        AutoCommands.AUTO_CMD_MAP.keySet().stream().findFirst().get());
 
     SmartDashboard.putData("Auto Path Chooser", this.autoPathChooser);
   }
@@ -199,26 +187,13 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // The trajectory to follow
-    PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(this.autoPathChooser.getSelected());
-
-    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        swerveSubsystem::getPose,
-        swerveSubsystem::resetOdometry,
-        Constants.DrivetrainConstants.DT_KINEMATICS,
-        new PIDConstants(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0),
-        new PIDConstants(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0),
-        new Consumer<SwerveModuleState[]>() {
-          @Override
-          public void accept(SwerveModuleState[] states) {
-            swerveSubsystem.setModuleStates(states, false);
-          }
-        },
-        eventMap,
-        true,
-        swerveSubsystem);
-
-    return autoBuilder.fullAuto(plotTrajectory);
+    String selected = this.autoPathChooser.getSelected();
+    return AutoCommands.AUTO_CMD_MAP.get(selected).apply(
+        this.swerveSubsystem,
+        this.armSubsystem,
+        this.grabberSubsystem,
+        this.intakeSubsystem,
+        this.eventMap);
   }
 
   /**
