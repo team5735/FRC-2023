@@ -213,6 +213,9 @@ public class RobotContainer {
     this.subsystemController.a()
       .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
 
+    this.subsystemController.b()
+      .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
+
     // COMMAND: Brings to level 0 (bottom)
     // subsystemController.x()
     // .toggleOnTrue(new SequentialCommandGroup(
@@ -242,20 +245,20 @@ public class RobotContainer {
     // }))));
 
     // COMMAND: Brings to level 2 (middle scoring level);
-    this.subsystemController.y()
-    .toggleOnTrue(new ParallelCommandGroup(
-    new InstantCommand(() -> {
-    this.elevatorSubsystem.setLevel(2);
-    }),
-    new InstantCommand(() -> {
-    this.extenderSubsystem.setLevel(2);
-    })));
+    // this.subsystemController.y()
+    // .toggleOnTrue(new ParallelCommandGroup(
+    // new InstantCommand(() -> {
+    // this.elevatorSubsystem.setLevel(2);
+    // }),
+    // new InstantCommand(() -> {
+    // this.extenderSubsystem.setLevel(2);
+    // })));
 
-    this.subsystemController.b()
-    .toggleOnTrue(
-    new InstantCommand(() -> {
-      this.elevatorSubsystem.setLevel(2);
-    }));
+    // this.subsystemController.b()
+    // .toggleOnTrue(
+    // new InstantCommand(() -> {
+    //   this.elevatorSubsystem.setLevel(2);
+    // }));
 
     // this.subsystemController.rightTrigger()
     // .whileTrue(new TurnToZero(visionSubsystem, swerveSubsystem));
