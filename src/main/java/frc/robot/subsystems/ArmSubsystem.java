@@ -129,15 +129,15 @@ public class ArmSubsystem extends SubsystemBase {
   public void setLevel(int level) {
 
     if (level == 0) {
-      setSetpoint(0);
+      setSetpoint(Units.degreesToRadians(-90));
     }
     // Low
-    else if (level == 1) {
-      setSetpoint(0.4); // ? -- To Test
-    }
+    // else if (level == 1) {
+    //   setSetpoint(0.4); // ? -- To Test
+    // }
     // Mid
-    else if (level == 2) {
-      setSetpoint(ArmConstants.ARM_ROTATION_LIMIT);
+    else if (level == 1) {
+      setSetpoint(0);
     }
     // High
     // else if(level == 3) {
@@ -146,6 +146,13 @@ public class ArmSubsystem extends SubsystemBase {
     else {
       return;
     }
+  }
+
+  public boolean isAtSetpoint() {
+      if(getArmCurrentRotations() < getSetpoint() + 0.05 && getArmCurrentRotations() > getSetpoint() - 0.05) {
+          return true;
+      }
+      return false;
   }
 
   @Override
