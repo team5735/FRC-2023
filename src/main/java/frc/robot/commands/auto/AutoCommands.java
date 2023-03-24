@@ -33,106 +33,106 @@ import frc.robot.trajectories.Trajectories;
 
 public class AutoCommands {
 
-    private final SwerveSubsystem swerveSubsystem;
-    private final IntakeSubsystem intakeSubsystem;
-    private final ArmSubsystem armSubsystem;
-    private final GrabberSubsystem grabberSubsystem;
+        private final SwerveSubsystem swerveSubsystem;
+        private final IntakeSubsystem intakeSubsystem;
+        private final ArmSubsystem armSubsystem;
+        private final GrabberSubsystem grabberSubsystem;
 
-    public Map<String, Command> eventMap = new HashMap<>();
+        public Map<String, Command> eventMap = new HashMap<>();
 
-    public AutoCommands(SwerveSubsystem swerveSubsystem, IntakeSubsystem intakeSubsystem, ArmSubsystem armSubsystem,
-            GrabberSubsystem grabberSubsystem) {
-        this.swerveSubsystem = swerveSubsystem;
-        this.intakeSubsystem = intakeSubsystem;
-        this.armSubsystem = armSubsystem;
-        this.grabberSubsystem = grabberSubsystem;
+        public AutoCommands(SwerveSubsystem swerveSubsystem, IntakeSubsystem intakeSubsystem, ArmSubsystem armSubsystem,
+                        GrabberSubsystem grabberSubsystem) {
+                this.swerveSubsystem = swerveSubsystem;
+                this.intakeSubsystem = intakeSubsystem;
+                this.armSubsystem = armSubsystem;
+                this.grabberSubsystem = grabberSubsystem;
 
-        this.eventMap = new HashMap<>();
-        eventMap.put("runIntakeIn",
-                new ParallelDeadlineGroup(
-                        new WaitCommand(3),
-                        // Run the intake
-                        new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN)));
+                this.eventMap = new HashMap<>();
+                eventMap.put("runIntakeIn",
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(3),
+                                                // Run the intake
+                                                new IntakeCommand(this.intakeSubsystem, IntakeDirection.IN)));
 
-        eventMap.put("runIntakeOut",
-                new ParallelDeadlineGroup(
-                        new WaitCommand(1),
-                        // Run the intake
-                        new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT)));
+                eventMap.put("runIntakeOut",
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(1),
+                                                // Run the intake
+                                                new IntakeCommand(this.intakeSubsystem, IntakeDirection.OUT)));
 
-        eventMap.put("gyroBalance",
-                new GyroAutocorrectCommand(swerveSubsystem));
+                eventMap.put("gyroBalance",
+                                new GyroAutocorrectCommand(swerveSubsystem));
 
-        eventMap.put("brake",
-                new BrakeCommand(swerveSubsystem));
-    }
+                eventMap.put("brake",
+                                new BrakeCommand(swerveSubsystem));
+        }
 
-    // ===== COMMANDS ===== //
-    public Command PlaceConeGrabCubeAndSpit() {
-        return new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                        new ParallelDeadlineGroup( // Move backward for 0.5 seconds to allow arm
-                                new WaitCommand(0.85),
-                                new MoveStraightCmd(this.swerveSubsystem, MoveDirection.BACKWARD)),
-                        new SequentialCommandGroup(
-                                new WaitCommand(0.5),
-                                // Arm raise to mid cone
-                                new ArmAutoControl(armSubsystem, 1))),
-                new ParallelDeadlineGroup( // Move forward for 0.5 seconds
-                        new WaitCommand(0.2),
-                        new MoveStraightCmd(swerveSubsystem, MoveDirection.FORWARD)),
-                new ParallelDeadlineGroup( // Runs grabber for 0.25 seconds, place cone
-                        new WaitCommand(0.5),
-                        new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)),
-                new ParallelCommandGroup(
-                        new ArmAutoControl(armSubsystem, 0), // Arm bring back down
-                        // Should move and grab a cube and bring it back
-                        this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1"),
-                        new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
-                new ParallelDeadlineGroup(
-                        new WaitCommand(1.7),
-                        new MoveStraightCmd(swerveSubsystem, MoveDirection.FORWARD),
-                        new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
-                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2"),
-                // Runs intake for 0.5 seconds
-                new ParallelDeadlineGroup(
-                        new WaitCommand(0.5),
-                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)));
-    };
+        // ===== COMMANDS ===== //
+        public Command PlaceConeGrabCubeAndSpit() {
+                return new SequentialCommandGroup(
+                                new ParallelCommandGroup(
+                                                new ParallelDeadlineGroup( // Move backward for 0.5 seconds to allow arm
+                                                                new WaitCommand(0.85),
+                                                                new MoveStraightCmd(this.swerveSubsystem,
+                                                                                MoveDirection.BACKWARD)),
+                                                new SequentialCommandGroup(
+                                                                new WaitCommand(0.5),
+                                                                // Arm raise to mid cone
+                                                                new ArmAutoControl(armSubsystem, 1))),
+                                new ParallelDeadlineGroup( // Move forward for 0.5 seconds
+                                                new WaitCommand(0.2),
+                                                new MoveStraightCmd(swerveSubsystem, MoveDirection.FORWARD)),
+                                new ParallelDeadlineGroup( // Runs grabber for 0.25 seconds, place cone
+                                                new WaitCommand(0.5),
+                                                new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)),
+                                new ParallelDeadlineGroup(
+                                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1"),
+                                                new ArmAutoControl(armSubsystem, 0), // Arm bring back down
+                                                new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(1.7),
+                                                new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
+                                                new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
+                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2"),
+                                // Runs intake for 0.5 seconds
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(1),
+                                                new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)));
+        };
 
-    // A simple "run certain trajectory" command
-    public Command SpitMoveOutBackAndBalance() {
-        return this.getTrajectoryCommand("SpitMoveOutBackAndBalance");
-    };
+        // A simple "run certain trajectory" command
+        public Command SpitMoveOutBackAndBalance() {
+                return this.getTrajectoryCommand("SpitMoveOutBackAndBalance");
+        };
 
-    // ===== HELPER ===== //
-    public Command getTrajectoryCommand(String fileName) {
-        // The trajectory to follow
-        PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName);
+        // ===== HELPER ===== //
+        public Command getTrajectoryCommand(String fileName) {
+                // The trajectory to follow
+                PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName);
 
-        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-                swerveSubsystem::getPose,
-                swerveSubsystem::resetOdometry,
-                Constants.DrivetrainConstants.DT_KINEMATICS,
-                new PIDConstants(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0),
-                new PIDConstants(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0),
-                new Consumer<SwerveModuleState[]>() {
-                    @Override
-                    public void accept(SwerveModuleState[] states) {
-                        swerveSubsystem.setModuleStates(states, false);
-                    }
-                },
-                this.eventMap,
-                true,
-                swerveSubsystem);
+                SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+                                swerveSubsystem::getPose,
+                                swerveSubsystem::resetOdometry,
+                                Constants.DrivetrainConstants.DT_KINEMATICS,
+                                new PIDConstants(Constants.AutoConstants.AUTO_XCONTROLLER_KP, 0, 0),
+                                new PIDConstants(Constants.AutoConstants.AUTO_THETACONTROLLER_KP, 0, 0),
+                                new Consumer<SwerveModuleState[]>() {
+                                        @Override
+                                        public void accept(SwerveModuleState[] states) {
+                                                swerveSubsystem.setModuleStates(states, false);
+                                        }
+                                },
+                                this.eventMap,
+                                true,
+                                swerveSubsystem);
 
-        return autoBuilder.fullAuto(plotTrajectory);
-    }
+                return autoBuilder.fullAuto(plotTrajectory);
+        }
 
-    // The dropdown select options
-    public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
-            .of(
-                    "PlaceConeGrabCubeAndSpit", () -> {
-                        return this.PlaceConeGrabCubeAndSpit();
-                    });
+        // The dropdown select options
+        public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
+                        .of(
+                                        "PlaceConeGrabCubeAndSpit", () -> {
+                                                return this.PlaceConeGrabCubeAndSpit();
+                                        });
 }
