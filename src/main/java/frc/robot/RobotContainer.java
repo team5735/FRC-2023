@@ -191,6 +191,7 @@ public class RobotContainer {
    * Resets setpoints to 0 on disable and init
    */
   public void resetSetpoints() {
+    this.armSubsystem.resetMotors();
     this.armSubsystem.setSetpoint(Constants.ArmConstants.ARM_POSITION_START_RAD);
   }
 }

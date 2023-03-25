@@ -51,7 +51,7 @@ public class AutoCommands {
                 this.armSubsystem = armSubsystem;
                 this.grabberSubsystem = grabberSubsystem;
 
-                this.CONSTRAINTS_NORMAL = new PathConstraints(4.0, 3.0);
+                this.CONSTRAINTS_NORMAL = new PathConstraints(2.0, 2.0);
                 this.CONSTRAINTS_BALANCE = new PathConstraints(1.5, 1.5);
 
                 this.eventMap = new HashMap<>();
@@ -84,7 +84,7 @@ public class AutoCommands {
         public Command PlaceMidCone() {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
-                                                new ParallelDeadlineGroup( // Move backward for 0.5 seconds to allow arm
+                                                new ParallelDeadlineGroup( // Move backwardi to allow arm
                                                                 new WaitCommand(0.85),
                                                                 new MoveStraightCmd(this.swerveSubsystem,
                                                                                 MoveDirection.BACKWARD)),
@@ -93,11 +93,18 @@ public class AutoCommands {
                                                                 // Arm raise to mid cone
                                                                 new ArmAutoControl(armSubsystem, 1))),
                                 new ParallelDeadlineGroup( // Move forward for 0.5 seconds
-                                                new WaitCommand(0.2),
+                                                new WaitCommand(0.85),
                                                 new MoveStraightCmd(swerveSubsystem, MoveDirection.FORWARD)),
-                                new ParallelDeadlineGroup( // Runs grabber for 0.25 seconds, place cone
-                                                new WaitCommand(0.5),
-                                                new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)));
+                                new ParallelCommandGroup(
+                                                new ArmAutoControl(armSubsystem, 0),
+                                                new SequentialCommandGroup(
+                                                                new WaitCommand(1),
+                                                                new ParallelDeadlineGroup( // Move backwardi to allow
+                                                                                           // arm
+                                                                                new WaitCommand(0.75),
+                                                                                new MoveStraightCmd(
+                                                                                                this.swerveSubsystem,
+                                                                                                MoveDirection.BACKWARD)))));
         }
 
         /**

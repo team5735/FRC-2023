@@ -135,7 +135,7 @@ public class ArmSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("Arm Curr Setpoint Vel",
     // this.armFeedback.getSetpoint().velocity);
     // SmartDashboard.putNumber("Arm Goal", this.angleSetpoint);
-    // SmartDashboard.putNumber("Arm Angle", this.getArmLeftAngle());
+    SmartDashboard.putNumber("Arm Angle", Units.radiansToDegrees(this.getArmLeftAngle()));
     // // SmartDashboard.putNumber("Arm Voltage FF+FB", voltage);
     // SmartDashboard.putNumber("Arm Motor L Amps",
     // this.armLeft.getStatorCurrent());
