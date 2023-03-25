@@ -155,7 +155,7 @@ public class AutoCommands {
         public Command SpitCubeAndBalance() {
                 return new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(
-                                                new WaitCommand(1),
+                                                new WaitCommand(2),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
                                 this.getTrajectoryCommand("OverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
                                 new GyroAutocorrectCommand(swerveSubsystem));
@@ -206,15 +206,15 @@ public class AutoCommands {
         // The dropdown select options
         public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
                         .of(
-                                        "PlaceConeAndBalance", () -> {
-                                                return this.PlaceConeAndBalance();
-                                        },
-                                        "LeftPlaceConeGrabCubeAndSpit", () -> {
-                                                return this.PlaceConeGrabCubeAndSpit("Left");
-                                        },
-                                        "RightPlaceConeGrabCubeAndSpit", () -> {
-                                                return this.PlaceConeGrabCubeAndSpit("Right");
-                                        },
+                                        // "PlaceConeAndBalance", () -> {
+                                        // return this.PlaceConeAndBalance();
+                                        // },
+                                        // "LeftPlaceConeGrabCubeAndSpit", () -> {
+                                        // return this.PlaceConeGrabCubeAndSpit("Left");
+                                        // },
+                                        // "RightPlaceConeGrabCubeAndSpit", () -> {
+                                        // return this.PlaceConeGrabCubeAndSpit("Right");
+                                        // },
                                         "SpitCubeAndBalance", () -> {
                                                 return this.SpitCubeAndBalance();
                                         },
@@ -223,8 +223,9 @@ public class AutoCommands {
                                         },
                                         "FarSideSpitAndTaxi", () -> {
                                                 return this.FarSideSpitAndTaxi();
-                                        },
-                                        "FarSideConeAndTaxi", () -> {
-                                                return this.FarSideConeAndTaxi();
-                                        });
+                                        }// ,
+                                         // "FarSideConeAndTaxi", () -> {
+                                         // return this.FarSideConeAndTaxi();
+                                         //
+                        );
 }
