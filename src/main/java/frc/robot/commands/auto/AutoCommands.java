@@ -94,10 +94,10 @@ public class AutoCommands {
                                                 this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1"),
                                                 new ArmAutoControl(armSubsystem, 0), // Arm bring back down
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
-                                new ParallelDeadlineGroup(
-                                                new WaitCommand(1.7),
-                                                new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
-                                                new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
+                                // new ParallelDeadlineGroup( SEE IF PATH CAN DO IT FINE
+                                //                 new WaitCommand(1.7),
+                                //                 new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
+                                //                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
                                 this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2"),
                                 // Runs intake for 0.5 seconds
                                 new ParallelDeadlineGroup(
@@ -116,14 +116,10 @@ public class AutoCommands {
                                 new GyroAutocorrectCommand(swerveSubsystem));
         }
 
-        // A simple "run certain trajectory" command
-        public Command SpitMoveOutBackAndBalance() {
-                return this.getTrajectoryCommand("SpitMoveOutBackAndBalance");
-        };
-
         // ===== HELPER ===== //
         public Command getTrajectoryCommand(String fileName) {
                 // The trajectory to follow
+                // TODO: Add Constraints as part of the path
                 PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName);
 
                 SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -151,11 +147,11 @@ public class AutoCommands {
                                         "PlaceConeGrabCubeAndSpit", () -> {
                                                 return this.PlaceConeGrabCubeAndSpit();
                                         },
-                                        "SpitMoveOutBackAndBalance", () -> {
-                                                return this.SpitMoveOutBackAndBalance();
-                                        },
                                         "PlaceConeAndBalance", () -> {
                                                 return this.PlaceConeAndBalance();
-                                        }
+                                        }//,
+                                        // "SpitMoveOutBackAndBalance", () -> { // just a trajectory
+                                        //         return this.getTrajectoryCommand("SpitMoveOutBackAndBalance");
+                                        // },
                         );
 }
