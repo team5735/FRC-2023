@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -71,9 +72,15 @@ public class AutoCommands {
 
                 eventMap.put("brake",
                                 new BrakeCommand(swerveSubsystem));
+
+                eventMap.put("print", new PrintCommand("##### PRINT COMMAND TEST"));
         }
 
         // ===== COMMANDS ===== //
+        /**
+         * THIS DOESN'T BRING THE ARM BACK DOWN, NEED TO DO
+         * new ArmAutoControl(armSubsystem, 0), // Arm bring back down
+         */
         public Command PlaceMidCone() {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
@@ -93,18 +100,25 @@ public class AutoCommands {
                                                 new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)));
         }
 
-        public Command PlaceConeGrabCubeAndSpit() {
+        /**
+         * @param direction "Left" or "Right"
+         * @return
+         */
+        public Command PlaceConeGrabCubeAndSpit(String direction) {
                 return new SequentialCommandGroup(
                                 this.PlaceMidCone(), // Place the cone
                                 new ParallelDeadlineGroup(
-                                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1", CONSTRAINTS_NORMAL),
+                                                this.getTrajectoryCommand(
+                                                                direction + "PlaceConeMoveOutGrabNewBlockMoveBackPart1",
+                                                                CONSTRAINTS_NORMAL),
                                                 new ArmAutoControl(armSubsystem, 0), // Arm bring back down
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
                                 // new ParallelDeadlineGroup( SEE IF PATH CAN DO IT FINE
-                                //                 new WaitCommand(1.7),
-                                //                 new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
-                                //                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
-                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2", CONSTRAINTS_NORMAL),
+                                // new WaitCommand(1.7),
+                                // new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
+                                // new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
+                                this.getTrajectoryCommand(direction + "PlaceConeMoveOutGrabNewBlockMoveBackPart2",
+                                                CONSTRAINTS_NORMAL),
                                 // Runs intake for 0.5 seconds
                                 new ParallelDeadlineGroup(
                                                 new WaitCommand(1),
@@ -116,7 +130,8 @@ public class AutoCommands {
                                 this.PlaceMidCone(), // Place the cone
                                 new ParallelDeadlineGroup(
                                                 // Backwards because placing cone first
-                                                this.getTrajectoryCommand("BackwardsOverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
+                                                this.getTrajectoryCommand("BackwardsOverStationAndBacktoBalance",
+                                                                CONSTRAINTS_BALANCE),
                                                 // Arm bring back down
                                                 new ArmAutoControl(armSubsystem, 0)),
                                 new GyroAutocorrectCommand(swerveSubsystem));
@@ -126,40 +141,40 @@ public class AutoCommands {
 
         public Command OverStationAndBacktoBalance() {
                 return new SequentialCommandGroup(
-                        new ParallelDeadlineGroup(
-                                        new WaitCommand(1),
-                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("OverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
-                        new GyroAutocorrectCommand(swerveSubsystem));
+                                this.getTrajectoryCommand("OverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
+                                new GyroAutocorrectCommand(swerveSubsystem));
         };
 
-        public Command SpitAndBalance2Meters() {
+        public Command SpitCubeAndBalance() {
                 return new SequentialCommandGroup(
-                        new ParallelDeadlineGroup(
-                                        new WaitCommand(1),
-                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("SpitAndBalance2Meters", CONSTRAINTS_BALANCE),
-                        new GyroAutocorrectCommand(swerveSubsystem));
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(1),
+                                                new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
+                                this.getTrajectoryCommand("OverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
+                                new GyroAutocorrectCommand(swerveSubsystem));
         };
 
         public Command FarSideSpitAndTaxi() {
                 return new SequentialCommandGroup(
-                        new ParallelDeadlineGroup(
-                                        new WaitCommand(1),
-                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("FarSideSpitAndTaxi", CONSTRAINTS_BALANCE));
+                                new ParallelDeadlineGroup(
+                                                new WaitCommand(1),
+                                                new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
+                                this.getTrajectoryCommand("FarSideSpitAndTaxi", CONSTRAINTS_BALANCE));
         };
 
         public Command FarSideConeAndTaxi() {
                 return new SequentialCommandGroup(
-                        this.PlaceMidCone(),
-                        this.getTrajectoryCommand("FarSideSpitAndTaxi", CONSTRAINTS_BALANCE));
+                                this.PlaceMidCone(),
+                                new ParallelCommandGroup(
+                                                new ArmAutoControl(armSubsystem, 0), // Arm bring back down
+                                                this.getTrajectoryCommand("BackwardsFarSideSpitAndTaxi",
+                                                                CONSTRAINTS_BALANCE)));
+
         };
 
         // ===== HELPER ===== //
         public Command getTrajectoryCommand(String fileName, PathConstraints constraints) {
                 // The trajectory to follow
-                // TODO: Add Constraints as part of the path
                 PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName, constraints);
 
                 SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
@@ -184,23 +199,25 @@ public class AutoCommands {
         // The dropdown select options
         public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
                         .of(
-                                        "PlaceConeGrabCubeAndSpit", () -> {
-                                                return this.PlaceConeGrabCubeAndSpit();
-                                        },
                                         "PlaceConeAndBalance", () -> {
                                                 return this.PlaceConeAndBalance();
                                         },
+                                        "LeftPlaceConeGrabCubeAndSpit", () -> {
+                                                return this.PlaceConeGrabCubeAndSpit("Left");
+                                        },
+                                        "RightPlaceConeGrabCubeAndSpit", () -> {
+                                                return this.PlaceConeGrabCubeAndSpit("Right");
+                                        },
+                                        "SpitCubeAndBalance", () -> {
+                                                return this.SpitCubeAndBalance();
+                                        },
                                         "OverStationAndBacktoBalance", () -> {
                                                 return this.OverStationAndBacktoBalance();
-                                        },
-                                        "SpitAndBalance2Meters", () -> {
-                                                return this.SpitAndBalance2Meters();
                                         },
                                         "FarSideSpitAndTaxi", () -> {
                                                 return this.FarSideSpitAndTaxi();
                                         },
                                         "FarSideConeAndTaxi", () -> {
                                                 return this.FarSideConeAndTaxi();
-                                        }
-                        );
+                                        });
 }
