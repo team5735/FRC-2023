@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
@@ -38,6 +39,8 @@ public class AutoCommands {
         private final ArmSubsystem armSubsystem;
         private final GrabberSubsystem grabberSubsystem;
 
+        private final PathConstraints CONSTRAINTS_NORMAL, CONSTRAINTS_BALANCE;
+
         public Map<String, Command> eventMap = new HashMap<>();
 
         public AutoCommands(SwerveSubsystem swerveSubsystem, IntakeSubsystem intakeSubsystem, ArmSubsystem armSubsystem,
@@ -46,6 +49,9 @@ public class AutoCommands {
                 this.intakeSubsystem = intakeSubsystem;
                 this.armSubsystem = armSubsystem;
                 this.grabberSubsystem = grabberSubsystem;
+
+                this.CONSTRAINTS_NORMAL = new PathConstraints(4.0, 3.0);
+                this.CONSTRAINTS_BALANCE = new PathConstraints(1.5, 1.5);
 
                 this.eventMap = new HashMap<>();
                 eventMap.put("runIntakeIn",
@@ -91,14 +97,14 @@ public class AutoCommands {
                 return new SequentialCommandGroup(
                                 this.PlaceMidCone(), // Place the cone
                                 new ParallelDeadlineGroup(
-                                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1"),
+                                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1", CONSTRAINTS_NORMAL),
                                                 new ArmAutoControl(armSubsystem, 0), // Arm bring back down
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
                                 // new ParallelDeadlineGroup( SEE IF PATH CAN DO IT FINE
                                 //                 new WaitCommand(1.7),
                                 //                 new MoveStraightCmd(swerveSubsystem, MoveDirection.BACKWARD),
                                 //                 new IntakeCommand(intakeSubsystem, IntakeDirection.IN)),
-                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2"),
+                                this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart2", CONSTRAINTS_NORMAL),
                                 // Runs intake for 0.5 seconds
                                 new ParallelDeadlineGroup(
                                                 new WaitCommand(1),
@@ -110,7 +116,7 @@ public class AutoCommands {
                                 this.PlaceMidCone(), // Place the cone
                                 new ParallelDeadlineGroup(
                                                 // Backwards because placing cone first
-                                                this.getTrajectoryCommand("BackwardsOverStationAndBacktoBalance"),
+                                                this.getTrajectoryCommand("BackwardsOverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
                                                 // Arm bring back down
                                                 new ArmAutoControl(armSubsystem, 0)),
                                 new GyroAutocorrectCommand(swerveSubsystem));
@@ -123,7 +129,7 @@ public class AutoCommands {
                         new ParallelDeadlineGroup(
                                         new WaitCommand(1),
                                         new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("OverStationAndBacktoBalance"),
+                        this.getTrajectoryCommand("OverStationAndBacktoBalance", CONSTRAINTS_BALANCE),
                         new GyroAutocorrectCommand(swerveSubsystem));
         };
 
@@ -132,29 +138,29 @@ public class AutoCommands {
                         new ParallelDeadlineGroup(
                                         new WaitCommand(1),
                                         new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("SpitAndBalance2Meters"),
+                        this.getTrajectoryCommand("SpitAndBalance2Meters", CONSTRAINTS_BALANCE),
                         new GyroAutocorrectCommand(swerveSubsystem));
         };
 
-        public Command farSideSpitAndTaxi() {
+        public Command FarSideSpitAndTaxi() {
                 return new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
                                         new WaitCommand(1),
                                         new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                        this.getTrajectoryCommand("farSideSpitAndTaxi"));
+                        this.getTrajectoryCommand("FarSideSpitAndTaxi", CONSTRAINTS_BALANCE));
         };
 
-        public Command farSideConeAndTaxi() {
+        public Command FarSideConeAndTaxi() {
                 return new SequentialCommandGroup(
                         this.PlaceMidCone(),
-                        this.getTrajectoryCommand("farSideSpitAndTaxi"));
+                        this.getTrajectoryCommand("FarSideSpitAndTaxi", CONSTRAINTS_BALANCE));
         };
 
         // ===== HELPER ===== //
-        public Command getTrajectoryCommand(String fileName) {
+        public Command getTrajectoryCommand(String fileName, PathConstraints constraints) {
                 // The trajectory to follow
                 // TODO: Add Constraints as part of the path
-                PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName);
+                PathPlannerTrajectory plotTrajectory = Trajectories.loadTrajectory(fileName, constraints);
 
                 SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
                                 swerveSubsystem::getPose,
@@ -184,17 +190,17 @@ public class AutoCommands {
                                         "PlaceConeAndBalance", () -> {
                                                 return this.PlaceConeAndBalance();
                                         },
-                                        "OverStationAndBacktoBalance", () -> { // now a full command
-                                                return this.getTrajectoryCommand("OverStationAndBacktoBalance");
+                                        "OverStationAndBacktoBalance", () -> {
+                                                return this.OverStationAndBacktoBalance();
                                         },
                                         "SpitAndBalance2Meters", () -> {
-                                                return this.getTrajectoryCommand("SpitAndBalance2Meters");
+                                                return this.SpitAndBalance2Meters();
                                         },
-                                        "farSideSpitAndTaxi", () -> {
-                                                return this.getTrajectoryCommand("farSideSpitAndTaxi");
+                                        "FarSideSpitAndTaxi", () -> {
+                                                return this.FarSideSpitAndTaxi();
                                         },
-                                        "farSideConeAndTaxi", () -> {
-                                                return this.getTrajectoryCommand("farSideConeAndTaxi");
+                                        "FarSideConeAndTaxi", () -> {
+                                                return this.FarSideConeAndTaxi();
                                         }
                         );
 }

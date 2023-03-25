@@ -86,8 +86,8 @@ public class Trajectories {
          *             folder
          *             e.g. if path is in 'pathplanner/Auto.path', file = 'Auto'
          */
-        public static final PathPlannerTrajectory loadTrajectory(String file) {
-                PathPlannerTrajectory path = PathPlanner.loadPath(file, Constants.AutoConstants.PP_AUTO_CONSTRAINTS);
+        public static final PathPlannerTrajectory loadTrajectory(String file, PathConstraints constraints) {
+                PathPlannerTrajectory path = PathPlanner.loadPath(file, constraints);
                 if (path == null) {
                         System.out.println("#### Could not find path: " + file);
                         // return some empty path

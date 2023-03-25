@@ -198,8 +198,7 @@ public final class Constants {
                                 AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ)
                                 .setKinematics(DrivetrainConstants.DT_KINEMATICS);
 
-                public static final PathConstraints PP_AUTO_CONSTRAINTS = new PathConstraints(
-                                AUTO_MAX_SPEED_METERS_PER_SECOND, AUTO_MAX_ACCELERATION_METERS_PER_SECONDSQ);
+                public static final PathConstraints PP_AUTO_CONSTRAINTS = new PathConstraints(1.5, 1.5);
         }
 
         // TODO: Measure required physical constants
