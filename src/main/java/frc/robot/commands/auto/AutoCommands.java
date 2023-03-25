@@ -68,7 +68,7 @@ public class AutoCommands {
         }
 
         // ===== COMMANDS ===== //
-        public Command PlaceConeGrabCubeAndSpit() {
+        public Command PlaceMidCone() {
                 return new SequentialCommandGroup(
                                 new ParallelCommandGroup(
                                                 new ParallelDeadlineGroup( // Move backward for 0.5 seconds to allow arm
@@ -84,7 +84,12 @@ public class AutoCommands {
                                                 new MoveStraightCmd(swerveSubsystem, MoveDirection.FORWARD)),
                                 new ParallelDeadlineGroup( // Runs grabber for 0.25 seconds, place cone
                                                 new WaitCommand(0.5),
-                                                new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)),
+                                                new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT)));
+        }
+
+        public Command PlaceConeGrabCubeAndSpit() {
+                return new SequentialCommandGroup(
+                                this.PlaceMidCone(), // Place the cone
                                 new ParallelDeadlineGroup(
                                                 this.getTrajectoryCommand("PlaceConeMoveOutGrabNewBlockMoveBackPart1"),
                                                 new ArmAutoControl(armSubsystem, 0), // Arm bring back down
@@ -99,6 +104,17 @@ public class AutoCommands {
                                                 new WaitCommand(1),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)));
         };
+
+        public Command PlaceConeAndBalance() {
+                return new SequentialCommandGroup(
+                                this.PlaceMidCone(), // Place the cone
+                                new ParallelDeadlineGroup(
+                                                // Backwards because placing cone first
+                                                this.getTrajectoryCommand("BackwardsOverStationAndBacktoBalance"),
+                                                // Arm bring back down
+                                                new ArmAutoControl(armSubsystem, 0)),
+                                new GyroAutocorrectCommand(swerveSubsystem));
+        }
 
         // A simple "run certain trajectory" command
         public Command SpitMoveOutBackAndBalance() {
@@ -132,11 +148,14 @@ public class AutoCommands {
         // The dropdown select options
         public Map<String, Supplier<Command>> AUTO_CMD_MAP = Map
                         .of(
-                                "PlaceConeGrabCubeAndSpit", () -> {
-                                        return this.PlaceConeGrabCubeAndSpit();
-                                },
-                                "SpitMoveOutBackAndBalance", () -> {
-                                        return this.SpitMoveOutBackAndBalance();
-                                }
+                                        "PlaceConeGrabCubeAndSpit", () -> {
+                                                return this.PlaceConeGrabCubeAndSpit();
+                                        },
+                                        "SpitMoveOutBackAndBalance", () -> {
+                                                return this.SpitMoveOutBackAndBalance();
+                                        },
+                                        "PlaceConeAndBalance", () -> {
+                                                return this.PlaceConeAndBalance();
+                                        }
                         );
 }
