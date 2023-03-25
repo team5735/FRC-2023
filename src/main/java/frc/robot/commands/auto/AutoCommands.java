@@ -116,6 +116,40 @@ public class AutoCommands {
                                 new GyroAutocorrectCommand(swerveSubsystem));
         }
 
+        // Add Place Cone Grab Cube & Balance
+
+        public Command OverStationAndBacktoBalance() {
+                return new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                        new WaitCommand(1),
+                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
+                        this.getTrajectoryCommand("OverStationAndBacktoBalance"),
+                        new GyroAutocorrectCommand(swerveSubsystem));
+        };
+
+        public Command SpitAndBalance2Meters() {
+                return new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                        new WaitCommand(1),
+                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
+                        this.getTrajectoryCommand("SpitAndBalance2Meters"),
+                        new GyroAutocorrectCommand(swerveSubsystem));
+        };
+
+        public Command farSideSpitAndTaxi() {
+                return new SequentialCommandGroup(
+                        new ParallelDeadlineGroup(
+                                        new WaitCommand(1),
+                                        new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
+                        this.getTrajectoryCommand("farSideSpitAndTaxi"));
+        };
+
+        public Command farSideConeAndTaxi() {
+                return new SequentialCommandGroup(
+                        this.PlaceMidCone(),
+                        this.getTrajectoryCommand("farSideSpitAndTaxi"));
+        };
+
         // ===== HELPER ===== //
         public Command getTrajectoryCommand(String fileName) {
                 // The trajectory to follow
@@ -149,9 +183,18 @@ public class AutoCommands {
                                         },
                                         "PlaceConeAndBalance", () -> {
                                                 return this.PlaceConeAndBalance();
-                                        }//,
-                                        // "SpitMoveOutBackAndBalance", () -> { // just a trajectory
-                                        //         return this.getTrajectoryCommand("SpitMoveOutBackAndBalance");
-                                        // },
+                                        },
+                                        "OverStationAndBacktoBalance", () -> { // now a full command
+                                                return this.getTrajectoryCommand("OverStationAndBacktoBalance");
+                                        },
+                                        "SpitAndBalance2Meters", () -> {
+                                                return this.getTrajectoryCommand("SpitAndBalance2Meters");
+                                        },
+                                        "farSideSpitAndTaxi", () -> {
+                                                return this.getTrajectoryCommand("farSideSpitAndTaxi");
+                                        },
+                                        "farSideConeAndTaxi", () -> {
+                                                return this.getTrajectoryCommand("farSideConeAndTaxi");
+                                        }
                         );
 }
