@@ -4,38 +4,16 @@
 
 package frc.robot;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.auto.AutoCommands;
-import frc.robot.commands.grabber.GrabberCommand;
-import frc.robot.commands.grabber.GrabberCommand.GrabberDirection;
 // Pneumatics Imports -- Could be reorganized by system
 import frc.robot.subsystems.swerve.SwerveSubsystem;
-import frc.robot.trajectories.Trajectories;
-
 // Intake imports
 import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.IntakeCommand.IntakeDirection;
@@ -43,8 +21,6 @@ import frc.robot.commands.swerve.BrakeCommand;
 import frc.robot.commands.swerve.GyroAutocorrectCommand;
 import frc.robot.commands.swerve.SwerveJoystickCmd;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.GrabberSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -60,8 +36,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
-  private final ArmSubsystem armSubsystem;
-  private final GrabberSubsystem grabberSubsystem;
 
   private final SendableChooser<String> autoPathChooser = new SendableChooser<>();
 
@@ -73,13 +47,11 @@ public class RobotContainer {
   public RobotContainer() {
     this.swerveSubsystem = new SwerveSubsystem();
     this.intakeSubsystem = new IntakeSubsystem();
-    this.armSubsystem = new ArmSubsystem();
-    this.grabberSubsystem = new GrabberSubsystem();
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
     this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
-    this.autoCommands = new AutoCommands(swerveSubsystem, intakeSubsystem, armSubsystem, grabberSubsystem);
+    this.autoCommands = new AutoCommands(swerveSubsystem, intakeSubsystem);
 
     // Configure the button bindings
     this.configureDriverBindings();
@@ -147,33 +119,6 @@ public class RobotContainer {
   }
 
   private void configureSubsystemBindings() {
-    this.subsystemController.a()
-        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
-
-    this.subsystemController.b()
-        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
-
-    this.subsystemController.rightTrigger()
-        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT));
-
-    this.subsystemController.x()
-        .toggleOnTrue(new InstantCommand(() -> {
-          this.armSubsystem.setLevel(0);
-        }));
-
-    this.subsystemController.y()
-        .toggleOnTrue(new InstantCommand(() -> {
-          this.armSubsystem.setLevel(2);
-        }));
-
-    // Left + Right bumpers: Decrease / Increase elevator setpoint
-    this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
-      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() + 0.1);
-    }));
-
-    this.subsystemController.leftBumper().toggleOnTrue(new InstantCommand(() -> {
-      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() - 0.1);
-    }));
   }
 
 
@@ -191,7 +136,5 @@ public class RobotContainer {
    * Resets setpoints to 0 on disable and init
    */
   public void resetSetpoints() {
-    this.armSubsystem.resetMotors();
-    this.armSubsystem.setSetpoint(Constants.ArmConstants.ARM_POSITION_START_RAD);
   }
 }
