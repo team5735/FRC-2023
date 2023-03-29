@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -46,6 +47,12 @@ public class SwerveModule {
         this.turnMotor = new WPI_TalonFX(turnMotorId);
         this.driveMotor.setInverted(driveMotorReversed);
         this.turnMotor.setInverted(turnMotorReversed);
+
+        // Falcon turn PID
+        this.turnMotor.config_kP(0, 0.2);
+        this.turnMotor.config_kI(0, 0.0);
+        this.turnMotor.config_kD(0, 0.1);
+
 
         this.driveFF = new SimpleMotorFeedforward(drivePid.getS(), drivePid.getV(), drivePid.getA());
         this.drivePID = new PIDController(drivePid.getP(), drivePid.getI(), drivePid.getD());
@@ -117,6 +124,12 @@ public class SwerveModule {
     public void resetEncoders() {
         this.driveMotor.setSelectedSensorPosition(0);
 
+        // Sync the turn motor with encoder value
+        this.turnMotor.setSelectedSensorPosition(
+                UnitConversion.rotationsToFalcon( // falcon units
+                        Units.radiansToRotations( // rotations which turns into ^
+                                this.getTurnMotorAngle()))); // radians turns into ^
+
         // Unnecessary because we will use absolute encoder to get angle instead of
         // Falcon
         // turningEncoder.setPosition(getAbsoluteEncoderRad());
@@ -144,7 +157,8 @@ public class SwerveModule {
 
     public void driveFullPower() {
         this.driveMotor.set(ControlMode.PercentOutput, 1.0);
-        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed", this.getDriveWheelVelocity());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed",
+        // this.getDriveWheelVelocity());
     }
 
     public void turnFullPower() {
@@ -202,15 +216,25 @@ public class SwerveModule {
         // WHEN USING PIDCONTROLLER:
         // - Just use PID: Input is current angle and angle setpoint (to calculate
         // error), output is voltage
-        double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
-                state.angle.getRadians());
-        // Set the voltage
-        this.turnMotor.setVoltage(turnVoltage);
+        // double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
+        // state.angle.getRadians());
+        // // Set the voltage
+        // this.turnMotor.setVoltage(turnVoltage);]
+
+        // Testing if Falcon units are fine
+        this.turnMotor.set(ControlMode.Position,
+                UnitConversion.rotationsToFalcon(state.angle.getRotations()));
 
         // Logging
-        // SmartDashboard.putString("Swerve[" + this.moduleId + "] state", state.toString());
+        SmartDashboard.putString("Swerve[" + this.moduleId + "] state",
+                state.toString());
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] falcon angle",
+                Units.rotationsToRadians(UnitConversion.falconToRotations(this.turnMotor.getSelectedSensorPosition())));
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] abs enc angle",
+                this.getTurnMotorAngle());
+        // this.turnAbsoluteEncoder.get());
         // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
-                // this.turnAbsoluteEncoder.get());
+        // this.turnAbsoluteEncoder.get());
     }
 
     /**
