@@ -161,7 +161,8 @@ public class AutoCommands {
                                                 new WaitCommand(0.69),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
                                 this.getTrajectoryCommand("SpitCubeGrabCubeAndSpit", false, CONSTRAINTS_NORMAL),
-                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpit", true, CONSTRAINTS_BALANCE),
+                                // This is wrong - need to create a separate path to go to another cube slot
+                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpit", true, CONSTRAINTS_NORMAL),
                                 new ParallelDeadlineGroup( // Spit cube
                                                 new WaitCommand(0.69),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)));
@@ -232,9 +233,6 @@ public class AutoCommands {
                                         // },
                                         "SpitCubeAndBalance", () -> {
                                                 return this.SpitCubeAndBalance();
-                                        },
-                                        "OverStationAndBacktoBalance", () -> {
-                                                return this.OverStationAndBacktoBalance();
                                         },
                                         "FarSideSpitAndTaxi", () -> {
                                                 return this.FarSideSpitAndTaxi();
