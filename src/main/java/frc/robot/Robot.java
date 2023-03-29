@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.server.PathPlannerServer;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -50,6 +52,7 @@ public class Robot extends TimedRobot {
     cam.setFPS(15);
     cam.setResolution(320, 240);
     
+    PathPlannerServer.startServer(5811);
   }
 
   /**
