@@ -86,12 +86,12 @@ public class Trajectories {
          *             folder
          *             e.g. if path is in 'pathplanner/Auto.path', file = 'Auto'
          */
-        public static final PathPlannerTrajectory loadTrajectory(String file, PathConstraints constraints) {
-                PathPlannerTrajectory path = PathPlanner.loadPath(file, constraints);
+        public static final List<PathPlannerTrajectory> loadTrajectory(String file, boolean reversed, PathConstraints constraints) {
+                List<PathPlannerTrajectory> path = PathPlanner.loadPathGroup(file, reversed, constraints);
                 if (path == null) {
                         System.out.println("#### Could not find path: " + file);
                         // return some empty path
-                        return Trajectories.DO_NOT_MOVE;
+                        return List.of(Trajectories.DO_NOT_MOVE);
                 }
                 return path;
         }
