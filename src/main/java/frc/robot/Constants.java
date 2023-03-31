@@ -187,7 +187,7 @@ public final class Constants {
                 // TODO: Tune these auto controller constants -- In Progress
                 public static final double AUTO_XCONTROLLER_KP = 5;
                 public static final double AUTO_YCONTROLLER_KP = 5;
-                public static final double AUTO_THETACONTROLLER_KP = 2;
+                public static final double AUTO_THETACONTROLLER_KP = 3.8;
 
                 public static final TrapezoidProfile.Constraints AUTO_THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
                                 AUTO_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND,

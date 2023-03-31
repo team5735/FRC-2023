@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -63,6 +64,9 @@ public class SwerveModule {
         this.turnPID.enableContinuousInput(-Math.PI, Math.PI);
 
         this.moduleId = moduleId;
+
+        SmartDashboard.putData("Swerve[" + this.moduleId + "] Drive PID", this.drivePID);
+        SmartDashboard.putData("Swerve[" + this.moduleId + "] Turn PID", this.turnPID);
 
         resetEncoders();
     }
@@ -117,6 +121,12 @@ public class SwerveModule {
     public void resetEncoders() {
         this.driveMotor.setSelectedSensorPosition(0);
 
+        // Sync the turn motor with encoder value
+        // this.turnMotor.setSelectedSensorPosition(
+        // UnitConversion.rotationsToFalcon( // falcon units
+        // Units.radiansToRotations( // rotations which turns into ^
+        // this.getTurnMotorAngle()))); // radians turns into ^
+
         // Unnecessary because we will use absolute encoder to get angle instead of
         // Falcon
         // turningEncoder.setPosition(getAbsoluteEncoderRad());
@@ -144,7 +154,8 @@ public class SwerveModule {
 
     public void driveFullPower() {
         this.driveMotor.set(ControlMode.PercentOutput, 1.0);
-        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed", this.getDriveWheelVelocity());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Drive Motor Speed",
+        // this.getDriveWheelVelocity());
     }
 
     public void turnFullPower() {
@@ -208,9 +219,19 @@ public class SwerveModule {
         this.turnMotor.setVoltage(turnVoltage);
 
         // Logging
-        // SmartDashboard.putString("Swerve[" + this.moduleId + "] state", state.toString());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Falcon Setpoint",
+        // UnitConversion.rotationsToFalcon(state.angle.getRotations()));
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Falcon Pos",
+        // this.turnMotor.getSelectedSensorPosition());zz
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] state deg",
+                state.angle.getDegrees());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] falcon deg",
+        // Units.rotationsToDegrees(UnitConversion.falconToRotations(this.turnMotor.getSelectedSensorPosition())));
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] abs enc deg",
+                Units.radiansToDegrees(this.getTurnMotorAngle()));
+        // this.turnAbsoluteEncoder.get());
         // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
-                // this.turnAbsoluteEncoder.get());
+        // this.turnAbsoluteEncoder.get());
     }
 
     /**
