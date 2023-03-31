@@ -41,7 +41,8 @@ public class AutoCommands {
         private final ArmSubsystem armSubsystem;
         private final GrabberSubsystem grabberSubsystem;
 
-        private final PathConstraints CONSTRAINTS_NORMAL, CONSTRAINTS_BALANCE;
+        private final PathConstraints CONSTRAINTS_NORMAL = new PathConstraints(2.5, 2.5);
+        private final PathConstraints CONSTRAINTS_BALANCE = new PathConstraints(1.5, 1.5);
 
         public Map<String, Command> eventMap = new HashMap<>();
 
@@ -51,9 +52,6 @@ public class AutoCommands {
                 this.intakeSubsystem = intakeSubsystem;
                 this.armSubsystem = armSubsystem;
                 this.grabberSubsystem = grabberSubsystem;
-
-                this.CONSTRAINTS_NORMAL = new PathConstraints(2.0, 2.0);
-                this.CONSTRAINTS_BALANCE = new PathConstraints(1.5, 1.5);
 
                 this.eventMap = new HashMap<>();
                 eventMap.put("runIntakeIn",
@@ -160,9 +158,8 @@ public class AutoCommands {
                                 new ParallelDeadlineGroup( // Spit cube
                                                 new WaitCommand(0.69),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)),
-                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpit", false, CONSTRAINTS_NORMAL),
-                                // This is wrong - need to create a separate path to go to another cube slot
-                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpit", true, CONSTRAINTS_NORMAL),
+                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpitPart1", false, CONSTRAINTS_NORMAL),
+                                this.getTrajectoryCommand("SpitCubeGrabCubeAndSpitPart2", false, CONSTRAINTS_NORMAL),
                                 new ParallelDeadlineGroup( // Spit cube
                                                 new WaitCommand(0.69),
                                                 new IntakeCommand(intakeSubsystem, IntakeDirection.OUT)));
@@ -239,6 +236,10 @@ public class AutoCommands {
                                         },
                                         "SpitCubeGrabCubeAndSpit", () -> {
                                                 return this.SpitCubeGrabCubeAndSpit();
+                                        //        return this.getTrajectoryCommand("SpitCubeGrabCubeAndSpitPart1", false, CONSTRAINTS_NORMAL);
+                                        },
+                                        "Straight", () -> {
+                                                return this.getTrajectoryCommand("Straight", false, this.CONSTRAINTS_NORMAL);
                                         }
                                         // ,
                                          // "FarSideConeAndTaxi", () -> {

@@ -48,12 +48,6 @@ public class SwerveModule {
         this.driveMotor.setInverted(driveMotorReversed);
         this.turnMotor.setInverted(turnMotorReversed);
 
-        // Falcon turn PID
-        this.turnMotor.config_kP(0, 0.2);
-        this.turnMotor.config_kI(0, 0.0);
-        this.turnMotor.config_kD(0, 0.1);
-
-
         this.driveFF = new SimpleMotorFeedforward(drivePid.getS(), drivePid.getV(), drivePid.getA());
         this.drivePID = new PIDController(drivePid.getP(), drivePid.getI(), drivePid.getD());
 
@@ -70,6 +64,9 @@ public class SwerveModule {
         this.turnPID.enableContinuousInput(-Math.PI, Math.PI);
 
         this.moduleId = moduleId;
+
+        SmartDashboard.putData("Swerve[" + this.moduleId + "] Drive PID", this.drivePID);
+        SmartDashboard.putData("Swerve[" + this.moduleId + "] Turn PID", this.turnPID);
 
         resetEncoders();
     }
@@ -125,10 +122,10 @@ public class SwerveModule {
         this.driveMotor.setSelectedSensorPosition(0);
 
         // Sync the turn motor with encoder value
-        this.turnMotor.setSelectedSensorPosition(
-                UnitConversion.rotationsToFalcon( // falcon units
-                        Units.radiansToRotations( // rotations which turns into ^
-                                this.getTurnMotorAngle()))); // radians turns into ^
+        // this.turnMotor.setSelectedSensorPosition(
+        // UnitConversion.rotationsToFalcon( // falcon units
+        // Units.radiansToRotations( // rotations which turns into ^
+        // this.getTurnMotorAngle()))); // radians turns into ^
 
         // Unnecessary because we will use absolute encoder to get angle instead of
         // Falcon
@@ -216,22 +213,22 @@ public class SwerveModule {
         // WHEN USING PIDCONTROLLER:
         // - Just use PID: Input is current angle and angle setpoint (to calculate
         // error), output is voltage
-        // double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
-        // state.angle.getRadians());
-        // // Set the voltage
-        // this.turnMotor.setVoltage(turnVoltage);]
-
-        // Testing if Falcon units are fine
-        this.turnMotor.set(ControlMode.Position,
-                UnitConversion.rotationsToFalcon(state.angle.getRotations()));
+        double turnVoltage = this.turnPID.calculate(this.getTurnMotorAngle(),
+                state.angle.getRadians());
+        // Set the voltage
+        this.turnMotor.setVoltage(turnVoltage);
 
         // Logging
-        SmartDashboard.putString("Swerve[" + this.moduleId + "] state",
-                state.toString());
-        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] falcon angle",
-                Units.rotationsToRadians(UnitConversion.falconToRotations(this.turnMotor.getSelectedSensorPosition())));
-        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] abs enc angle",
-                this.getTurnMotorAngle());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Falcon Setpoint",
+        // UnitConversion.rotationsToFalcon(state.angle.getRotations()));
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Falcon Pos",
+        // this.turnMotor.getSelectedSensorPosition());zz
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] state deg",
+                state.angle.getDegrees());
+        // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] falcon deg",
+        // Units.rotationsToDegrees(UnitConversion.falconToRotations(this.turnMotor.getSelectedSensorPosition())));
+        SmartDashboard.putNumber("Swerve[" + this.moduleId + "] abs enc deg",
+                Units.radiansToDegrees(this.getTurnMotorAngle()));
         // this.turnAbsoluteEncoder.get());
         // SmartDashboard.putNumber("Swerve[" + this.moduleId + "] Abs Encoder",
         // this.turnAbsoluteEncoder.get());

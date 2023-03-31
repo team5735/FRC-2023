@@ -44,13 +44,13 @@ public class Robot extends TimedRobot {
     // Do not place these function calls in any periodic functions
     
     // https://docs.limelightvision.io/en/latest/best_practices.html
-    for (int port = 5800; port <= 5805; port++) {
-      PortForwarder.add(port, "limelight.local", port);
-    }
+    // for (int port = 5800; port <= 5805; port++) {
+    //   PortForwarder.add(port, "limelight.local", port);
+    // }
 
-    var cam = CameraServer.startAutomaticCapture();
-    cam.setFPS(15);
-    cam.setResolution(320, 240);
+    // var cam = CameraServer.startAutomaticCapture();
+    // cam.setFPS(15);
+    // cam.setResolution(320, 240);
     
     PathPlannerServer.startServer(5811);
   }
