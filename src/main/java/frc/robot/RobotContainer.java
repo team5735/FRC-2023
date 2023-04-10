@@ -56,7 +56,7 @@ import frc.robot.subsystems.GrabberSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final CommandXboxController driverController;//, subsystemController;
+  private final CommandXboxController driverController, subsystemController;
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem;
   private final IntakeSubsystem intakeSubsystem;
@@ -77,7 +77,7 @@ public class RobotContainer {
     this.grabberSubsystem = new GrabberSubsystem();
 
     this.driverController = new CommandXboxController(Constants.OIConstants.DRIVER_CONTROLLER_PORT);
-    // this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
+    this.subsystemController = new CommandXboxController(Constants.OIConstants.SUBSYSTEM_CONTROLLER_PORT);
 
     this.autoCommands = new AutoCommands(swerveSubsystem, intakeSubsystem, armSubsystem, grabberSubsystem);
 
@@ -147,33 +147,33 @@ public class RobotContainer {
   }
 
   private void configureSubsystemBindings() {
-    // this.subsystemController.a()
-    //     .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
+    this.subsystemController.a()
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.IN));
 
-    // this.subsystemController.b()
-    //     .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
+    this.subsystemController.b()
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.OUT));
 
-    // this.subsystemController.rightTrigger()
-    //     .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT));
+    this.subsystemController.rightTrigger()
+        .whileTrue(new GrabberCommand(grabberSubsystem, GrabberDirection.SLOW_OUT));
 
-    // this.subsystemController.x()
-    //     .toggleOnTrue(new InstantCommand(() -> {
-    //       this.armSubsystem.setLevel(0);
-    //     }));
+    this.subsystemController.x()
+        .toggleOnTrue(new InstantCommand(() -> {
+          this.armSubsystem.setLevel(0);
+        }));
 
-    // this.subsystemController.y()
-    //     .toggleOnTrue(new InstantCommand(() -> {
-    //       this.armSubsystem.setLevel(2);
-    //     }));
+    this.subsystemController.y()
+        .toggleOnTrue(new InstantCommand(() -> {
+          this.armSubsystem.setLevel(2);
+        }));
 
-    // // Left + Right bumpers: Decrease / Increase elevator setpoint
-    // this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
-    //   this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() + 0.1);
-    // }));
+    // Left + Right bumpers: Decrease / Increase elevator setpoint
+    this.subsystemController.rightBumper().toggleOnTrue(new InstantCommand(() -> {
+      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() + 0.1);
+    }));
 
-    // this.subsystemController.leftBumper().toggleOnTrue(new InstantCommand(() -> {
-    //   this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() - 0.1);
-    // }));
+    this.subsystemController.leftBumper().toggleOnTrue(new InstantCommand(() -> {
+      this.armSubsystem.setSetpoint(this.armSubsystem.getSetpoint() - 0.1);
+    }));
   }
 
 

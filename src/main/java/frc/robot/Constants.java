@@ -333,7 +333,7 @@ public final class Constants {
                 public static final double SLOW_MODE_JOYSTICK_DEADBAND = 0.03;
 
                 public static double SPEED_LIMIT_XY = 1;
-                public static double SPEED_LIMIT_TURN = 0.2;
+                public static double SPEED_LIMIT_TURN = 0.35;
         }
 
 }
